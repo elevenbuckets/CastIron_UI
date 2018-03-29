@@ -17,12 +17,6 @@ module.exports = {
         'style-loader',
         'css-loader'
       ]
-    },
-    {
-      test: /\.json$/,
-      use: [
-        'json-loader'
-      ]
     }]
   },
   devtool: 'cheap-module-eval-source-map',
@@ -30,9 +24,5 @@ module.exports = {
     contentBase: path.join(__dirname, 'public'),
     historyApiFallback : true
   },
-  node : {
-    fs: 'empty',
-    net: 'empty',
-    tls: 'empty'
-  }
+  target : 'node'
 };

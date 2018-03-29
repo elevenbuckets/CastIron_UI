@@ -76,6 +76,7 @@ class WalletView extends Reflux.Component {
     }
 
     handleSend(addr, amount, gasNumber){
+        console.log(CastIronService.getAccount());
         alert("Send single tx!")
     }
 
