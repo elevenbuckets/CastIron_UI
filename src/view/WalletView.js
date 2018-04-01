@@ -4,6 +4,7 @@ import Accounts from '../components/Accounts';
 import SendTX from '../components/SendTX';
 import CastIronStore from '../store/CastIronStore';
 import CastIronService from '../service/CastIronService';
+import Receipts from '../components/Receipts';
 
 
 
@@ -18,7 +19,9 @@ class WalletView extends Reflux.Component {
             accounts: [
             ],
             queuedTxs: [
-            ]
+            ],
+            Qs: [],
+            receipts: []
 
         }
 
@@ -27,23 +30,12 @@ class WalletView extends Reflux.Component {
         this.handleDequeue = this.handleDequeue.bind(this);
         this.handleSend = this.handleSend.bind(this);
         this.handleBatchSend = this.handleBatchSend.bind(this);
+        this.processQPromise = this.processQPromise.bind(this);
+        this.getAccounts = this.getAccounts.bind(this);
     }
 
     componentWillMount() {
-        let addrs = CastIronService.getAccounts();
-        let addrsWithBalance = addrs.map((addr, index) => (
-            {
-                name: "account_" + index, 
-                addr: addr,
-                balance: this.wallet.toEth(this.wallet.addrEtherBalance(addr), this.wallet.TokenList['ETH'].decimals)
-            }));
-        this.setState((preState) => {
-            let state = preState;
-            state.accounts = addrsWithBalance;
-            state.selected_account = addrs[0];
-            return state;
-        })
-
+       this.getAccounts()
     }
 
     _onSelect(value) {
@@ -77,22 +69,58 @@ class WalletView extends Reflux.Component {
         let weiAmount = wallet.toWei(amount, wallet.TokenList['ETH'].decimals).toString();
         let jobList = [];
         jobList.push(wallet.enqueueTx("ETH")(addr, weiAmount, gasNumber));
-        wallet.processJobs(jobList);
-        console.log("Send single tx!" + addr + amount + gasNumber)
+        let qPromise = wallet.processJobs(jobList);
+        this.processQPromise(qPromise)
     }
 
     handleBatchSend() {
         let wallet = CastIronService.wallet;
         let jobList = [];
-        this.state.queuedTxs.map((tx) =>{
+        this.state.queuedTxs.map((tx) => {
             wallet.setAccount(tx.from);
             let weiAmount = wallet.toWei(tx.amount, wallet.TokenList['ETH'].decimals).toString();
             jobList.push(wallet.enqueueTx("ETH")(tx.addr, weiAmount, tx.gasNumber));
         })
-       
-        wallet.processJobs(jobList);
-        console.log("Sending batch txs:");
-        console.log(this.state.queuedTxs);
+
+        let qPromise = wallet.processJobs(jobList);
+        this.processQPromise(qPromise)
+    }
+
+    processQPromise(qPromise) {
+        qPromise.then((Q) => {
+            CastIronService.addQ(Q);
+            let batchTxHash = this.wallet.rcdQ[Q].map((o) => (o.tx));
+            console.log("Sending batch txs:");
+            console.log(this.state.queuedTxs);
+            console.log(batchTxHash);
+            return this.wallet.getReceipt(batchTxHash, 30000)
+        }).then((data) => {
+            console.log("Receipts:")
+            console.log(data);
+            this.setState((preState) => {
+                let state = preState;
+                state.receipts = state.receipts.concat(data);
+                return state;
+            })
+            this.getAccounts();
+
+        })
+    }
+
+    getAccounts(){
+        let addrs = CastIronService.getAccounts();
+        let addrsWithBalance = addrs.map((addr, index) => (
+            {
+                name: "account_" + index,
+                addr: addr,
+                balance: this.wallet.toEth(this.wallet.addrEtherBalance(addr), this.wallet.TokenList['ETH'].decimals)
+            }));
+        this.setState((preState) => {
+            let state = preState;
+            state.accounts = addrsWithBalance;
+            state.selected_account = addrs[0];
+            return state;
+        })
     }
 
     render() {
@@ -103,6 +131,7 @@ class WalletView extends Reflux.Component {
                 <SendTX queuedTxs={this.state.queuedTxs} selected_account={this.state.selected_account}
                     handleEnqueue={this.handleEnqueue} handleDequeue={this.handleDequeue} handleSend={this.handleSend}
                     handleBatchSend={this.handleBatchSend} />
+                <Receipts receipts={this.state.receipts}/>
             </div>
 
         )

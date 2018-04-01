@@ -10,7 +10,7 @@ class SendTX extends React.Component {
         this.handleChangePayments = this.handleChangePayments.bind(this);
 
         this.state = {
-            isBatched: true
+            isBatched: false
         }
     }
 

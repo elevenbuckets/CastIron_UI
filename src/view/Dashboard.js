@@ -44,7 +44,7 @@ class DashBoard extends Reflux.Component {
             state.localTime = new Date();
             state.unixTime = Date.now();
             this.wallet.gasPriceEst().then(data =>{
-                state.gasPrice = this.wallet.toEth(data.fast, this.wallet.TokenList['ETH'].decimals).toString()
+                state.gasPrice = this.wallet.toEth(data.fast, 9).toString()
             }
             , error =>{state.gasPrice = preState.defaultGasPrice });
             return state;
