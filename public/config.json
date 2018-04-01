@@ -1,0 +1,9 @@
+{
+    "rpcAddr": "http://127.0.0.1:8545",
+    "ipcPath": "/home/liang/.ethereum/net41100/geth.ipc",
+    "defaultGasPrice": "20000000000",
+    "gasOracleAPI": "https://ethgasstation.info/json/ethgasAPI.json",
+    "condition": "sanity",
+    "networkID": "1100",
+    "passVault": "/home/liang/Liang_Learn/git_hub/castIron_ui/CastIron_UI/src/.local/passes.json"
+  }

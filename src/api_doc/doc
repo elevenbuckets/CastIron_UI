@@ -3,7 +3,7 @@ wallet.ethNetStatus() {return {blockHeight: , blockTime }}
 wallet.gasPriceEst() {return {type:price, ... }}
 
 wallet.setAccount(addr) { return boolean }
-wallet.send(token)(addr, amount, gas){ return jobObj} 
+wallet.enqueueTx(token)(addr, amount, gas){ return jobObj} 
 
 wallet.processJobs([] jobList){return Q}
 

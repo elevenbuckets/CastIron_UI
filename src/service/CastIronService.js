@@ -1,16 +1,12 @@
 import Wallet from 'CastIron/core/Wallet'
 class CastIronService {
     constructor() {
-        this.wallet = new Wallet(1100);
-        this.wallet.ipcPath = '/home/liang/.ethereum/net41100/geth.ipc';
-        // setup
-        this.wallet.condition = 'sanity';
-        this.wallet.gasPrice = 20000000000; // 20 GWei
-        this.wallet.passVault = __dirname + '/.local/passes.json'; 
-        this.getAccount = this.getAccount.bind(this);
+        // TODO: change this to be a relative path
+        this.wallet = new Wallet('/home/liang/Liang_Learn/git_hub/castIron_ui/CastIron_UI/src/.local/config.json');
+        this.getAccounts = this.getAccounts.bind(this);
     }
 
-    getAccount(){
+    getAccounts(){
         return this.wallet.allAccounts();
     }
 

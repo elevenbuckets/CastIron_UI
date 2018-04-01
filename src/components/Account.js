@@ -5,7 +5,6 @@ class Account extends React.Component {
     }
 
     render() {
-        console.log(this.props)
         return (
             <div>
                {this.props.account.name + ":"+ this.props.account.addr + " blance:"+  this.props.account.balance + " ETH"}

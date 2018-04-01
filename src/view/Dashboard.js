@@ -1,36 +1,60 @@
 import React, { Component } from 'react';
 import Reflux from 'reflux';
 import { Link } from 'react-router-dom';
+import CastIronService from '../service/CastIronService';
 
 class DashBoard extends Reflux.Component {
     constructor(props) {
         super(props);
 
+        this.wallet = CastIronService.wallet;
 
         this.state = {
             blockHeight: 120000,
             unixTime: 123213,
             localTime: null,
-            blockTimeStamp: null,
-            gasPrice: 20
+            blockTime: null,
+            gasPrice: 15,
+            defaultGasPrice: 20
 
         }
 
-        this._onSelect = this._onSelect.bind(this);
+        this.getDashInfo = this.getDashInfo.bind(this);
     }
 
-    _onSelect(value) {
+    componentWillMount(){
+       this.getDashInfo();
+    }
+
+    componentDidMount(){
+        this.timer = setInterval(this.getDashInfo, 1000);
+    }
+
+    componentDidUnMount(){
+        clearInterval(this.timer);
+    }
+
+
+    getDashInfo(){
         this.setState((preState) => {
             let state = preState;
-            state.selected_account = JSON.parse(value.value);
+            let netStatus = this.wallet.ethNetStatus();
+            state.blockHeight = netStatus.blockHeight;
+            state.blockTime = netStatus.blockTime;
+            state.localTime = new Date();
+            state.unixTime = Date.now();
+            this.wallet.gasPriceEst().then(data =>{
+                state.gasPrice = this.wallet.toEth(data.fast, this.wallet.TokenList['ETH'].decimals).toString()
+            }
+            , error =>{state.gasPrice = preState.defaultGasPrice });
             return state;
         })
-
     }
+
 
     render() {
         let dashInfo = "BlockHeight: " + this.state.blockHeight + " Unix Time(Local Time) :" + this.state.unixTime + "(" +
-                        this.state.localTime + ") BlockTimeStamp: " + this.state.blockTimeStamp + " GasPrice: " + 
+                        this.state.localTime + ") BlockTimeStamp: " + this.state.blockTime + " GasPrice: " + 
                         this.state.gasPrice;
         return (
             <div>
