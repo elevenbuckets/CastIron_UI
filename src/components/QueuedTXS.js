@@ -26,7 +26,7 @@ class QueuedTXS extends React.Component {
         return (
             <div>
                 {
-                    this.props.queuedTxs.map((tx) =>(<QueuedTX key={JSON.stringify(tx)} tx={tx} 
+                    this.props.queuedTxs.map((tx, index) =>(<QueuedTX key={index} tx={tx} 
                     handleDequeue={this.props.handleDequeue}/>) )
                 }
             </div>
