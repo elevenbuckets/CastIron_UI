@@ -62,6 +62,7 @@ class DashBoard extends Reflux.Component {
                 <p>{dashInfo}</p>
                 <Link to="/"> Wallet View </Link>
                 <Link to="/receipts"> Receipts View </Link>
+                <Link to="/queryForm"> Query Form </Link>
             </div>
 
         )
