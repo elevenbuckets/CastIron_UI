@@ -15,13 +15,18 @@ class CastIronStore extends Reflux.Store {
             Qs: [],
             receipts: [],
             address: null,
-            balances: {'ETH': 0}
+            balances: { 'ETH': 0 },
+            blockHeight: null,
+            blockTime: null,
+            gasPrice: null
 
         }
         this.listenables = CastIronActions;
         this.wallet = CastIronService.wallet;
         this.getAccounts = this.getAccounts.bind(this);
-        this.tokenList = ['TTT'];
+        this.tokenList = ['TTT', 'TKA','TKB','TKC','TKD','TKE',
+        'TKF','TKG','TKH','TKI','TKJ','TKK','TKL','TKM','TKN','TKO','TKP',
+        'TKQ','TKR','TKS','TKU'];
         this.wallet.hotGroups(this.tokenList);
         this._count;
         this._target;
@@ -82,10 +87,10 @@ class CastIronStore extends Reflux.Store {
         this.setState({ address: address });
 
         this.tokenList.map((t) => {
-            Actions.statusUpdate({ [t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) });
+            CastIronActions.statusUpdate({ [t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) });
         });
 
-        Actions.statusUpdate({ 'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) });
+        CastIronActions.statusUpdate({ 'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) });
 
         createCanvasWithAddress(canvas, this.state.address);
     }
@@ -95,7 +100,24 @@ class CastIronStore extends Reflux.Store {
 
         this.setState({ balances: { ...this.state.balances, ...status } });
 
-        if (this._count == this._target) Actions.finishUpdate();
+        if (this._count == this._target) CastIronActions.finishUpdate();
+    }
+
+    onInfoUpdate(blockHeight, blockTime) {
+        this.getAccounts();
+
+        this.wallet.gasPriceEst().then(data => {
+            let gasPrice = this.wallet.toEth(data.fast, 9).toString()
+            this.setState(() => {
+                return { blockHeight: blockHeight, blockTime: blockTime, gasPrice: gasPrice }
+            })
+        }
+            , error => {
+            state.gasPrice = preState.defaultGasPrice
+                this.setState(() => {
+                    return { blockHeight: blockHeight, blockTime: blockTime, gasPrice: gasPrice }
+                })
+            });
     }
 
     onFinishUpdate() {
@@ -135,7 +157,7 @@ class CastIronStore extends Reflux.Store {
                 balance: this.wallet.toEth(this.wallet.addrEtherBalance(addr), this.wallet.TokenList['ETH'].decimals)
             }
         ));
-        this.setState({ accounts: accounts, address: addrs[0], balances: {'ETH': accounts[addrs[0]].balance}   })
+        this.setState({ accounts: accounts, address: addrs[0] })
     }
 
 }

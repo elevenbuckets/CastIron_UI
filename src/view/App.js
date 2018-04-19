@@ -220,7 +220,8 @@ class GenSheets extends Reflux.Component {
 		      <th className="balance-sheet">Types</th>
 		      <th className="balance-sheet">Amount</th>
 		      <th className="balance-sheet" colSpan="3">Actions</th>
-		    </tr>
+			</tr>
+			{console.log(balanceSheet)}
 		    {balanceSheet}
     		    </tbody>
 		    </table>);
@@ -278,4 +279,3 @@ class QueryForm extends Reflux.Component {
 }
 
 export default QueryForm
-

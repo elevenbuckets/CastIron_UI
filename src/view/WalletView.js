@@ -15,29 +15,8 @@ class WalletView extends Reflux.Component {
 
         this.store = CastIronStore;
         this.wallet = CastIronService.wallet;
-
-
-        // this.state = {
-        //     accounts: [
-        //     ],
-        //     queuedTxs: [
-        //     ],
-        //     Qs: [],
-        //     receipts: []
-
-        // }
-
-        // console.log(this.state);
-        // this._onSelect = this._onSelect.bind(this);
-        // this.handleEnqueue = this.handleEnqueue.bind(this);
-        // this.handleDequeue = this.handleDequeue.bind(this);
-        // this.handleSend = this.handleSend.bind(this);
-        // this.handleBatchSend = this.handleBatchSend.bind(this);
     }
 
-    // componentWillMount() {
-    //      this.getAccounts()
-    // }
 
     _onSelect(value) {
        CastIronActions.selectAccount(value);
@@ -65,9 +44,7 @@ class WalletView extends Reflux.Component {
     render() {
         console.log(this.state);
         return (
-            <div>
-                <h1>This is the wallet view!</h1>
-                <Accounts accounts={this.state.accounts} selected_account={this.state.selected_account} _onSelect={this._onSelect} />
+            <div> 
                 <SendTX queuedTxs={this.state.queuedTxs} selected_account={this.state.selected_account}
                     handleEnqueue={this.handleEnqueue} handleDequeue={this.handleDequeue} handleSend={this.handleSend}
                     handleBatchSend={this.handleBatchSend} />
