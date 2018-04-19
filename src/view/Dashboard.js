@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import Reflux from 'reflux';
 import { Link } from 'react-router-dom';
 import CastIronService from '../service/CastIronService';
+import WalletView from './WalletView';
+import ReceiptsView from './ReceiptsView';
+import QueryForm from './App';
 
 class DashBoard extends Reflux.Component {
     constructor(props) {
@@ -58,11 +61,10 @@ class DashBoard extends Reflux.Component {
                         this.state.gasPrice;
         return (
             <div>
+                <QueryForm/>
                 <h1>This is the DashBoard view!</h1>
                 <p>{dashInfo}</p>
-                <Link to="/"> Wallet View </Link>
-                <Link to="/receipts"> Receipts View </Link>
-                <Link to="/queryForm"> Query Form </Link>
+                <WalletView/>
             </div>
 
         )

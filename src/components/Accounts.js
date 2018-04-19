@@ -21,7 +21,7 @@ class Accounts extends React.Component {
     }
 
     render() {
-        let options = this.props.accounts.map((account) => (JSON.stringify(account)));
+        let options = Object.keys(this.props.accounts);
 
         return (
             <div>

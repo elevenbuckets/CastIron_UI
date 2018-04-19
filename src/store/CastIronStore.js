@@ -1,15 +1,149 @@
 import BittrexService from '../service/BittrexService';
 import Reflux from 'reflux';
+import CastIronActions from '../action/CastIronActions'
+import CastIronService from '../service/CastIronService';
+import { createCanvasWithAddress } from "../util/Utils"
 
-class CastIronStore extends Reflux.Store{
-    constructor(){
+class CastIronStore extends Reflux.Store {
+    constructor() {
         super();
-        // this.bittrexService = BittrexService;
+        this.state = {
+            accounts: {}
+            ,
+            queuedTxs: [
+            ],
+            Qs: [],
+            receipts: [],
+            address: null,
+            balances: {'ETH': 0}
+
+        }
+        this.listenables = CastIronActions;
+        this.wallet = CastIronService.wallet;
+        this.getAccounts = this.getAccounts.bind(this);
+        this.tokenList = ['TTT'];
+        this.wallet.hotGroups(this.tokenList);
+        this._count;
+        this._target;
+
+        // initialize the state
+        this.getAccounts();
     }
+
+    onEnqueue(tx) {
+        this.setState((preState) => {
+            preState.queuedTxs.push(tx);
+            return { queuedTxs: preState.queuedTxs };
+        })
+    }
+
+    onDequeue(tx) {
+        this.setState((preState) => {
+            preState.queuedTxs.splice(preState.queuedTxs.indexOf(tx), 1);
+            return { queuedTxs: preState.queuedTxs };
+        })
+    }
+
+    onSend(addr, amount, gasNumber) {
+        let wallet = CastIronService.wallet;
+        wallet.setAccount(this.state.address);
+        let weiAmount = wallet.toWei(amount, wallet.TokenList['ETH'].decimals).toString();
+        let jobList = [];
+        jobList.push(wallet.enqueueTx("ETH")(addr, weiAmount, gasNumber));
+        let qPromise = wallet.processJobs(jobList);
+        this.processQPromise(qPromise)
+    }
+
+    onBatchSend() {
+        let wallet = CastIronService.wallet;
+        let jobList = [];
+        this.state.queuedTxs.map((tx) => {
+            wallet.setAccount(tx.from);
+            let weiAmount = wallet.toWei(tx.amount, wallet.TokenList['ETH'].decimals).toString();
+            jobList.push(wallet.enqueueTx("ETH")(tx.addr, weiAmount, tx.gasNumber));
+        })
+
+        let qPromise = wallet.processJobs(jobList);
+        this.processQPromise(qPromise)
+    }
+
+    onSelectAccount(value) {
+        this.setState(() => {
+            return { address: JSON.parse(value.value) };
+        })
+
+    }
+
+    onStartUpdate(address, canvas) {
+        this._count = 0;
+        this._target = this.tokenList.length + 1;
+
+        this.wallet.setAccount(address);
+        this.setState({ address: address });
+
+        this.tokenList.map((t) => {
+            Actions.statusUpdate({ [t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) });
+        });
+
+        Actions.statusUpdate({ 'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) });
+
+        createCanvasWithAddress(canvas, this.state.address);
+    }
+
+    onStatusUpdate(status) {
+        this._count++;
+
+        this.setState({ balances: { ...this.state.balances, ...status } });
+
+        if (this._count == this._target) Actions.finishUpdate();
+    }
+
+    onFinishUpdate() {
+        console.log(`-|| Account: ${this.state.address} ||-`);
+        console.log(JSON.stringify(this.state.balances, 0, 2));
+        console.log(`--------------------`);
+        // we can perhaps store a copy of the state on disk?
+    }
+
+    processQPromise(qPromise) {
+        qPromise.then((Q) => {
+            CastIronService.addQ(Q);
+            let batchTxHash = this.wallet.rcdQ[Q].map((o) => (o.tx));
+            console.log("Sending batch txs:");
+            console.log(this.state.queuedTxs);
+            console.log(batchTxHash);
+            return this.wallet.getReceipt(batchTxHash, 30000)
+        }).then((data) => {
+            console.log("Receipts:")
+            console.log(data);
+            this.setState((preState) => {
+                let state = preState;
+                state.receipts = state.receipts.concat(data);
+                return state;
+            })
+            this.getAccounts();
+
+        })
+    }
+
+    getAccounts() {
+        let addrs = CastIronService.getAccounts();
+        let accounts = {};
+        addrs.map((addr, index) => (
+            accounts[addr] = {
+                name: "account_" + index,
+                balance: this.wallet.toEth(this.wallet.addrEtherBalance(addr), this.wallet.TokenList['ETH'].decimals)
+            }
+        ));
+        this.setState({ accounts: accounts, address: addrs[0], balances: {'ETH': accounts[addrs[0]].balance}   })
+    }
+
 }
 
-// const castIronStore = new CastIronStore()
+//  const castIronStore = new CastIronStore()
 
-CastIronStore.id = "CastIronStore";
+
+
+// CastIronStore.id = "CastIronStore";
 
 export default CastIronStore

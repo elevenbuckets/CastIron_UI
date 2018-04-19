@@ -11,11 +11,10 @@ import CastIronStore from './store/CastIronStore';
 const routes = (
     <BrowserRouter>
         <div>
-            <Dashboard/>
             <Switch>
                 <Route path="/receipts" component={ReceiptsView} />
                 <Route path="/queryForm" component={QueryForm} />
-                <Route path="/" component={WalletView}  />
+                <Route path="/" component={Dashboard}  />
                 <Route component={NotFound} />
 
             </Switch>

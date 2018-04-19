@@ -14,7 +14,6 @@ class Receipts extends Reflux.Component {
 
     }
     render() {
-
         return (
             <div>
                 <p>These are receipts:</p>

@@ -13,6 +13,7 @@ class StatusStore extends Reflux.Store
 {
     constructor()
     {
+		console.log("Initializing the store")
         super();
         this.state = { balances: {'ETH': 0}, address: '' }; // <- set store's default state much like in React
 	this.tokenList = ['TTT'];
@@ -229,18 +230,23 @@ class GenSheets extends Reflux.Component {
 class QueryForm extends Reflux.Component {
   constructor(props) {
     super(props);
-    this.store = StatusStore;
+	this.store = StatusStore;
+	console.log("The state at constructor is : " + JSON.stringify(this.state));
+	setTimeout(error => (console.log("The state at constructor 1s later is : " + JSON.stringify(this.state))), 1000)
   }
 
   handleChange = (event) => 
   {
+	console.log("The state in handleChange is " + JSON.stringify(this.state));
     Actions.startUpdate(event.value, this.refs.canvas);
   }
 
   render = () => 
   {
+	console.log("The state in render is " + JSON.stringify(this.state));
     return (
-      <div>
+	  <div>
+	  {console.log("The state in jsx is " + JSON.stringify(this.state))}
 	<table>
 	<tbody>
 	<tr>
@@ -257,7 +263,7 @@ class QueryForm extends Reflux.Component {
 	        }
 	    /></td>
           <td>
-           <label>
+		   <label>
 	     Address:
 	     <Dropdown ref='addrlist' options={this.state.accounts} onChange={this.handleChange} value={this.state.address} placeholder="Select an option" />
 	   </label>
