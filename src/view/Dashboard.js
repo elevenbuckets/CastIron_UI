@@ -6,6 +6,7 @@ import WalletView from './WalletView';
 import ReceiptsView from './ReceiptsView';
 import QueryForm from './QueryForm'
 import Footer from './Footer'
+import Transfer from './Transfer'
 
 class DashBoard extends Reflux.Component {
     constructor(props) {
@@ -20,7 +21,8 @@ class DashBoard extends Reflux.Component {
         return (
             <div>
                 <QueryForm />
-                <WalletView />
+//                <WalletView />
+                <Transfer />
                 <Footer/ >
             </div>
 

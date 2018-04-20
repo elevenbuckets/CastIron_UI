@@ -38,6 +38,7 @@ jspm_packages/
 src/playground/
 public/bundle.js
 .local/
+public/bundle.js
 
 # Typescript v1 declaration files
 typings/

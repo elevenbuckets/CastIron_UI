@@ -24,9 +24,7 @@ class CastIronStore extends Reflux.Store {
         this.listenables = CastIronActions;
         this.wallet = CastIronService.wallet;
         this.getAccounts = this.getAccounts.bind(this);
-        this.state.tokenList = ['TTT', 'TKA','TKB','TKC','TKD','TKE',
-        'TKF','TKG','TKH','TKI','TKJ','TKK','TKL','TKM','TKN','TKO','TKP',
-        'TKQ','TKR','TKS','TKU'];
+        this.state.tokenList = this.wallet.configs.watchTokens || ['OMG'];
         this.wallet.hotGroups(this.state.tokenList);
         this._count;
         this._target;
