@@ -4,11 +4,7 @@
 To be added
 
 ## Note
-In src/service/CastIronService.js, line 5
-~~~~
- this.wallet = new Wallet('/home/liang/Liang_Learn/git_hub/castIron_ui/CastIron_UI/src/.local/config.json');
- ~~~~
-You need put your config.json path instead. This will be fixed in future.
+
 
 ## Prerequisite
 Need nodejs, npm and electron installed

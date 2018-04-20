@@ -29,7 +29,7 @@ class SingleTX extends React.Component {
 
         return (
             <div>
-                <form onSubmit={this.onFormSubmit}>
+                <form class = "txForm" onSubmit={this.onFormSubmit}>
                     <label> Address:</label>
                     <input type='text' name="addr" />
                     <label> Amount:</label>
