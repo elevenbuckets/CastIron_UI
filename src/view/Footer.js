@@ -37,7 +37,7 @@ class Footer extends Reflux.Component {
 
     getDashInfo() {
         this.setState(() => {
-            return { localTime: new Date(), unixTime: Date.now() };
+            return { localTime: new Date(), unixTime: Date.now()/1000 };
         })
 
         let netStatus = this.wallet.ethNetStatus();
@@ -47,28 +47,44 @@ class Footer extends Reflux.Component {
     }
 
 
+
     render = () => {
 
         let dashInfo = "BlockHeight: " + this.state.blockHeight + "  &nbsp Unix Time(Local Time) :" + this.state.unixTime + "(" +
             this.state.localTime + ") BlockTimeStamp: " + this.state.blockTime + " GasPrice: " +
             this.state.gasPrice;
 
-        return (<footer>
-            <table className="balance-sheet">
+        return (
+            <table className="Footer" style={{paddingTop: '0px', paddingBottom: '0px'}}>
                  <tbody>
-                     <tr>
-                         <th className="balance-sheet">{"BlockHeight: " + this.state.blockHeight}</th>
-                         <th className="balance-sheet">{"Unix Time(Local Time) :" + this.state.unixTime + "(" +
-                         this.state.localTime + ")"}</th>
-                         <th className="balance-sheet">{"BlockTimeStamp: " + this.state.blockTime}</th>
-                         <th className="balance-sheet">{"GasPrice: " +
-                         this.state.gasPrice}</th>
-                         <th className="balance-sheet" colSpan="3"><input type="button" className="button" value="Receipts" disabled /></th>
-                     </tr>
+                     <tr style={{paddingTop: '0px', paddingBottom: '0px'}}>
+                         <th style={{paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap'}}>
+			   <dl style={{paddingTop: '0px', paddingBottom: '0px'}}><dt>BlockHeight:</dt><dd>{this.state.blockHeight}</dd></dl>
+			 </th>
+                         <th style={{paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap'}}>
+			   <dl style={{paddingTop: '0px', paddingBottom: '0px'}}>
+				<dt>Unix Time:</dt><dd>{this.state.unixTime}</dd>
+			   </dl>
+			 </th>
+                         <th style={{paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap'}}>
+			   <dl style={{paddingTop: '0px', paddingBottom: '0px'}}>
+				<dt>Local Time:</dt><dd>{String(this.state.localTime)}</dd>
+			   </dl>
+			 </th>
+                         <th style={{paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap'}}>
+			   <dl style={{paddingTop: '0px', paddingBottom: '0px'}}>
+				<dt>BlockTimeStamp:</dt><dd>{this.state.blockTime}</dd> 
+			   </dl>
+			 </th> 
+                         <th style={{paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap'}}>
+			   <dl style={{paddingTop: '0px', paddingBottom: '0px'}}>
+				<dt>GasPrice:</dt><dd>{this.state.gasPrice}</dd>
+			   </dl>
+			 </th>
+                         <th width='99%' style={{textAlign: 'right', paddingTop: '0px', paddingBottom: '0px'}}><input type="button" className="button" value="Receipts" /></th>
+		     </tr>
                  </tbody>
-             </table>);
-        </footer>)
-        
+             </table>)
     }
 }
 
