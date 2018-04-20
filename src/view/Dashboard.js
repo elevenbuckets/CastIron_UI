@@ -23,6 +23,7 @@ class DashBoard extends Reflux.Component {
                 <QueryForm />
 //                <WalletView />
                 <Transfer />
+                <Footer/ >
             </div>
 
         )
