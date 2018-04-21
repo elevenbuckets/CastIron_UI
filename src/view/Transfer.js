@@ -5,6 +5,7 @@ import React from 'react';
 import Dropdown from 'react-dropdown';
 import CastIronActions from '../action/CastIronActions';
 import TxObjects from './TxObjects';
+import TxQList from './TxQList';
 import { createCanvasWithAddress } from "../util/Utils";
 
 class Transfer extends Reflux.Component {
@@ -17,18 +18,20 @@ class Transfer extends Reflux.Component {
   }
 
   handleChange = (event) => {
-//    clearTimeout(this.timeout);
     console.log('got event: ' + event.target.value);
     let addr = event.target.value;
     console.log('got addr: ' + addr);
-    createCanvasWithAddress(this.refs.canvas, addr);
+    try {
+      if (CastIronService.wallet.web3.toAddress(addr) === addr) {
+        createCanvasWithAddress(this.refs.canvas, addr);
+      } else {
+        this.refs.canvas.getContext('2d').clearRect(0, 0, this.refs.canvas.width, this.refs.canvas.height);
+      }
+    } catch(err) {
+      this.refs.canvas.getContext('2d').clearRect(0, 0, this.refs.canvas.width, this.refs.canvas.height);
+    }
 
-//    this.timeout = setTimeout( () => 
-//    {
-      this.setState(() => { return {recipient: addr}});
-//    }, 550);
-
-
+    this.setState(() => { return {recipient: addr}});
   }
 
   render = () => {
@@ -44,22 +47,24 @@ class Transfer extends Reflux.Component {
               <td className="balance-sheet">
                 <label>
                   Recipient:
-	     <input size={84} style={{marginLeft: '30', fontFamily: 'monospace', fontSize: '1.09em'}} type='text' onChange={this.handleChange} value={this.state.recipient} placeholder="Ethereum Address" />
+	     <input size={62} style={{marginLeft: '30', fontFamily: 'monospace', fontSize: '1.09em'}} type='text' onChange={this.handleChange} value={this.state.recipient} placeholder="Ethereum Address" />
                 </label>
               </td>
-              <td className="balance-sheet" width={201} rowSpan='2'>
-                <canvas ref='canvas' width={66} height={66} style=
-                  {
+              <td className="balance-sheet" width={211} rowSpan='2' style={{backgroundColor: '#eeeeee'}}>
+		  <table className="txform"><tbody><tr className="txform"><td className="txform" style={{textAlign: 'center'}}>
+                  <canvas ref='canvas' width={66} height={66} style=
                     {
-                      border: "3px solid #ccc",
-                      borderBottomLeftRadius: "2.8em",
-                      borderBottomRightRadius: "2.8em",
-                      borderTopRightRadius: "2.8em",
-                      borderTopLeftRadius: "2.8em"
+                      {
+                        border: "3px solid #ccc",
+                        borderBottomLeftRadius: "2.8em",
+                        borderBottomRightRadius: "2.8em",
+                        borderTopRightRadius: "2.8em",
+                        borderTopLeftRadius: "2.8em"
+                      }
                     }
-                  }
-                /></td>
-            </tr>
+                  /></td></tr></tbody></table>
+	      </td>
+	    </tr>
             <tr className="balance-sheet">
 		<td className="balance-sheet">
 			<TxObjects selected_token_name={this.state.selected_token_name}/>
@@ -67,6 +72,7 @@ class Transfer extends Reflux.Component {
 	    </tr>
           </tbody>
         </table>
+	<TxQList height="460px" style={{marginTop: '0', marginBottom: '0', paddingTop: '0', paddingBottom: '0'}} />
       </div>
     );
   }
