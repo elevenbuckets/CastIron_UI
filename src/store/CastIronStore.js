@@ -77,6 +77,12 @@ class CastIronStore extends Reflux.Store {
 
     }
 
+    onSelectedTokenUpdate(value){
+        this.setState(() => {
+            return { selected_token_name: value };
+        })
+    }
+
     onStartUpdate(address, canvas) {
         this._count = 0;
         this._target = this.state.tokenList.length + 1;

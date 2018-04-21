@@ -2,6 +2,7 @@ import CastIronStore from "../store/CastIronStore";
 import Reflux from 'reflux';
 import React from 'react';
 import Dropdown from 'react-dropdown';
+import CastIronActions from '../action/CastIronActions'
 
 // Reflux components
 
@@ -14,7 +15,9 @@ class GenSheets extends Reflux.Component {
     handleChange = (event) => {
       console.log("The state in GenSheets handleChange is " + event.value);
       let symbol = event.value.substring(0, event.value.indexOf(':'));
-      this.setState( () => { return {selected_token_name: symbol}; } );
+      // this.setState( () => { return {selected_token_name: symbol}; } );
+
+      CastIronActions.selectedTokenUpdate(symbol);
     }
   
     render = () => 
