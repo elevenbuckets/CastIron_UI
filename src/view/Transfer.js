@@ -4,6 +4,7 @@ import Reflux from 'reflux';
 import React from 'react';
 import Dropdown from 'react-dropdown';
 import CastIronActions from '../action/CastIronActions';
+import TxObjects from './TxObjects';
 import { createCanvasWithAddress } from "../util/Utils";
 
 class Transfer extends Reflux.Component {
@@ -43,10 +44,10 @@ class Transfer extends Reflux.Component {
               <td className="balance-sheet">
                 <label>
                   Recipient:
-	     <input size={42} style={{marginLeft: '30', fontFamily: 'monospace', fontSize: '1.08em'}} type='text' onChange={this.handleChange} value={this.state.recipient} placeholder="Ethereum Address" />
+	     <input size={84} style={{marginLeft: '30', fontFamily: 'monospace', fontSize: '1.09em'}} type='text' onChange={this.handleChange} value={this.state.recipient} placeholder="Ethereum Address" />
                 </label>
               </td>
-              <td className="balance-sheet" width={201}>
+              <td className="balance-sheet" width={201} rowSpan='2'>
                 <canvas ref='canvas' width={66} height={66} style=
                   {
                     {
@@ -59,7 +60,11 @@ class Transfer extends Reflux.Component {
                   }
                 /></td>
             </tr>
-            <tr className="balance-sheet"><td className="balance-sheet" colSpan="2"> 'TxObjects will be here' </td></tr>
+            <tr className="balance-sheet">
+		<td className="balance-sheet">
+			<TxObjects selected_token_name={this.state.selected_token_name}/>
+		</td>
+	    </tr>
           </tbody>
         </table>
       </div>

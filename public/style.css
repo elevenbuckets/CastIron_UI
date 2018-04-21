@@ -17,6 +17,29 @@
         cursor: default;
 }
 
+table.txform {
+	width: 100%;
+	color: #000000;
+}
+
+tr.txform {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 8px;
+}
+
+td.txform {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 8px;
+}
+
+th.txform {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 8px;
+}
+
 table.balance-sheet {
 	width: 100%;
 	text-align: center;
@@ -162,13 +185,17 @@ WalletView{
   flex-direction: column;
 }
 
-Footer{
+.Footer{
   position: fixed;
+   display: block;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
     left: 0;
     bottom: 0;
-    width: 100%;
-    height: 5%;
-    background-color: rgb(32, 71, 83);
+    width: 99%;
+    height: 7.5%;
+    //background-color: #343434;
     color: white;
     text-align: center;
 }
