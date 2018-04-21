@@ -37,7 +37,7 @@ class Footer extends Reflux.Component {
 
     getDashInfo() {
         this.setState(() => {
-            return { localTime: new Date(), unixTime: Date.now()/1000 };
+            return { localTime: new Date(), unixTime: Date.now() / 1000 };
         })
 
         let netStatus = this.wallet.ethNetStatus();
@@ -55,36 +55,36 @@ class Footer extends Reflux.Component {
             this.state.gasPrice;
 
         return (
-            <table className="Footer" style={{paddingTop: '0px', paddingBottom: '0px'}}>
-                 <tbody>
-                     <tr style={{paddingTop: '0px', paddingBottom: '0px'}}>
-                         <th style={{paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap'}}>
-			   <dl style={{paddingTop: '0px', paddingBottom: '0px'}}><dt>BlockHeight:</dt><dd>{this.state.blockHeight}</dd></dl>
-			 </th>
-                         <th style={{paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap'}}>
-			   <dl style={{paddingTop: '0px', paddingBottom: '0px'}}>
-				<dt>Unix Time:</dt><dd>{this.state.unixTime}</dd>
-			   </dl>
-			 </th>
-                         <th style={{paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap'}}>
-			   <dl style={{paddingTop: '0px', paddingBottom: '0px'}}>
-				<dt>Local Time:</dt><dd>{String(this.state.localTime)}</dd>
-			   </dl>
-			 </th>
-                         <th style={{paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap'}}>
-			   <dl style={{paddingTop: '0px', paddingBottom: '0px'}}>
-				<dt>BlockTimeStamp:</dt><dd>{this.state.blockTime}</dd> 
-			   </dl>
-			 </th> 
-                         <th style={{paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap'}}>
-			   <dl style={{paddingTop: '0px', paddingBottom: '0px'}}>
-				<dt>GasPrice:</dt><dd>{this.state.gasPrice}</dd>
-			   </dl>
-			 </th>
-                         <th width='99%' style={{textAlign: 'right', paddingTop: '0px', paddingBottom: '0px'}}><input type="button" className="button" value="Receipts" /></th>
-		     </tr>
-                 </tbody>
-             </table>)
+            <table className="Footer" style={{ paddingTop: '0px', paddingBottom: '0px' }}>
+                <tbody>
+                    <tr style={{ paddingTop: '0px', paddingBottom: '0px' }}>
+                        <th style={{ paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap' }}>
+                            <dl style={{ paddingTop: '0px', paddingBottom: '0px' }}><dt>BlockHeight:</dt><dd>{this.state.blockHeight}</dd></dl>
+                        </th>
+                        <th style={{ paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap' }}>
+                            <dl style={{ paddingTop: '0px', paddingBottom: '0px' }}>
+                                <dt>Unix Time:</dt><dd>{this.state.unixTime}</dd>
+                            </dl>
+                        </th>
+                        <th style={{ paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap' }}>
+                            <dl style={{ paddingTop: '0px', paddingBottom: '0px' }}>
+                                <dt>Local Time:</dt><dd>{String(this.state.localTime)}</dd>
+                            </dl>
+                        </th>
+                        <th style={{ paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap' }}>
+                            <dl style={{ paddingTop: '0px', paddingBottom: '0px' }}>
+                                <dt>BlockTimeStamp:</dt><dd>{this.state.blockTime}</dd>
+                            </dl>
+                        </th>
+                        <th style={{ paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap' }}>
+                            <dl style={{ paddingTop: '0px', paddingBottom: '0px' }}>
+                                <dt>GasPrice:</dt><dd>{this.state.gasPrice}</dd>
+                            </dl>
+                        </th>
+                        <th width='99%' style={{ textAlign: 'right', paddingTop: '0px', paddingBottom: '0px' }}><input type="button" className="button" value="Receipts" /></th>
+                    </tr>
+                </tbody>
+            </table>)
     }
 }
 

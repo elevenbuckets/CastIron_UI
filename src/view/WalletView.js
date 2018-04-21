@@ -23,7 +23,7 @@ class WalletView extends Reflux.Component {
     }
 
     handleEnqueue(tx) {
-        CastIronActions.enqueue(tx);
+        // CastIronActions.enqueue(tx);
     }
 
     handleDequeue(tx) {

@@ -34,10 +34,11 @@ class CastIronStore extends Reflux.Store {
     }
 
     onEnqueue(tx) {
-        this.setState((preState) => {
-            preState.queuedTxs.push(tx);
-            return { queuedTxs: preState.queuedTxs };
-        })
+        this.state.queuedTxs.push(tx);
+        // TODO: figure out why can not use function for this as it will update it multiple times
+
+        this.setState(
+           { queuedTxs: this.state.queuedTxs })
     }
 
     onDequeue(tx) {
@@ -47,12 +48,27 @@ class CastIronStore extends Reflux.Store {
         })
     }
 
+    onClearQueue(tx) {
+        this.setState({queuedTxs : []})
+    }
+
     onSend(addr, amount, gasNumber) {
         let wallet = CastIronService.wallet;
         wallet.setAccount(this.state.address);
         let weiAmount = wallet.toWei(amount, wallet.TokenList['ETH'].decimals).toString();
         let jobList = [];
         jobList.push(wallet.enqueueTx("ETH")(addr, weiAmount, gasNumber));
+        let qPromise = wallet.processJobs(jobList);
+        this.processQPromise(qPromise)
+    }
+
+    onSendTxInQueue(tx) {
+        CastIronActions.onDequeue(tx);
+        let wallet = CastIronService.wallet;
+        wallet.setAccount(tx.from);
+        let weiAmount = wallet.toWei(tx.amount, wallet.TokenList['ETH'].decimals).toString();
+        let jobList = [];
+        jobList.push(wallet.enqueueTx("ETH")(tx.to, weiAmount, tx.gas));
         let qPromise = wallet.processJobs(jobList);
         this.processQPromise(qPromise)
     }
