@@ -42,10 +42,15 @@ class CastIronStore extends Reflux.Store {
     }
 
     onDequeue(tx) {
-        this.setState((preState) => {
-            preState.queuedTxs.splice(preState.queuedTxs.indexOf(tx), 1);
-            return { queuedTxs: preState.queuedTxs };
-        })
+        if(this.state.queuedTxs.indexOf(tx) == -1){
+            return;
+        }
+        // this.setState((preState) => {
+        //     preState.queuedTxs.splice(preState.queuedTxs.indexOf(tx), 1);
+        //     return { queuedTxs: preState.queuedTxs };
+        // })
+        this.state.queuedTxs.splice(this.state.queuedTxs.indexOf(tx), 1);
+        this.setState({ queuedTxs : this.state.queuedTxs})
     }
 
     onClearQueue(tx) {
@@ -63,7 +68,7 @@ class CastIronStore extends Reflux.Store {
     }
 
     onSendTxInQueue(tx) {
-        CastIronActions.onDequeue(tx);
+        CastIronActions.dequeue(tx);
         let wallet = CastIronService.wallet;
         wallet.setAccount(tx.from);
         let weiAmount = wallet.toWei(tx.amount, wallet.TokenList['ETH'].decimals).toString();

@@ -99,7 +99,7 @@ class Transfer extends Reflux.Component {
         </table>
         <TxQList height="460px" style={{ marginTop: '0', marginBottom: '0', paddingTop: '0', paddingBottom: '0' }} />
         <input type="button" className="button" value='BatchSend' onClick={this.handleBatchSend} />
-        <input type="button" className="xbutton" value='ClearAll' />
+        <input type="button" className="xbutton" value='ClearAll' onClick={this.handleClearQueue} />
         </div>
     );
   }

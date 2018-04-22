@@ -1,6 +1,7 @@
 import CastIronStore from "../store/CastIronStore";
 import Reflux from 'reflux';
 import React from 'react';
+import CastIronActions from "../action/CastIronActions";
 
 // Reflux components
 
@@ -8,6 +9,15 @@ class TxQList extends Reflux.Component {
   constructor(props) {
     super(props);
     this.store = CastIronStore;
+  }
+
+
+  handleDequeue(tx, event){
+    CastIronActions.dequeue(tx);
+  }
+
+  handSendTxInQueue(tx, event){
+    CastIronActions.sendTxInQueue(tx); 
   }
 
   render = () => {
@@ -37,12 +47,14 @@ class TxQList extends Reflux.Component {
             {this.state.queuedTxs.map((tx) => {
               return (
                 <tr>
-                  <td className="txform" width='5%'><input type="button" className="xbutton" value='X' /></td>
+                  <td className="txform" width='5%'><input type="button" className="xbutton" value='X' 
+                  onClick={this.handleDequeue.bind(this, tx)} /></td>
                   <td className="txform" width='32%'>{tx.from}</td>
                   <td className="txform" width='32%'>{tx.to}</td>
                   <td className="txform" width='12%'>{tx.amount}</td>
                   <td className="txform" width='12%'>{tx.gas}</td>
-                  <td className="txform"><input type="button" className="button" value='Send' /></td>
+                  <td className="txform"><input type="button" className="button" value='Send' 
+                  onClick={this.handSendTxInQueue.bind(this, tx)}/></td>
                 </tr>
               );
             })}
