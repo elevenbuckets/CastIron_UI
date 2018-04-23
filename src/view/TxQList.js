@@ -33,7 +33,7 @@ class TxQList extends Reflux.Component {
     });
 
     return (
-      <div style={{ overflow: 'auto', margin: '0' }} height='460px'>
+      <div style={{ overflow: 'scroll', margin: '0' }} height='460px'>
         <table className="txform">
           <tbody>
             <tr>

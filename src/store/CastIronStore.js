@@ -84,7 +84,7 @@ class CastIronStore extends Reflux.Store {
         this.state.queuedTxs.map((tx) => {
             wallet.setAccount(tx.from);
             let weiAmount = wallet.toWei(tx.amount, wallet.TokenList['ETH'].decimals).toString();
-            jobList.push(wallet.enqueueTx("ETH")(tx.addr, weiAmount, tx.gasNumber));
+            jobList.push(wallet.enqueueTx("ETH")(tx.to, weiAmount, tx.gas));
         })
 
         let qPromise = wallet.processJobs(jobList);
@@ -99,6 +99,7 @@ class CastIronStore extends Reflux.Store {
     }
 
     onSelectedTokenUpdate(value){
+        console.log("in On onSelectedTokenUpdate")
         this.setState(() => {
             return { selected_token_name: value };
         })
@@ -179,10 +180,16 @@ class CastIronStore extends Reflux.Store {
         addrs.map((addr, index) => (
             accounts[addr] = {
                 name: "account_" + index,
-                balance: this.wallet.toEth(this.wallet.addrEtherBalance(addr), this.wallet.TokenList['ETH'].decimals)
+                balance: this.wallet.toEth(this.wallet.addrEtherBalance(addr), this.wallet.TokenList['ETH'].decimals).toFixed(9)
             }
         ));
-        this.setState(() => { return { accounts: accounts }})
+
+        if(this.state.address){
+            this.setState(() => { return { accounts: accounts, balances: {'ETH' : accounts[this.state.address].balance}}})
+        }else{
+            this.setState(() => { return { accounts: accounts}});
+        }
+        
     }
 
 }
