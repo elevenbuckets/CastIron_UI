@@ -34,25 +34,46 @@ class CastIronStore extends Reflux.Store {
     }
 
     onEnqueue(tx) {
-        this.setState((preState) => {
-            preState.queuedTxs.push(tx);
-            return { queuedTxs: preState.queuedTxs };
-        })
+        this.state.queuedTxs.push(tx);
+        // TODO: figure out why can not use function for this as it will update it multiple times
+
+        this.setState(
+           { queuedTxs: this.state.queuedTxs })
     }
 
     onDequeue(tx) {
-        this.setState((preState) => {
-            preState.queuedTxs.splice(preState.queuedTxs.indexOf(tx), 1);
-            return { queuedTxs: preState.queuedTxs };
-        })
+        if(this.state.queuedTxs.indexOf(tx) == -1){
+            return;
+        }
+        // this.setState((preState) => {
+        //     preState.queuedTxs.splice(preState.queuedTxs.indexOf(tx), 1);
+        //     return { queuedTxs: preState.queuedTxs };
+        // })
+        this.state.queuedTxs.splice(this.state.queuedTxs.indexOf(tx), 1);
+        this.setState({ queuedTxs : this.state.queuedTxs})
     }
 
-    onSend(addr, amount, gasNumber) {
+    onClearQueue() {
+        this.setState({queuedTxs : []})
+    }
+
+    onSend(addr, type, amount, gasNumber) {
         let wallet = CastIronService.wallet;
         wallet.setAccount(this.state.address);
-        let weiAmount = wallet.toWei(amount, wallet.TokenList['ETH'].decimals).toString();
+        let weiAmount = wallet.toWei(amount, wallet.TokenList[type].decimals).toString();
         let jobList = [];
-        jobList.push(wallet.enqueueTx("ETH")(addr, weiAmount, gasNumber));
+        jobList.push(wallet.enqueueTx(type)(addr, weiAmount, gasNumber));
+        let qPromise = wallet.processJobs(jobList);
+        this.processQPromise(qPromise)
+    }
+
+    onSendTxInQueue(tx) {
+        CastIronActions.dequeue(tx);
+        let wallet = CastIronService.wallet;
+        wallet.setAccount(tx.from);
+        let weiAmount = wallet.toWei(tx.amount, wallet.TokenList[tx.type].decimals).toString();
+        let jobList = [];
+        jobList.push(wallet.enqueueTx(tx.type)(tx.to, weiAmount, tx.gas));
         let qPromise = wallet.processJobs(jobList);
         this.processQPromise(qPromise)
     }
@@ -62,12 +83,13 @@ class CastIronStore extends Reflux.Store {
         let jobList = [];
         this.state.queuedTxs.map((tx) => {
             wallet.setAccount(tx.from);
-            let weiAmount = wallet.toWei(tx.amount, wallet.TokenList['ETH'].decimals).toString();
-            jobList.push(wallet.enqueueTx("ETH")(tx.addr, weiAmount, tx.gasNumber));
+            let weiAmount = wallet.toWei(tx.amount, wallet.TokenList[tx.type].decimals).toString();
+            jobList.push(wallet.enqueueTx(tx.type)(tx.to, weiAmount, tx.gas));
         })
 
         let qPromise = wallet.processJobs(jobList);
-        this.processQPromise(qPromise)
+        this.processQPromise(qPromise);
+        CastIronActions.clearQueue();
     }
 
     onSelectAccount(value) {
@@ -75,6 +97,13 @@ class CastIronStore extends Reflux.Store {
             return { address: JSON.parse(value.value) };
         })
 
+    }
+
+    onSelectedTokenUpdate(value){
+        console.log("in On onSelectedTokenUpdate")
+        this.setState(() => {
+            return { selected_token_name: value };
+        })
     }
 
     onStartUpdate(address, canvas) {
@@ -152,10 +181,21 @@ class CastIronStore extends Reflux.Store {
         addrs.map((addr, index) => (
             accounts[addr] = {
                 name: "account_" + index,
-                balance: this.wallet.toEth(this.wallet.addrEtherBalance(addr), this.wallet.TokenList['ETH'].decimals)
+                balance: this.wallet.toEth(this.wallet.addrEtherBalance(addr), this.wallet.TokenList['ETH'].decimals).toFixed(9)
             }
         ));
-        this.setState(() => { return { accounts: accounts }})
+
+        if(this.state.address){
+            this.setState(() => { return { accounts: accounts, balances: {'ETH' : accounts[this.state.address].balance}}})
+            this.state.tokenList.map((t) => {
+                CastIronActions.statusUpdate({ [t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) });
+            });
+    
+            CastIronActions.statusUpdate({ 'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) });
+        }else{
+            this.setState(() => { return { accounts: accounts}});
+        }
+        
     }
 
 }
