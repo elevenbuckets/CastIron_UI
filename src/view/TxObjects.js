@@ -33,7 +33,8 @@ class TxObjects extends Reflux.Component {
   handleSend(event)
   {
     console.log("sending event" + event);
-    this.props.handleSend(this.props.recipient, this.state.amount, this.state.gas);
+    let type = this.selected_token_name? this.state.selected_token_name : "ETH";
+    this.props.handleSend(this.props.recipient, type, this.state.amount, this.state.gas);
   }
 
   handleEnqueue(){
@@ -41,6 +42,7 @@ class TxObjects extends Reflux.Component {
     tx.from = this.state.address;
     tx.to = this.props.recipient;
     tx.amount = this.state.amount;
+    tx.type = this.state.selected_token_name? this.state.selected_token_name : "ETH";
     tx.gas =  this.state.gas;
     this.props.handleEnqueue(tx);
   }

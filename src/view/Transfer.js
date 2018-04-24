@@ -25,13 +25,13 @@ class Transfer extends Reflux.Component {
     CastIronActions.dequeue(tx);
   }
 
-  handleClearQueue(tx) {
-    CastIronActions.clearQueue(tx);
+  handleClearQueue() {
+    CastIronActions.clearQueue();
   }
 
 
-  handleSend(addr, amount, gasNumber) {
-    CastIronActions.send(addr, amount, gasNumber);
+  handleSend(addr, type, amount, gasNumber) {
+    CastIronActions.send(addr, type, amount, gasNumber);
   }
 
   handleBatchSend() {
