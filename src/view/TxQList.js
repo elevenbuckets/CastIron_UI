@@ -21,8 +21,6 @@ class TxQList extends Reflux.Component {
   }
 
   render = () => {
-    console.log("in render in Gensheets")
-    console.log("selected_token_name: " + this.state.selected_token_name);
     if (this.state.address == '') return (<p />);
 
     let tokenBalances = [];
@@ -54,7 +52,7 @@ class TxQList extends Reflux.Component {
                   <td className="txform" width='32%'>{tx.to}</td>
                   <td className="txform" width='4%' >{tx.type}</td>
                   <td className="txform" width='10%'>{tx.amount}</td>
-                  <td className="txform" width='10%'>{tx.gas}</td>
+                  <td className="txform" width='10%'>{tx.gas * this.state.gasPrice}</td>
                   <td className="txform"><input type="button" className="button" value='Send'
                     onClick={this.handSendTxInQueue.bind(this, tx)} /></td>
                 </tr>

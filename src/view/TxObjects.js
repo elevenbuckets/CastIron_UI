@@ -49,10 +49,6 @@ class TxObjects extends Reflux.Component {
 
   
   render = () => {
-    console.log("in render in TxObjects")
-    console.log("selected address:" + this.state.address);
-    console.log("selected_token_name in TxObjects: " + this.props.selected_token_name);
-    console.log("selected recipient:" + this.props.recipient);
     if (this.state.address == '') return (<p />);
 
     let sendkind = this.props.selected_token_name !== '' ? this.props.selected_token_name : 'ETH';

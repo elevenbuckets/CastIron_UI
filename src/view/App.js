@@ -167,15 +167,6 @@ class StatusStore extends Reflux.Store
 
 	if (this._count == this._target) Actions.finishUpdate();
     }
-
-    onFinishUpdate() 
-    {
-	console.log(`-|| Account: ${this.state.address} ||-`);
-	console.log(JSON.stringify(this.state.balances, 0 ,2));
-	console.log(`--------------------`);
-	// we can perhaps store a copy of the state on disk?
-    }
-
 }
 
 // Reflux components
@@ -220,8 +211,7 @@ class GenSheets extends Reflux.Component {
 		      <th className="balance-sheet">Types</th>
 		      <th className="balance-sheet">Amount</th>
 		      <th className="balance-sheet" colSpan="3">Actions</th>
-			</tr>
-			{console.log(balanceSheet)}
+		    </tr>
 		    {balanceSheet}
     		    </tbody>
 		    </table>);
@@ -232,22 +222,17 @@ class QueryForm extends Reflux.Component {
   constructor(props) {
     super(props);
 	this.store = StatusStore;
-	console.log("The state at constructor is : " + JSON.stringify(this.state));
-	setTimeout(error => (console.log("The state at constructor 1s later is : " + JSON.stringify(this.state))), 1000)
   }
 
   handleChange = (event) => 
   {
-	console.log("The state in handleChange is " + JSON.stringify(this.state));
     Actions.startUpdate(event.value, this.refs.canvas);
   }
 
   render = () => 
   {
-	console.log("The state in render is " + JSON.stringify(this.state));
     return (
 	  <div>
-	  {console.log("The state in jsx is " + JSON.stringify(this.state))}
 	<table>
 	<tbody>
 	<tr>

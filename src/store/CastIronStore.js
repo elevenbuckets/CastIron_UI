@@ -157,11 +157,20 @@ class CastIronStore extends Reflux.Store {
     processQPromise(qPromise) {
         qPromise.then((Q) => {
             CastIronService.addQ(Q);
-            let batchTxHash = this.wallet.rcdQ[Q].map((o) => (o.tx));
-            console.log("Sending batch txs:");
-            console.log(this.state.queuedTxs);
-            console.log(batchTxHash);
-            return this.wallet.getReceipt(batchTxHash, 30000)
+	    try {
+              	let batchTxHash = this.wallet.rcdQ[Q].map((o) => (o.tx));
+              	console.log("Sending batch txs:");
+              	console.log(this.state.queuedTxs);
+              	console.log(batchTxHash);
+              	return this.wallet.getReceipt(batchTxHash, 30000)
+	    } catch (err) {
+	        console.log("ERROR in processQPromise: " + err);
+	        console.log("rcdQ: " + Q + ">>");
+	        console.log(JSON.stringify(this.wallet.rcdQ[Q]));
+	        console.log("jobQ: " + Q + ">>");
+	        console.log(JSON.stringify(this.wallet.jobQ[Q]));
+		return Promise.resolve([]);
+	    }
         }).then((data) => {
             console.log("Receipts:")
             console.log(data);
@@ -171,8 +180,7 @@ class CastIronStore extends Reflux.Store {
                 return state;
             })
             this.getAccounts();
-
-        })
+	})
     }
 
     getAccounts() {
@@ -195,7 +203,8 @@ class CastIronStore extends Reflux.Store {
         }else{
             this.setState(() => { return { accounts: accounts}});
         }
-        
+    
+        console.log(JSON.stringify(this.state, 0, 2));	
     }
 
 }

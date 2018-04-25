@@ -13,7 +13,7 @@ class GenSheets extends Reflux.Component {
   }
 
   handleChange = (event) => {
-    console.log("The state in GenSheets handleChange is " + event.value);
+    console.log("event.value in GenSheets handleChange is " + event.value);
     let symbol = event.value.substring(0, event.value.indexOf(':'));
     // this.setState( () => { return {selected_token_name: symbol}; } );
 
@@ -21,8 +21,6 @@ class GenSheets extends Reflux.Component {
   }
 
   render = () => {
-    console.log("in render in Gensheets")
-    console.log("selected_token_name: " + this.state.selected_token_name);
     if (this.state.address == '') return (<p />);
 
     let tokenBalances = [];
