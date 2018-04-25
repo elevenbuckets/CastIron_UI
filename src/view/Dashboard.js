@@ -12,15 +12,20 @@ import Transfer from './Transfer'
 class DashBoard extends Reflux.Component {
     constructor(props) {
         super(props);
-	this.store = CastIronStore;
+        this.store = CastIronStore;
+        this.map = {
+            Transfer : <Transfer />,
+            Receipts : <ReceiptsView />
+        }
     }
+
 
     render() {
 
         return (
             <div>
                 <QueryForm />
-                <Transfer />
+                {this.map[this.state.currentView]}
                 <Footer />
             </div>
 

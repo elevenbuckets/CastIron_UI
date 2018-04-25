@@ -19,7 +19,8 @@ class CastIronStore extends Reflux.Store {
             blockHeight: null,
             blockTime: null,
             gasPrice: null,
-            selected_token_name: ''
+            selected_token_name: '',
+            currentView : 'Transfer' 
         }
         this.listenables = CastIronActions;
         this.wallet = CastIronService.wallet;
@@ -154,9 +155,24 @@ class CastIronStore extends Reflux.Store {
         // we can perhaps store a copy of the state on disk?
     }
 
-    processQPromise(qPromise) {
+    onAddQ(Q){
+        this.state.Qs.push(Q);
+        this.setState({Qs:this.state.Qs});
+    }
+
+    onChangeView(view){
+        this.setState({currentView : view});
+    }
+
+    onUpdateReceipts(data){
+        this.state.receipts = this.state.receipts.concat(data);
+        this.setState({receipts : this.state.receipts})
+    }
+
+    processQPromise = (qPromise) => {
         qPromise.then((Q) => {
-            CastIronService.addQ(Q);
+            // CastIronService.addQ(Q);
+            CastIronActions.addQ(Q);
 	    try {
               	let batchTxHash = this.wallet.rcdQ[Q].map((o) => (o.tx));
               	console.log("Sending batch txs:");
@@ -174,12 +190,7 @@ class CastIronStore extends Reflux.Store {
         }).then((data) => {
             console.log("Receipts:")
             console.log(data);
-            this.setState((preState) => {
-                let state = preState;
-                state.receipts = state.receipts.concat(data);
-                return state;
-            })
-            this.getAccounts();
+            CastIronActions.updateReceipts(data);
 	})
     }
 

@@ -20,6 +20,10 @@ class GenSheets extends Reflux.Component {
     CastIronActions.selectedTokenUpdate(symbol);
   }
 
+  handleClickTransactETH = () => {
+      CastIronActions.changeView("Transfer");
+  }
+
   render = () => {
     if (this.state.address == '') return (<p />);
 
@@ -41,7 +45,7 @@ class GenSheets extends Reflux.Component {
           <tr className="balance-sheet">
             <td className="balance-sheet" width='185'>ETH:</td>
             <td className="balance-sheet" width='35%'>{this.state.balances['ETH']}</td>
-            <td className="balance-sheet"><input type="button" className="button" value="Transact ETH" /></td>
+            <td className="balance-sheet"><input type="button" className="button" onClick={this.handleClickTransactETH} value="Transact ETH" /></td>
             <td className="balance-sheet"><input type="button" className="button" value="Trade ETH" disabled /></td>
           </tr>
           <tr className="balance-sheet">
