@@ -42,7 +42,6 @@ class WalletView extends Reflux.Component {
 
 
     render() {
-        console.log(this.state);
         return (
             <div> 
                 <SendTX queuedTxs={this.state.queuedTxs} selected_account={this.state.selected_account}

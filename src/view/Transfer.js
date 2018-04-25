@@ -57,7 +57,6 @@ class Transfer extends Reflux.Component {
   }
 
   render = () => {
-    console.log("The state in render is " + JSON.stringify(this.state));
     return (
       <div>
         <table className="balance-sheet">
@@ -97,9 +96,11 @@ class Transfer extends Reflux.Component {
             </tr>
           </tbody>
         </table>
-        <TxQList height="460px" style={{ marginTop: '0', marginBottom: '0', paddingTop: '0', paddingBottom: '0' }} />
-        <input type="button" className="button" value='BatchSend' onClick={this.handleBatchSend} />
-        <input type="button" className="xbutton" value='ClearAll' onClick={this.handleClearQueue} />
+        <TxQList style={{ marginTop: '0', marginBottom: '0', paddingTop: '0', paddingBottom: '0' }} />
+	<div style={{textAlign: 'center', backgroundColor: '#ffffff',  width: '100%', maxHeight: '51', minHeight: '51', zIndex: '2', position: "fixed", bottom: '80'}}>
+        <input type="button" className="button" value='BatchSend' onClick={this.handleBatchSend} style={{width: '160px', marginTop: '9px', marginLeft: '5%', marginRight: '5%'}}/>
+        <input type="button" className="button" value='ClearAll' onClick={this.handleClearQueue} style={{backgroundColor: 'rgb(250,0,0)', width: '160px', marginTop: '9px', marginLeft: '5%', marginRight: '5%'}}/>
+	</div>
         </div>
     );
   }

@@ -9,20 +9,15 @@ class QueryForm extends Reflux.Component {
   constructor(props) {
     super(props);
     this.store = CastIronStore;
-    console.log("The state at constructor is : " + JSON.stringify(this.state));
-    setTimeout(error => (console.log("The state at constructor 1s later is : " + JSON.stringify(this.state))), 1000)
   }
 
   handleChange = (event) => {
-    console.log("The state in handleChange is " + JSON.stringify(this.state));
     CastIronActions.startUpdate(event.value, this.refs.canvas);
   }
 
   render = () => {
-    console.log("The state in render is " + JSON.stringify(this.state));
     return (
       <div>
-        {console.log("The state in jsx is " + JSON.stringify(this.state))}
         <table>
           <tbody>
             <tr>
