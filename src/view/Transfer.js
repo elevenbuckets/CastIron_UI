@@ -97,7 +97,20 @@ class Transfer extends Reflux.Component {
           </tbody>
         </table>
         <TxQList style={{ marginTop: '0', marginBottom: '0', paddingTop: '0', paddingBottom: '0' }} />
-	<div style={{textAlign: 'center', backgroundColor: '#ffffff',  width: '100%', maxHeight: '51', minHeight: '51', zIndex: '2', position: "fixed", bottom: '80'}}>
+	<div style=
+	  {
+	    {
+		textAlign: 'center', 
+		backgroundColor: '#ffffff',  
+		width: '98.5%', 
+		maxHeight: '51', 
+		minHeight: '51', 
+		zIndex: '2', 
+		position: "fixed", 
+		bottom: '80',
+		boxShadow: '0 -5px 6px -5px rgba(200,200,200,0.5)'
+	    }
+	  }>
         <input type="button" className="button" value='BatchSend' onClick={this.handleBatchSend} style={{width: '160px', marginTop: '9px', marginLeft: '5%', marginRight: '5%'}}/>
         <input type="button" className="button" value='ClearAll' onClick={this.handleClearQueue} style={{backgroundColor: 'rgb(250,0,0)', width: '160px', marginTop: '9px', marginLeft: '5%', marginRight: '5%'}}/>
 	</div>
