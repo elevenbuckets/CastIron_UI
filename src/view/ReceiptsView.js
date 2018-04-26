@@ -68,8 +68,7 @@ class ReceiptsView extends Reflux.Component {
                         <tr className="balance-sheet">
                             <td className="balance-sheet">
                                 <label>
-                                    Queues:
-                      <Dropdown options={this.state.Qs} onChange={this.handleChange} 
+                                    Queues:<Dropdown options={this.state.Qs} onChange={this.handleChange} 
                       value={this.state.selectedQ} placeholder={'Choose a Q id '} />
                                 </label>
                             </td>
