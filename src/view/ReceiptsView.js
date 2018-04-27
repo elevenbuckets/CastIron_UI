@@ -5,6 +5,8 @@ import SendTX from '../components/SendTX';
 import CastIronStore from '../store/CastIronStore';
 import CastIronService from '../service/CastIronService';
 import Receipts from '../components/Receipts';
+import Dropdown from 'react-dropdown';
+import TxQList from './TxQList';
 
 
 class ReceiptsView extends Reflux.Component {
@@ -13,19 +15,28 @@ class ReceiptsView extends Reflux.Component {
 
         this.store = CastIronStore;
         this.wallet = CastIronService.wallet;
-
         this.state = {
-            queue: [12, 15],
-            receipts: [
-            ]
-        }
+            selectedQ : ""
+        };
+
+        // this.state = {
+        //     receipts: [
+        //     ]
+        // }
 
         this.getReceipts = this.getReceipts.bind(this);
 
     }
 
+
+
     componentWillMount() {
-        this.getReceipts();
+        super.componentWillMount();
+        // this.getReceipts();
+    }
+
+    handleChange = (event) =>{
+        this.setState({selectedQ: event.value});
     }
 
     getReceipts() {
@@ -46,10 +57,27 @@ class ReceiptsView extends Reflux.Component {
     }
 
     render() {
+        console.log("in ReceiptsView render()");
         return (
             <div>
-                <h1>This is the great Receipts view!</h1>
-                <Receipts receipts={this.state.receipts}/>
+                <table className="balance-sheet">
+                    <tbody>
+                        <tr className="avatar" style={{ textAlign: "center" }}>
+                            <th className="avatar" style={{ textAlign: "center" }}>Receipts</th>
+                        </tr>
+                        <tr className="balance-sheet">
+                            <td className="balance-sheet">
+                                <label>
+                                    Queues:<Dropdown options={this.state.Qs} onChange={this.handleChange} 
+                      value={this.state.selectedQ} placeholder={'Choose a Q id '} />
+                                </label>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                <Receipts receipts={this.state.receipts}
+                 style={{ marginTop: '0', marginBottom: '0', paddingTop: '0', paddingBottom: '0' }} />
             </div>
 
         )

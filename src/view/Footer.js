@@ -46,6 +46,10 @@ class Footer extends Reflux.Component {
         }
     }
 
+    handleClick(){
+        CastIronActions.changeView("Receipts");
+    }
+
 
 
     render = () => {
@@ -81,7 +85,8 @@ class Footer extends Reflux.Component {
                                 <dt>GasPrice:</dt><dd>{this.state.gasPrice}</dd>
                             </dl>
                         </th>
-                        <th width='99%' style={{ textAlign: 'right', paddingTop: '0px', paddingBottom: '0px' }}><input type="button" className="button" value="Receipts" /></th>
+                        <th width='99%' style={{ textAlign: 'right', paddingTop: '0px', paddingBottom: '0px' }}><input type="button" className="button" 
+                        onClick={this.handleClick} value="Receipts" /></th>
                     </tr>
                 </tbody>
             </table>)
