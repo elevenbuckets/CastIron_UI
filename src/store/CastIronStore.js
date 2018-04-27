@@ -13,13 +13,15 @@ class CastIronStore extends Reflux.Store {
             queuedTxs: [
             ],
             Qs: [],
-            receipts: [],
+            finishedQs: [],
+            receipts: {},
             address: null,
             balances: { 'ETH': 0 },
             blockHeight: null,
             blockTime: null,
             gasPrice: null,
-            selected_token_name: ''
+            selected_token_name: '',
+            currentView : 'Transfer' 
         }
         this.listenables = CastIronActions;
         this.wallet = CastIronService.wallet;
@@ -154,15 +156,29 @@ class CastIronStore extends Reflux.Store {
         // we can perhaps store a copy of the state on disk?
     }
 
-    processQPromise(qPromise) {
+    onAddQ(Q){
+        this.setState({Qs:[...this.state.Qs, ...Q]});
+    }
+
+    onChangeView(view){
+        this.setState({currentView : view});
+    }
+
+    onUpdateReceipts(r){
+        let data = this.merge(["transactionHash", "tx"], r.data, this.wallet.rcdQ[r.Q]);
+        this.setState({receipts : { ...this.state.receipts, ...{[r.Q] : data} }})
+    }
+
+    processQPromise = (qPromise) => {
         qPromise.then((Q) => {
-            CastIronService.addQ(Q);
+            // CastIronService.addQ(Q);
+            CastIronActions.addQ(Q);
 	    try {
               	let batchTxHash = this.wallet.rcdQ[Q].map((o) => (o.tx));
               	console.log("Sending batch txs:");
               	console.log(this.state.queuedTxs);
               	console.log(batchTxHash);
-              	return this.wallet.getReceipt(batchTxHash, 30000)
+              	return this.wallet.getReceipt(batchTxHash, 30000).then((data) => {return {data,Q}})
 	    } catch (err) {
 	        console.log("ERROR in processQPromise: " + err);
 	        console.log("rcdQ: " + Q + ">>");
@@ -171,15 +187,10 @@ class CastIronStore extends Reflux.Store {
 	        console.log(JSON.stringify(this.wallet.jobQ[Q]));
 		return Promise.resolve([]);
 	    }
-        }).then((data) => {
+        }).then((r) => {
             console.log("Receipts:")
-            console.log(data);
-            this.setState((preState) => {
-                let state = preState;
-                state.receipts = state.receipts.concat(data);
-                return state;
-            })
-            this.getAccounts();
+            console.log(r.data);
+            CastIronActions.updateReceipts(r);
 	})
     }
 
@@ -205,6 +216,41 @@ class CastIronStore extends Reflux.Store {
         }
     
         console.log(JSON.stringify(this.state, 0, 2));	
+    }
+
+
+    // change from https://github.com/ZitRos/array-merge-by-key/blob/master/index.js
+    merge(keys, arrays) {
+
+        const array = [];
+        const groups = new Map(); // key => [pos in array, [array, of, objects, with, the, same, key]]
+    
+        for (let i = 1; i < arguments.length; ++i) {
+            for (let j = 0; j < arguments[i].length; ++j) {
+                const element = arguments[i][j];
+                if (element.hasOwnProperty(keys[i-1])) {
+                    const keyValue = element[keys[i-1]];
+                    if (groups.has(keyValue)) {
+                        groups.get(keyValue)[1].push(element);
+                    } else {
+                        array.push(element);
+                        groups.set(keyValue, [array.length - 1, []]);
+                    }
+                } else {
+                    array.push(element);
+                }
+            }
+        }
+    
+        for (let group of groups) {
+            if (group[1][1].length === 0)
+                continue;
+            array[group[1][0]] =
+                Object.assign.apply(Object, [{}, array[group[1][0]]].concat(group[1][1]));
+        }
+    
+        return array;
+    
     }
 
 }

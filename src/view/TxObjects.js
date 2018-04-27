@@ -33,7 +33,7 @@ class TxObjects extends Reflux.Component {
   handleSend(event)
   {
     console.log("sending event" + event);
-    let type = this.selected_token_name? this.state.selected_token_name : "ETH";
+    let type = this.state.selected_token_name? this.state.selected_token_name : "ETH";
     this.props.handleSend(this.props.recipient, type, this.state.amount, this.state.gas);
   }
 
