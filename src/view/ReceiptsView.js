@@ -39,21 +39,23 @@ class ReceiptsView extends Reflux.Component {
         this.setState({selectedQ: event.value});
     }
 
-    getReceipts() {
-        CastIronService.state.currentQs.map((Q) => {
-            let batchTxHash = this.wallet.rcdQ[Q].map((o) => (o.tx));
-            this.wallet.getReceipt(batchTxHash, 30000).then(
-                (data) => {
-                    console.log("Receipts:")
-                    console.log(data);
-                    this.setState((preState) => {
-                        let state = preState;
-                        state.receipts = state.receipts.concat(data);
-                        return state;
-                    })
-                })
+    getReceipts = ()=> {
+        // CastIronService.state.currentQs.map((Q) => {
+        //     let batchTxHash = this.wallet.rcdQ[Q].map((o) => (o.tx));
+        //     this.wallet.getReceipt(batchTxHash, 30000).then(
+        //         (data) => {
+        //             console.log("Receipts:")
+        //             console.log(data);
+        //             this.setState((preState) => {
+        //                 let state = preState;
+        //                 state.receipts = state.receipts.concat(data);
+        //                 return state;
+        //             })
+        //         })
 
-        })
+        // })
+
+        return this.state.receipts[this.state.selectedQ]
     }
 
     render() {
@@ -76,7 +78,7 @@ class ReceiptsView extends Reflux.Component {
 
                     </tbody>
                 </table>
-                <Receipts receipts={this.state.receipts}
+                <Receipts receipts={this.getReceipts()}
                  style={{ marginTop: '0', marginBottom: '0', paddingTop: '0', paddingBottom: '0' }} />
             </div>
 

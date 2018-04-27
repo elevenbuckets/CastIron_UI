@@ -157,7 +157,7 @@ class CastIronStore extends Reflux.Store {
     }
 
     onAddQ(Q){
-        this.setState({Qs:[...this.state.Qs, ...Q]});
+        this.setState({Qs:[...this.state.Qs, Q]});
     }
 
     onChangeView(view){
@@ -165,7 +165,11 @@ class CastIronStore extends Reflux.Store {
     }
 
     onUpdateReceipts(r){
-        let data = this.merge(["transactionHash", "tx"], r.data, this.wallet.rcdQ[r.Q]);
+        let data = r.data;
+        if(typeof(this.state.receipts[r.Q]) !== "undefined"){
+            data = this.merge(["transactionHash", "tx"], r.data, this.wallet.rcdQ[r.Q]);
+        } 
+        
         this.setState({receipts : { ...this.state.receipts, ...{[r.Q] : data} }})
     }
 
@@ -174,6 +178,12 @@ class CastIronStore extends Reflux.Store {
             // CastIronService.addQ(Q);
             CastIronActions.addQ(Q);
 	    try {
+                let r = {
+                    Q : Q,
+                    data : this.wallet.rcdQ[Q],
+
+                }
+                CastIronActions.updateReceipts(r)
               	let batchTxHash = this.wallet.rcdQ[Q].map((o) => (o.tx));
               	console.log("Sending batch txs:");
               	console.log(this.state.queuedTxs);
@@ -220,37 +230,39 @@ class CastIronStore extends Reflux.Store {
 
 
     // change from https://github.com/ZitRos/array-merge-by-key/blob/master/index.js
-    merge(keys, arrays) {
+    merge(keys, receipt, rcdq) {
 
-        const array = [];
-        const groups = new Map(); // key => [pos in array, [array, of, objects, with, the, same, key]]
+        // const array = [];
+        // const groups = new Map(); // key => [pos in array, [array, of, objects, with, the, same, key]]
     
-        for (let i = 1; i < arguments.length; ++i) {
-            for (let j = 0; j < arguments[i].length; ++j) {
-                const element = arguments[i][j];
-                if (element.hasOwnProperty(keys[i-1])) {
-                    const keyValue = element[keys[i-1]];
-                    if (groups.has(keyValue)) {
-                        groups.get(keyValue)[1].push(element);
-                    } else {
-                        array.push(element);
-                        groups.set(keyValue, [array.length - 1, []]);
-                    }
-                } else {
-                    array.push(element);
-                }
-            }
-        }
+        // for (let i = 1; i < arguments.length; ++i) {
+        //     for (let j = 0; j < arguments[i].length; ++j) {
+        //         const element = arguments[i][j];
+        //         if (element.hasOwnProperty(keys[i-1])) {
+        //             const keyValue = element[keys[i-1]];
+        //             if (groups.has(keyValue)) {
+        //                 groups.get(keyValue)[1].push(element);
+        //             } else {
+        //                 array.push(element);
+        //                 groups.set(keyValue, [array.length - 1, []]);
+        //             }
+        //         } else {
+        //             array.push(element);
+        //         }
+        //     }
+        // }
     
-        for (let group of groups) {
-            if (group[1][1].length === 0)
-                continue;
-            array[group[1][0]] =
-                Object.assign.apply(Object, [{}, array[group[1][0]]].concat(group[1][1]));
-        }
+        // for (let group of groups) {
+        //     if (group[1][1].length === 0)
+        //         continue;
+        //     array[group[1][0]] =
+        //         Object.assign.apply(Object, [{}, array[group[1][0]]].concat(group[1][1]));
+        // }
     
-        return array;
-    
+        // return array;
+        let oout = [];
+        rcdq.map((rc) => { receipt.map( (o) => { if (o[keys[0]] === rc[keys[1]]) oout = [...oout, {...rc, ...o}] }) });
+        return oout;
     }
 
 }
