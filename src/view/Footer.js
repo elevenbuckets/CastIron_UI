@@ -40,16 +40,15 @@ class Footer extends Reflux.Component {
             return { localTime: new Date(), unixTime: Date.now() / 1000 };
         })
 
-        let netStatus = this.wallet.ethNetStatus();
-        if (netStatus.blockHeight != this.state.blockHeight) {
-            CastIronActions.infoUpdate(netStatus.blockHeight, netStatus.blockTime)
-        }
+        // let netStatus = this.wallet.ethNetStatus();
+        // if (netStatus.blockHeight != this.state.blockHeight) {
+        //     CastIronActions.infoUpdate(netStatus.blockHeight, netStatus.blockTime)
+        // }
     }
 
     handleClick(){
         CastIronActions.changeView("Receipts");
     }
-
 
 
     render = () => {

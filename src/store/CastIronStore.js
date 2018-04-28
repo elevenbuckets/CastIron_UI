@@ -3,6 +3,7 @@ import Reflux from 'reflux';
 import CastIronActions from '../action/CastIronActions'
 import CastIronService from '../service/CastIronService';
 import { createCanvasWithAddress } from "../util/Utils"
+import BlockTimer from '../util/BlockTimer'
 
 class CastIronStore extends Reflux.Store {
     constructor() {
@@ -33,6 +34,7 @@ class CastIronStore extends Reflux.Store {
 
         // initialize the state
         this.getAccounts();
+        BlockTimer.register(this.updateInfo);
     }
 
     onEnqueue(tx) {
@@ -226,6 +228,23 @@ class CastIronStore extends Reflux.Store {
         }
     
         console.log(JSON.stringify(this.state, 0, 2));	
+    }
+
+    updateInfo = () => {
+        this.getAccounts();
+
+        this.wallet.gasPriceEst().then(data => {
+            let gasPrice = this.wallet.toEth(data.fast, 9).toString()
+            this.setState(() => {
+                return { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.blockTime, gasPrice: gasPrice }
+            })
+        }
+            , error => {
+            let gasPrice = this.wallet.toEth(this.wallet.configs.defaultGasPrice, 9).toString();
+                this.setState(() => {
+                    return { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.blockTime, gasPrice: gasPrice }
+                })
+            });
     }
 
 
