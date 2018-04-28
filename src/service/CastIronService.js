@@ -1,4 +1,4 @@
-import Wallet from 'CastIron/core/Wallet'
+import Wallet from 'CastIron/core/CastIron'
 class CastIronService {
     constructor() {
         this.wallet = new Wallet('.local/config.json');

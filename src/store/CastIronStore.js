@@ -142,7 +142,7 @@ class CastIronStore extends Reflux.Store {
             })
         }
             , error => {
-            let gasPrice = preState.defaultGasPrice
+            let gasPrice = this.wallet.toEth(this.wallet.configs.defaultGasPrice, 9).toString();
                 this.setState(() => {
                     return { blockHeight: blockHeight, blockTime: blockTime, gasPrice: gasPrice }
                 })

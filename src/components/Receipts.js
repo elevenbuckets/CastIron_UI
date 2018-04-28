@@ -62,24 +62,24 @@ class Receipts extends Reflux.Component {
         if(this.props.receipts){
             return this.props.receipts.map((receipt) => {
                 return (
-                  <tr>
-                  <td className="txform"
+                  <tr className="balance-sheet">
+                  <td className="balance-sheet"
 		      onMouseEnter={this.infoDisplay.bind(this, 'txHash', receipt.tx)} 
 		      onMouseLeave={this.infoClear.bind(this)} 
 		      width='10%'>{this.simplifyTxHash(receipt.tx)}</td>
-                  <td className="txform" 
+                  <td className="balance-sheet" 
 		      onMouseEnter={this.infoDisplay.bind(this, 'From', receipt.from)} 
 		      onMouseLeave={this.infoClear.bind(this)} 
 		      width='10%'>{this.simplifyTxHash(receipt.from)}</td>
-                  <td className="txform" 
+                  <td className="balance-sheet" 
 		      onMouseEnter={this.infoDisplay.bind(this, 'To', receipt.to)} 
 		      onMouseLeave={this.infoClear.bind(this)} 
 		      width='10%'>{this.simplifyTxHash(receipt.to)}</td>
-                  <td className="txform" width='8%'>{this.getType(receipt)}</td>
-                  <td className="txform" width='8%'>{this.getAmount(receipt)}</td>
-                  <td className="txform" width='8%'>{receipt.gasUsed}</td>
-                  <td className="txform" width='8%'>{receipt.blockNumber}</td>
-                  <td className="txform" width='8%'>{this.getStatus(receipt)}</td>
+                  <td className="balance-sheet" width='8%'>{this.getType(receipt)}</td>
+                  <td className="balance-sheet" width='8%'>{this.getAmount(receipt)}</td>
+                  <td className="balance-sheet" width='8%'>{receipt.gasUsed}</td>
+                  <td className="balance-sheet" width='8%'>{receipt.blockNumber}</td>
+                  <td className="balance-sheet" width='8%'>{this.getStatus(receipt)}</td>
                   </tr>
                 );
               })
@@ -89,18 +89,18 @@ class Receipts extends Reflux.Component {
     render() {
         
         return (
-          <div style={{ overflow: 'scroll', margin: '0', maxHeight: "473", height: '473px' }} >
-            <table className="txform">
+          <div style={{ overflow: 'scroll', margin: '0', maxHeight: "490px", height: '490px' }} >
+            <table className="balance-sheet">
               <tbody>
-                <tr>
-                  <td className="txform" width='10%'>TxHash</td>
-                  <td className="txform" width='10%'>From</td>
-                  <td className="txform" width='10%'>To</td>
-                  <td className="txform" width='8%'>Type</td>
-                  <td className="txform" width='8%'>Amount</td>
-                  <td className="txform" width='8%'>Gas Fee</td>
-                  <td className="txform" width='8%'>Block Number</td>
-                  <td className="txform" width='8%'>Status</td>
+                <tr className="balance-sheet">
+                  <th className="balance-sheet" style={{color: '#111111'}} width='10%'>TxHash</th>
+                  <th className="balance-sheet" style={{color: '#111111'}} width='10%'>From</th>
+                  <th className="balance-sheet" style={{color: '#111111'}} width='10%'>To</th>
+                  <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Type</th>
+                  <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Amount</th>
+                  <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Gas Fee</th>
+                  <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Block Number</th>
+                  <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Status</th>
                 </tr>
                 {this.receipts()}
               </tbody>
@@ -119,7 +119,7 @@ class Receipts extends Reflux.Component {
                      boxShadow: '0 -5px 6px -5px rgba(200,200,200,0.5)'
                  }
                }>
-	     <input type='text' style={{marginTop: '10px', fontFamily: 'monospace', border: 0, width: '85%', fontSize: '1.08em', textAlign: 'center'}} align='center' ref='infocache' value=''/>
+	     <input type='text' style={{paddingTop: '15px', fontFamily: 'monospace', border: 0, width: '85%', fontSize: '1.11em', textAlign: 'center'}} align='center' ref='infocache' value=''/>
             </div>
           </div>
         )

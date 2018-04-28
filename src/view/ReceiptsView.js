@@ -65,14 +65,13 @@ class ReceiptsView extends Reflux.Component {
                 <table className="balance-sheet">
                     <tbody>
                         <tr className="avatar" style={{ textAlign: "center" }}>
-                            <th className="avatar" style={{ textAlign: "center" }}>Receipts</th>
+                            <th colSpan="2" className="avatar" style={{ textAlign: "center" }}>Receipts</th>
                         </tr>
                         <tr className="balance-sheet">
+			    <td className="balance-sheet" width="17%">Queue IDs:</td>
                             <td className="balance-sheet">
-                                <label>
-                                    Queues:<Dropdown options={this.state.Qs} onChange={this.handleChange} 
-                      value={this.state.selectedQ} placeholder={'Choose a Q id '} />
-                                </label>
+			    	<Dropdown options={this.state.Qs} onChange={this.handleChange} 
+                                      value={this.state.selectedQ} placeholder={'Please select a Queue ID'} />
                             </td>
                         </tr>
 
