@@ -9,6 +9,8 @@ import Constants from '../util/Constants'
 class Receipts extends Reflux.Component {
     constructor(props) {
         super(props);
+	
+	this.clearTout = undefined;
     }
 
     simplifyTxHash = (content) =>{
@@ -46,20 +48,38 @@ class Receipts extends Reflux.Component {
         return Constants.Pending;
     }
 
+    infoDisplay(name, data) {
+	event.preventDefault(); // is this necessary?
+	clearTimeout(this.clearTout);
+	this.refs.infocache.value = name + ': ' + data;
+    }
+
+    infoClear() {
+	this.clearTout = setTimeout(() => {this.refs.infocache.value = ''}, 5000);
+    }
 
     receipts = () =>{
         if(this.props.receipts){
             return this.props.receipts.map((receipt) => {
                 return (
-                  <tr>
-                  <td className="txform" width='36%'>{this.simplifyTxHash(receipt.tx)}</td>
-                  <td className="txform" width='20%'>{receipt.from}</td>
-                  <td className="txform" width='20%'>{receipt.to}</td>
-                  <td className="txform" width='4%'>{this.getType(receipt)}</td>
-                  <td className="txform" width='5%'>{this.getAmount(receipt)}</td>
-                  <td className="txform" width='5'>{receipt.gasUsed}</td>
-                  <td className="txform" width='5%'>{receipt.blockNumber}</td>
-                  <td className="txform">{this.getStatus(receipt)}</td>
+                  <tr className="balance-sheet">
+                  <td className="balance-sheet"
+		      onMouseEnter={this.infoDisplay.bind(this, 'txHash', receipt.tx)} 
+		      onMouseLeave={this.infoClear.bind(this)} 
+		      width='10%'>{this.simplifyTxHash(receipt.tx)}</td>
+                  <td className="balance-sheet" 
+		      onMouseEnter={this.infoDisplay.bind(this, 'From', receipt.from)} 
+		      onMouseLeave={this.infoClear.bind(this)} 
+		      width='10%'>{this.simplifyTxHash(receipt.from)}</td>
+                  <td className="balance-sheet" 
+		      onMouseEnter={this.infoDisplay.bind(this, 'To', receipt.to)} 
+		      onMouseLeave={this.infoClear.bind(this)} 
+		      width='10%'>{this.simplifyTxHash(receipt.to)}</td>
+                  <td className="balance-sheet" width='8%'>{this.getType(receipt)}</td>
+                  <td className="balance-sheet" width='8%'>{this.getAmount(receipt)}</td>
+                  <td className="balance-sheet" width='8%'>{receipt.gasUsed}</td>
+                  <td className="balance-sheet" width='8%'>{receipt.blockNumber}</td>
+                  <td className="balance-sheet" width='8%'>{this.getStatus(receipt)}</td>
                   </tr>
                 );
               })
@@ -69,22 +89,38 @@ class Receipts extends Reflux.Component {
     render() {
         
         return (
-            <div style={{ overflow: 'scroll', margin: '0', maxHeight: "430", height: '430px' }} >
-            <table className="txform">
+          <div style={{ overflow: 'scroll', margin: '0', maxHeight: "490px", height: '490px' }} >
+            <table className="balance-sheet">
               <tbody>
-                <tr>
-                  <td className="txform" width='36%'>TxHash</td>
-                  <td className="txform" width='20%'>From</td>
-                  <td className="txform" width='20%'>To</td>
-                  <td className="txform" width='4%'>Type</td>
-                  <td className="txform" width='5%'>Amount</td>
-                  <td className="txform" width='5'>Gas Fee</td>
-                  <td className="txform" width='5%'>Block Number</td>
-                  <td className="txform">Status</td>
+                <tr className="balance-sheet">
+                  <th className="balance-sheet" style={{color: '#111111'}} width='10%'>TxHash</th>
+                  <th className="balance-sheet" style={{color: '#111111'}} width='10%'>From</th>
+                  <th className="balance-sheet" style={{color: '#111111'}} width='10%'>To</th>
+                  <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Type</th>
+                  <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Amount</th>
+                  <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Gas Fee</th>
+                  <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Block Number</th>
+                  <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Status</th>
                 </tr>
                 {this.receipts()}
               </tbody>
             </table>
+	    <div style=
+               {
+                 {
+                     textAlign: 'center',
+                     backgroundColor: '#ffffff',
+                     width: '98.5%',
+                     maxHeight: '51',
+                     minHeight: '51',
+                     zIndex: '2',
+                     position: "fixed",
+                     bottom: '80',
+                     boxShadow: '0 -5px 6px -5px rgba(200,200,200,0.5)'
+                 }
+               }>
+	     <input type='text' style={{paddingTop: '15px', fontFamily: 'monospace', border: 0, width: '85%', fontSize: '1.11em', textAlign: 'center'}} align='center' ref='infocache' value=''/>
+            </div>
           </div>
         )
     }
