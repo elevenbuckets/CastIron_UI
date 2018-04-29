@@ -22,8 +22,16 @@ class GenSheets extends Reflux.Component {
 
   handleClickTransactETH = () => {
       CastIronActions.changeView("Transfer");
+      CastIronActions.selectedTokenUpdate("")
   }
 
+  handleClickTransact = () => {
+    CastIronActions.changeView("Transfer");
+}
+
+  handleClickTrade = () => {
+    CastIronActions.changeView("Trade");
+  }
   render = () => {
     if (this.state.address == '') return (<p />);
 
@@ -53,8 +61,9 @@ class GenSheets extends Reflux.Component {
             <td className="balance-sheet" width='35%'>
               <Dropdown options={tokenBalances} onChange={this.handleChange} value={this.state.selected_token_name !== '' ? this.state.selected_token_name + ': ' + this.state.balances[this.state.selected_token_name] : ''} placeholder={'Found ' + tokenkinds + ' tokens'} />
             </td>
-            <td className="balance-sheet"><input type="button" className="button" value={this.state.selected_token_name !== '' ? "Transact " + this.state.selected_token_name : 'Transact ...'} /></td>
-            <td className="balance-sheet"><input type="button" className="button" value={this.state.selected_token_name !== '' ? "Trade " + this.state.selected_token_name : 'Trade ...'} /></td>
+            <td className="balance-sheet"><input type="button" className="button" onClick={this.handleClickTransact} value={this.state.selected_token_name !== '' ? "Transact " + this.state.selected_token_name : 'Transact ...'} /></td>
+            <td className="balance-sheet"><input type="button" className="button" onClick={this.handleClickTrade} 
+            value={this.state.selected_token_name !== '' ? "Trade " + this.state.selected_token_name : 'Trade ...'} /></td>
           </tr>
         </tbody>
       </table>);

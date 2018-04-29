@@ -33,8 +33,9 @@ class CastIronStore extends Reflux.Store {
         this._target;
 
         // initialize the state
-        this.getAccounts();
+        // this.getAccounts();
         BlockTimer.register(this.updateInfo);
+        this.updateInfo()
     }
 
     onEnqueue(tx) {
@@ -105,9 +106,9 @@ class CastIronStore extends Reflux.Store {
 
     onSelectedTokenUpdate(value){
         console.log("in On onSelectedTokenUpdate")
-        this.setState(() => {
-            return { selected_token_name: value };
-        })
+        this.setState(
+            { selected_token_name: value }
+        )
     }
 
     onStartUpdate(address, canvas) {
@@ -224,7 +225,7 @@ class CastIronStore extends Reflux.Store {
     
             CastIronActions.statusUpdate({ 'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) });
         }else{
-            this.setState(() => { return { accounts: accounts}});
+            this.setState({accounts: accounts});
         }
     
         console.log(JSON.stringify(this.state, 0, 2));	
@@ -236,13 +237,13 @@ class CastIronStore extends Reflux.Store {
         this.wallet.gasPriceEst().then(data => {
             let gasPrice = this.wallet.toEth(data.fast, 9).toString()
             this.setState(() => {
-                return { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.blockTime, gasPrice: gasPrice }
+                return { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice: gasPrice }
             })
         }
             , error => {
             let gasPrice = this.wallet.toEth(this.wallet.configs.defaultGasPrice, 9).toString();
                 this.setState(() => {
-                    return { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.blockTime, gasPrice: gasPrice }
+                    return { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice: gasPrice }
                 })
             });
     }
