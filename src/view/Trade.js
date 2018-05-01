@@ -6,6 +6,7 @@ import Dropdown from 'react-dropdown';
 import CastIronActions from '../action/CastIronActions';
 import TxObjects from './TxObjects';
 import TxQList from './TxQList';
+import BlockTimer from '../util/BlockTimer';
 
 class Trade extends Reflux.Component {
     constructor(props) {
@@ -18,6 +19,20 @@ class Trade extends Reflux.Component {
             showBuckets: null
         }
         this.wallet = CastIronService.wallet;
+        
+    }
+
+    componentWillMount() {
+        super.componentWillMount();
+    }
+
+    componentDidMount() {
+        BlockTimer.register(this.refreshOrders);
+    }
+
+    componentDidUnMount() {
+        super.componentDidUnMount();
+        BlockTimer.unRegister(this.readOrders);
     }
 
     buy = () => {
@@ -36,9 +51,18 @@ class Trade extends Reflux.Component {
         this.setState({ showIndex: null });
     }
 
-    showBuckets = (index, start, end) => {
-        if (index == this.state.showIndex) {
-            return this.state.orders.slice(start, end + 1).map((order) => {
+    showBuckets = (bucket) => {
+        if (bucket.index == this.state.showIndex) {
+            let res = [];
+            res.push(<tr className="balance-sheet">
+                <td className="balance-sheet" width='20%' >{bucket.price}</td>
+                <td className="balance-sheet" width='20%' >{bucket.amount}</td>
+                <td className="balance-sheet" width='40%' > <input type="button" className="button" value='Hide Stores'
+                    onClick={this.hide.bind(this, bucket.index)} />
+                </td>
+
+            </tr>)
+            let res2 = this.state.orders.slice(bucket.start, bucket.end + 1).map((order) => {
                 return (
                     <tr className="balance-sheet">
                         <td className="balance-sheet" width='20%' >{order.price}</td>
@@ -49,6 +73,8 @@ class Trade extends Reflux.Component {
                     </tr>
                 );
             })
+
+            return res.concat(res2);
         }
 
     }
@@ -83,9 +109,16 @@ class Trade extends Reflux.Component {
         })
 
     }
+
+    refreshOrders = () =>{
+        this.setState({
+            orders : this.mockOrders()
+        })
+    }
+
     mockOrders = () => {
         let array = [];
-        for (var i = 1; i < 100; ++i) {
+        for (var i = 1; i < 1000; ++i) {
             let item = {
                 price: (Math.random() * 10).toFixed(6),
                 amount: i
@@ -103,21 +136,17 @@ class Trade extends Reflux.Component {
         if (this.state.orders) {
             return this.state.buckets.map((bucket) => {
                 return (
-                    <tr className="balance-sheet">
-                        <td className="balance-sheet" width='20%' >{bucket.price}</td>
-                        <td className="balance-sheet" width='20%' >{bucket.amount}</td>
-                        <td className="balance-sheet" width='40%' >
-                            {bucket.index == this.state.showIndex ? <div>
-                                 {this.showBuckets(bucket.index, bucket.start, bucket.end)}
-                                 <input type="button" className="button" value='Hide Stores'
-                                    onClick={this.hide.bind(this, bucket.index)} />
-                                  </div> :
+                    bucket.index == this.state.showIndex ? this.showBuckets(bucket) :
+                        <tr className="balance-sheet">
+                            <td className="balance-sheet" width='20%' >{bucket.price}</td>
+                            <td className="balance-sheet" width='20%' >{bucket.amount}</td>
+                            <td className="balance-sheet" width='40%' >
                                 <input type="button" className="button" value='Show Stores'
                                     onClick={this.show.bind(this, bucket.index)} />
 
-                            }</td>
+                            </td>
 
-                    </tr>
+                        </tr>
                 );
             })
         }
