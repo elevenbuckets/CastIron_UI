@@ -16,45 +16,20 @@ class ReceiptsView extends Reflux.Component {
         this.store = CastIronStore;
         this.wallet = CastIronService.wallet;
         this.state = {
-            selectedQ : ""
+            selectedQ: ""
         };
 
-        // this.state = {
-        //     receipts: [
-        //     ]
-        // }
 
         this.getReceipts = this.getReceipts.bind(this);
 
     }
 
 
-
-    componentWillMount() {
-        super.componentWillMount();
-        // this.getReceipts();
+    handleChange = (event) => {
+        this.setState({ selectedQ: event.value });
     }
 
-    handleChange = (event) =>{
-        this.setState({selectedQ: event.value});
-    }
-
-    getReceipts = ()=> {
-        // CastIronService.state.currentQs.map((Q) => {
-        //     let batchTxHash = this.wallet.rcdQ[Q].map((o) => (o.tx));
-        //     this.wallet.getReceipt(batchTxHash, 30000).then(
-        //         (data) => {
-        //             console.log("Receipts:")
-        //             console.log(data);
-        //             this.setState((preState) => {
-        //                 let state = preState;
-        //                 state.receipts = state.receipts.concat(data);
-        //                 return state;
-        //             })
-        //         })
-
-        // })
-
+    getReceipts = () => {
         return this.state.receipts[this.state.selectedQ]
     }
 
@@ -68,17 +43,17 @@ class ReceiptsView extends Reflux.Component {
                             <th colSpan="2" className="avatar" style={{ textAlign: "center" }}>Receipts</th>
                         </tr>
                         <tr className="balance-sheet">
-			    <td className="balance-sheet" width="17%">Queue IDs:</td>
+                            <td className="balance-sheet" width="17%">Queue IDs:</td>
                             <td className="balance-sheet">
-			    	<Dropdown options={this.state.Qs} onChange={this.handleChange} 
-                                      value={this.state.selectedQ} placeholder={'Please select a Queue ID'} />
+                                <Dropdown options={this.state.Qs} onChange={this.handleChange}
+                                    value={this.state.selectedQ} placeholder={'Please select a Queue ID'} />
                             </td>
                         </tr>
 
                     </tbody>
                 </table>
                 <Receipts receipts={this.getReceipts()}
-                 style={{ marginTop: '0', marginBottom: '0', paddingTop: '0', paddingBottom: '0' }} />
+                    style={{ marginTop: '0', marginBottom: '0', paddingTop: '0', paddingBottom: '0' }} />
             </div>
 
         )

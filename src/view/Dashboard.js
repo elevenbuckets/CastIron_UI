@@ -8,6 +8,7 @@ import ReceiptsView from './ReceiptsView';
 import QueryForm from './QueryForm'
 import Footer from './Footer'
 import Transfer from './Transfer'
+import Trade from './Trade'
 
 class DashBoard extends Reflux.Component {
     constructor(props) {
@@ -15,7 +16,8 @@ class DashBoard extends Reflux.Component {
         this.store = CastIronStore;
         this.map = {
             Transfer : <Transfer />,
-            Receipts : <ReceiptsView />
+            Receipts : <ReceiptsView />,
+            Trade : <Trade />
         }
     }
 
