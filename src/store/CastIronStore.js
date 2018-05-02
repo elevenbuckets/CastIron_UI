@@ -83,6 +83,18 @@ class CastIronStore extends Reflux.Store {
         this.processQPromise(qPromise)
     }
 
+    onSendTk(tk) {
+        let wallet = CastIronService.wallet;
+        wallet.setAccount(this.state.address);
+
+        let jobList = [];
+        jobList.push(this.wallet.enqueueTk(tk.type,tk.contract, tk.call,
+         tk.args)(tk.txObj.value, tk.txObj.gas, 
+         tk.tkObj));
+        let qPromise = wallet.processJobs(jobList);
+        this.processQPromise(qPromise)
+    }
+
     onBatchSend() {
         let wallet = CastIronService.wallet;
         let jobList = [];

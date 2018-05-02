@@ -2,40 +2,74 @@ import CastIronStore from "../store/CastIronStore";
 import CastIronService from "../service/CastIronService";
 import Reflux from 'reflux';
 import React from 'react';
-import Dropdown from 'react-dropdown';
 import CastIronActions from '../action/CastIronActions';
-import TxObjects from './TxObjects';
-import TxQList from './TxQList';
 import BlockTimer from '../util/BlockTimer';
+import { BADNAME } from "dns";
 
 class Trade extends Reflux.Component {
     constructor(props) {
         super(props);
         this.store = CastIronStore;
+        this.wallet = CastIronService.wallet;
         this.state = {
-            // orders: [{ price: 1.5, amount: 2000 }, { price: 1.6, amount: 3000 }, { price: 1.8, amount: 20000 }]
-            orders: this.mockOrders(),
             buckets: [],
             showBuckets: null
         }
-        this.wallet = CastIronService.wallet;
-        
+
+
+        // dApp specific info
+        const __APP__ = 'BMart';
+
+
+        // Expose internal binded contract instances.
+        // This should not be necessary once CastIron provides constant functions observers.
+        this.ETHMall = this.wallet.CUE[__APP__]['ETHMall'];
+        this.Registry = this.wallet.CUE[__APP__]['Registry'];
+
     }
 
     componentWillMount() {
         super.componentWillMount();
+
     }
 
     componentDidMount() {
+        this.setState({orders : this.readOrders()});
+        console.log("in componet did mount in Trade.js");
         BlockTimer.register(this.refreshOrders);
     }
 
     componentDidUnMount() {
         super.componentDidUnMount();
-        BlockTimer.unRegister(this.readOrders);
+        BlockTimer.unRegister(this.refreshOrders);
     }
 
-    buy = () => {
+    buy = (order) => {
+    
+        let posAddr = order.addr;
+        let price = this.wallet.toWei(order.price, this.wallet.TokenList["ETH"].decimals);
+        let buyAmount = 10;
+        let payment = price.times(buyAmount); // 10 tokens
+        let total = payment.times(1.0025);
+        let tokenAddr = this.wallet.TokenList[this.state.selected_token_name].addr;
+        let buyAmountInUnit = this.wallet.toWei(buyAmount, this.wallet.TokenList[this.state.selected_token_name].decimals).toString();
+
+        let tk = {
+            type: 'BMart',
+            contract : 'ETHMall',
+            call : 'buyProxy',
+            args:  ['posims', 'token', 'amount'],
+            txObj : {value :total.toString(), gas:2200000  },
+            tkObj : {
+                posims: posAddr, 
+                token: tokenAddr,
+                amount: buyAmountInUnit
+            }
+        }
+
+        CastIronActions.sendTk(tk);
+        
+
 
     }
 
@@ -68,7 +102,7 @@ class Trade extends Reflux.Component {
                         <td className="balance-sheet" width='20%' >{order.price}</td>
                         <td className="balance-sheet" width='20%' >{order.amount}</td>
                         <td className="balance-sheet" width='40%' ><input type="button" className="button" value='Buy'
-                            onClick={this.buy} /></td>
+                            onClick={this.buy.bind(this, order)} /></td>
 
                     </tr>
                 );
@@ -80,7 +114,16 @@ class Trade extends Reflux.Component {
     }
 
     readOrders = () => {
+        let TKRAddr = this.wallet.TokenList[this.state.selected_token_name].addr;
+        let TKRdecimal = this.wallet.TokenList[this.state.selected_token_name].decimals;
+        return this.Registry.browseStock(TKRAddr, 1, 100).map((rawOrder) => {
+            return {
+                addr: this.wallet.byte32ToAddress(rawOrder[0]),
+                amount: Number(this.wallet.toEth(rawOrder[1], this.wallet.TokenList[this.state.selected_token_name].decimals).toFixed(9)),
+                price: Number(this.wallet.toEth(rawOrder[2], this.wallet.TokenList["ETH"].decimals).toFixed(9))
+            }
 
+        })
     }
 
     sortOrders() {
@@ -110,30 +153,19 @@ class Trade extends Reflux.Component {
 
     }
 
-    refreshOrders = () =>{
+    refreshOrders = () => {
         this.setState({
-            orders : this.mockOrders()
+            orders: this.readOrders()
         })
+
     }
 
-    mockOrders = () => {
-        let array = [];
-        for (var i = 1; i < 1000; ++i) {
-            let item = {
-                price: (Math.random() * 10).toFixed(6),
-                amount: i
-            }
-
-            array.push(item);
-
-        }
-
-        return array;
-    }
+   
 
     orders = () => {
-        this.sortOrders();
+
         if (this.state.orders) {
+            this.sortOrders();
             return this.state.buckets.map((bucket) => {
                 return (
                     bucket.index == this.state.showIndex ? this.showBuckets(bucket) :
