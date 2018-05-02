@@ -39,6 +39,10 @@ class Receipts extends Reflux.Component {
         return receipt.amount;
     }
 
+    getGasPrice = (receipt) =>{
+        return CastIronService.wallet.toEth(CastIronService.wallet.hex2num(receipt.gasPrice), 9).toFixed(9);
+    }
+
     getStatus(receipt){
         if(receipt.status === "0x0"){
             return Constants.Failed;
@@ -78,6 +82,7 @@ class Receipts extends Reflux.Component {
                   <td className="balance-sheet" width='8%'>{this.getType(receipt)}</td>
                   <td className="balance-sheet" width='8%'>{this.getAmount(receipt)}</td>
                   <td className="balance-sheet" width='8%'>{receipt.gasUsed}</td>
+                  <td className="balance-sheet" width='8%'>{this.getGasPrice(receipt)}</td>
                   <td className="balance-sheet" width='8%'>{receipt.blockNumber}</td>
                   <td className="balance-sheet" width='8%'>{this.getStatus(receipt)}</td>
                   </tr>
@@ -98,7 +103,8 @@ class Receipts extends Reflux.Component {
                   <th className="balance-sheet" style={{color: '#111111'}} width='10%'>To</th>
                   <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Type</th>
                   <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Amount</th>
-                  <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Gas Fee</th>
+                  <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Gas</th>
+                  <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Gas Price</th>
                   <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Block Number</th>
                   <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Status</th>
                 </tr>
