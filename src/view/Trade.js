@@ -13,7 +13,7 @@ class Trade extends Reflux.Component {
         this.wallet = CastIronService.wallet;
         this.state = {
             buckets: [],
-            showBuckets: null
+            showIndex: null
         }
 
 
@@ -142,7 +142,7 @@ class Trade extends Reflux.Component {
             let amount = orders.slice(start, end + 1).map((o) => o.amount).reduce((a, b) => {
                 return a + b;
             })
-            return { price: orders[start].price + "--" + orders[end].price, amount: amount, start, end, index: i }
+            return { price: orders[start].price.toFixed(9) + " ~ " + orders[end].price.toFixed(9), amount: amount, start, end, index: i }
         })
 
     }
@@ -163,33 +163,45 @@ class Trade extends Reflux.Component {
                 if (bucket.index == this.state.showIndex) {
                     return (
 		     <table border="0"><tbody>
-		      <tr className="avatar">
-                        <td className="avatar" width='50%' >{bucket.price}</td>
-                        <td className="avatar" width='25%' >{bucket.amount}</td>
-                        <td className="avatar" width='200px' > <input type="button" className="button" value='Hide Stores'
+		      <tr className="avatar" style={{padding: '3px'}}>
+                        <td className="avatar" style={{padding: '3px'}} width='49%' >{bucket.price}</td>
+                        <td className="avatar" style={{padding: '3px'}} width='26%' >{bucket.amount}</td>
+                        <td className="avatar" style={{padding: '3px', minWidth: '310px'}} > <input type="button" className="button" value='Hide Stores'
                             onClick={this.hide.bind(this, bucket.index)} />
                         </td>
                       </tr> 
 			{ this.state.orders.slice(bucket.start, bucket.end + 1).map( (order) =>
                     		{
                        			return (
-		      				<tr className="balance-sheet">
-                          			<td className="balance-sheet" width='50%' >{order.price}</td>
-                          			<td className="balance-sheet" width='25%' >{order.amount}</td>
-                          			<td className="balance-sheet" width='200px' ><input type="button" className="button" value='Buy'
+		      				<tr className="balance-sheet" style={{padding: '3px'}}>
+                          			<td className="balance-sheet" style={{padding: '3px'}} width='49%' >{order.price}</td>
+                          			<td className="balance-sheet" style={{padding: '3px'}} width='26%' >{order.amount}</td>
+                          			<td className="balance-sheet" style={{padding: '3px', minWidth: '310px'}} ><input type="button" className="tbutton" value='Buy'
                               			onClick={this.buy.bind(this, order)} /></td></tr>
                        			)
                     		}) }
                       </tbody></table>
 		      )
+		    } else if (this.state.showIndex !== null) {
+		      return (
+		     <table border="0"><tbody>
+		      <tr className="bucket-table" style={{textAlign: 'center'}}>
+                            <td className="bucket-table" width='49%' style={{textAlign: 'center'}}>{bucket.price}</td>
+                            <td className="bucket-table" width='26%' style={{textAlign: 'center'}}>{bucket.amount}</td>
+                            <td className="bucket-table" style={{minWidth:'310px', textAlign: 'center'}}>
+                                <input type="button" className="tbutton" value='Show Stores'
+                                    onClick={this.show.bind(this, bucket.index)} />
+                            </td>
+                      </tr> </tbody></table>
+		      )
 		    } else {
 		      return (
 		     <table border="0"><tbody>
-		      <tr className="txform" style={{textAlign: 'center'}}>
-                            <td className="txform" width='50%' style={{textAlign: 'center'}}>{bucket.price}</td>
-                            <td className="txform" width='25%' style={{textAlign: 'center'}}>{bucket.amount}</td>
-                            <td className="txform" width='200px' style={{textAlign: 'center'}}>
-                                <input type="button" className="button" value='Show Stores'
+		      <tr className="bucket-table-init" style={{textAlign: 'center'}}>
+                            <td className="bucket-table-init" width='49%' style={{textAlign: 'center'}}>{bucket.price}</td>
+                            <td className="bucket-table-init" width='26%' style={{textAlign: 'center'}}>{bucket.amount}</td>
+                            <td className="bucket-table-init" style={{minWidth:'310px', textAlign: 'center'}}>
+                                <input type="button" className="tbutton" value='Show Stores'
                                     onClick={this.show.bind(this, bucket.index)} />
                             </td>
                       </tr> </tbody></table>
@@ -216,13 +228,13 @@ class Trade extends Reflux.Component {
                         </tr>
                      </tbody>
                 </table>
-              <div style={{ width: '100%', overflow: 'scroll', margin: '0', maxHeight: "568px", height: '568px' }} >
+              <div style={{ width: '100%', overflow: 'scroll', margin: '0', maxHeight: "578px", height: '578px' }} >
                 <table className="balance-sheet">
                     <tbody>
                         <tr className="balance-sheet">
-                                <th className="balance-sheet" style={{ color: '#111111' }} width='628px'>Price</th>
-                                <th className="balance-sheet" style={{ color: '#111111' }} width='309px'>Amount</th>
-                                <th className="balance-sheet" style={{ color: '#111111' }} width='200px'>Action</th>
+                                <th className="balance-sheet" style={{ color: '#111111' }} width='816px'>Price</th>
+                                <th className="balance-sheet" style={{ color: '#111111' }} width='417px'>Amount</th>
+                                <th className="balance-sheet" style={{ color: '#111111' }} width='425px'>Action</th>
                         </tr>
 			<tr><td colSpan="3">
                             {this.orders()}

@@ -29,6 +29,19 @@
     cursor: pointer;
 }
 
+.tbutton {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 2px 1px;
+    cursor: pointer;
+}
+
 .button:disabled {
 	background-color: #eeeeee;
 	color: #aaaaaa;
@@ -54,6 +67,58 @@
   background-color: rgb(250,0,0);
   color: white;
   font-weight: bold;
+}
+
+table.bucket-table-init {
+	width: 100%;
+	color: #000000;
+}
+
+tr.bucket-table-init {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    color: #111111;
+    padding: 3px;
+}
+
+td.bucket-table-init {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    color: #111111;
+    padding: 3px;
+}
+
+th.bucket-table-init {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    color: #111111;
+    padding: 3px;
+}
+
+table.bucket-table {
+	width: 100%;
+	color: #111111;
+}
+
+tr.bucket-table {
+    background-color: #cccccc;
+    border: 1px solid #ffffff;
+    color: #111111;
+    padding: 3px;
+}
+
+td.bucket-table {
+    background-color: #cccccc;
+    border: 1px solid #ffffff;
+    color: #111111;
+    padding: 3px;
+}
+
+th.bucket-table {
+    background-color: #cccccc;
+    border: 1px solid #ffffff;
+    color: #111111;
+    padding: 3px;
 }
 
 table.txform {
