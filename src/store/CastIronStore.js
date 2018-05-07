@@ -116,6 +116,10 @@ class CastIronStore extends Reflux.Store {
 
     }
 
+    onMasterUpdate(value) {
+	    this.wallet.masterpw = value;
+    }
+
     onSelectedTokenUpdate(value){
         console.log("in On onSelectedTokenUpdate")
         this.setState(

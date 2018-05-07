@@ -9,10 +9,21 @@ class QueryForm extends Reflux.Component {
   constructor(props) {
     super(props);
     this.store = CastIronStore;
+    this.state = {
+	    ptoggle: true, 
+	    pfield: '28px'
+    };
   }
 
   handleChange = (event) => {
     CastIronActions.startUpdate(event.value, this.refs.canvas);
+  }
+
+  handleToggle = (event) => {
+    let pt = !this.state.ptoggle;
+    let pf = pt ? '100px' : '283px';
+    this.setState({ptoggle: pt, pfield: pf});
+    CastIronActions.masterUpdate(this.refs.mp.value);
   }
 
   render = () => {
@@ -39,8 +50,12 @@ class QueryForm extends Reflux.Component {
 	     <Dropdown ref='addrlist' options={Object.keys(this.state.accounts)} onChange={this.handleChange} value={this.state.address} placeholder="Select an option" />
                 </label>
               </td>
+	      <td width={this.state.pfield} style={{textAlign: 'center', minWidth:this.state.pfield }} onMouseEnter={this.handleToggle} onMouseLeave={this.handleToggle}>
+	         Master Password <br/>
+	      <input ref='mp' type='password' maxLength='200' hidden={this.state.ptoggle} style={{marginTop: '7px'}}/>
+	      </td>
             </tr>
-            <tr><td colSpan="2"><GenSheets /></td></tr>
+            <tr><td colSpan="3"><GenSheets /></td></tr>
           </tbody>
         </table>
       </div>
