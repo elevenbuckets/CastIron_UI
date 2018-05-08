@@ -105,7 +105,7 @@ class Receipts extends Reflux.Component {
                   <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Amount</th>
                   <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Gas</th>
                   <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Gas Price</th>
-                  <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Block Number</th>
+                  <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Block No.</th>
                   <th className="balance-sheet" style={{color: '#111111'}} width='8%'>Status</th>
                 </tr>
                 {this.receipts()}
