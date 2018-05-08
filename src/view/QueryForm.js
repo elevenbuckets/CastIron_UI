@@ -50,8 +50,9 @@ class QueryForm extends Reflux.Component {
 	     <Dropdown ref='addrlist' options={Object.keys(this.state.accounts)} onChange={this.handleChange} value={this.state.address} placeholder="Select an option" />
                 </label>
               </td>
-	      <td width={this.state.pfield} style={{textAlign: 'center', minWidth:this.state.pfield }} onMouseEnter={this.handleToggle} onMouseLeave={this.handleToggle}>
-	         Master Password <br/>
+	      <td width={this.state.pfield} style={{textAlign: 'center', minWidth:this.state.pfield, color: this.state.unlocked ? 'green' : 'red' }} 
+		onMouseEnter={this.handleToggle} onMouseLeave={this.handleToggle}>
+	         <label style={{fontWeight: 'bold'}}>Master Password</label><br/>
 	      <input ref='mp' type='password' maxLength='200' hidden={this.state.ptoggle} style={{marginTop: '7px'}}/>
 	      </td>
             </tr>
