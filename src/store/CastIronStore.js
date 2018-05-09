@@ -22,7 +22,8 @@ class CastIronStore extends Reflux.Store {
             blockTime: null,
             gasPrice: null,
             selected_token_name: '',
-            currentView : 'Transfer' 
+            currentView : 'Transfer',
+	    unlocked: false 
         }
         this.listenables = CastIronActions;
         this.wallet = CastIronService.wallet;
@@ -114,6 +115,11 @@ class CastIronStore extends Reflux.Store {
             return { address: JSON.parse(value.value) };
         })
 
+    }
+
+    onMasterUpdate(value) {
+	    this.wallet.password(value);
+	    this.wallet.validPass().then( (r) => { this.setState({unlocked: r}); });
     }
 
     onSelectedTokenUpdate(value){
