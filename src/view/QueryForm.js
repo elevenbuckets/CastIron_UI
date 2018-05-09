@@ -68,7 +68,7 @@ class QueryForm extends Reflux.Component {
               </td>
 	      <td width={this.state.pfield} style={{textAlign: 'center', minWidth:this.state.pfield}} 
 		onMouseEnter={this.handleToggle} onMouseLeave={this.handleToggle}>
-		 <table border="0"><tbody><tr style={{border: '0px'}} align="center"><td style={{border: '0px', color: this.state.unlocked ? 'green' : 'red'}}>
+		 <table border="0"><tbody><tr style={{border: '0px'}} align="center"><td style={{border: '0px', color: this.state.unlocked ? '#4CAF50' : 'red'}}>
 	           <label style={{fontWeight: 'bold'}}>Master Password</label><br/>
 	           <input ref='mp' type='password' maxLength='200' hidden={this.state.ptoggle} style={{marginTop: '7px'}}/>
 		 </td>
