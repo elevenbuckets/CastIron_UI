@@ -1,3 +1,33 @@
+#settings {
+    position: fixed;
+    left: 0;
+    top: 0;
+    transform: translate3d(-100vw, 0, 0);
+    width: 100vw;
+    height: 100vh;
+
+    background-color: #FFE600;
+    transition: transform .3s
+                cubic-bezier(0, .52, 0, 1);
+    overflow: scroll;
+    z-index: 1000;
+}
+
+#settings.hide {
+    transform: translate3d(-100vw, 0, 0);
+}
+   
+#settings.show {
+    transform: translate3d(0vw, 0, 0);
+    overflow: hidden;
+}
+
+#settings h2 a {
+  color: #333;
+  margin-left: 55px;
+  text-decoration: none;
+}
+ 
 ::-webkit-scrollbar {
     width: 6px;
 }
@@ -188,6 +218,33 @@ th.balance-sheet {
 
 td.avatar {
     text-align: center;
+}
+
+table.settings-sheet {
+    color: #333;
+    border-collapse: collapse;
+    border: 0px;
+    background-color: rgba(0,0,0,0);
+}
+
+tr.settings-sheet {
+    color: #333;
+    background-color: rgba(0,0,0,0);
+    padding-right: 25px;
+    border: 0px;
+}
+
+td.settings-sheet {
+    color: #333;
+    border: 0px;
+    padding-right: 25px;
+    background-color: rgba(0,0,0,0);
+}
+
+th.settings-sheet {
+    color: #333;
+    border: 0px;
+    background-color: rgba(0,0,0,0);
 }
 
 table {
