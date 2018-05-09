@@ -6,7 +6,7 @@
     width: 100vw;
     height: 100vh;
 
-    background-color: #FFE600;
+    background-color: #EDEDE3;
     transition: transform .3s
                 cubic-bezier(0, .52, 0, 1);
     overflow: scroll;
