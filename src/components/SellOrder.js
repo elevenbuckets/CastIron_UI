@@ -10,13 +10,13 @@ class SellOrder extends React.Component {
                 <table className="balance-sheet">
                     <tbody>
                         <tr className="balance-sheet">
-                            <td colSpan="4" className="balance-sheet" >Acmount : 20, Price: 0.15</td>
+                            <td colSpan="4" className="balance-sheet" >Amount : 20, Price: 0.15</td>
                         </tr>
                         <tr className="balance-sheet">
                             <td className="balance-sheet" > <input type="button" className="button" value="Create"
-                                onClick={this.create} /></td>
+                                onClick={this.createOrder} /></td>
                             <td className="balance-sheet"> <input type="button" className="button" value="Cancel"
-                                onClick={this.cancel} /></td>
+                                onClick={this.cancelOrder} /></td>
                             <td className="balance-sheet"> <input type="button" className="button" value="Change Price"
                                 onClick={this.changePrice} /></td>
                             <td className="balance-sheet"> <input type="button" className="button" value="Restock"

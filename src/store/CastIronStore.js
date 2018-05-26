@@ -22,8 +22,9 @@ class CastIronStore extends Reflux.Store {
             blockTime: null,
             gasPrice: null,
             selected_token_name: '',
-            currentView : 'Transfer',
-	    unlocked: false 
+            currentView: 'Transfer',
+            modalIsOpen: false,
+            unlocked: false
         }
         this.listenables = CastIronActions;
         this.wallet = CastIronService.wallet;
@@ -44,11 +45,11 @@ class CastIronStore extends Reflux.Store {
         // TODO: figure out why can not use function for this as it will update it multiple times
 
         this.setState(
-           { queuedTxs: this.state.queuedTxs })
+            { queuedTxs: this.state.queuedTxs })
     }
 
     onDequeue(tx) {
-        if(this.state.queuedTxs.indexOf(tx) == -1){
+        if (this.state.queuedTxs.indexOf(tx) == -1) {
             return;
         }
         // this.setState((preState) => {
@@ -56,14 +57,27 @@ class CastIronStore extends Reflux.Store {
         //     return { queuedTxs: preState.queuedTxs };
         // })
         this.state.queuedTxs.splice(this.state.queuedTxs.indexOf(tx), 1);
-        this.setState({ queuedTxs : this.state.queuedTxs})
+        this.setState({ queuedTxs: this.state.queuedTxs })
     }
 
     onClearQueue() {
-        this.setState({queuedTxs : []})
+        this.setState({ queuedTxs: [] })
     }
 
     onSend(addr, type, amount, gasNumber) {
+        this.confirmTxs(this.send);
+
+        this.setState({ modalIsOpen: true });
+        // let wallet = CastIronService.wallet;
+        // wallet.setAccount(this.state.address);
+        // let weiAmount = wallet.toWei(amount, wallet.TokenList[type].decimals).toString();
+        // let jobList = [];
+        // jobList.push(wallet.enqueueTx(type)(addr, weiAmount, gasNumber));
+        // let qPromise = wallet.processJobs(jobList);
+        // this.processQPromise(qPromise)
+    }
+
+    send(addr, type, amount, gasNumber) {
         let wallet = CastIronService.wallet;
         wallet.setAccount(this.state.address);
         let weiAmount = wallet.toWei(amount, wallet.TokenList[type].decimals).toString();
@@ -89,9 +103,9 @@ class CastIronStore extends Reflux.Store {
         wallet.setAccount(this.state.address);
 
         let jobList = [];
-        jobList.push(this.wallet.enqueueTk(tk.type,tk.contract, tk.call,
-         tk.args)(tk.txObj.value, tk.txObj.gas, 
-         tk.tkObj));
+        jobList.push(this.wallet.enqueueTk(tk.type, tk.contract, tk.call,
+            tk.args)(tk.txObj.value, tk.txObj.gas,
+                tk.tkObj));
         let qPromise = wallet.processJobs(jobList);
         this.processQPromise(qPromise)
     }
@@ -118,11 +132,11 @@ class CastIronStore extends Reflux.Store {
     }
 
     onMasterUpdate(value) {
-	    this.wallet.password(value);
-	    this.wallet.validPass().then( (r) => { this.setState({unlocked: r}); });
+        this.wallet.password(value);
+        this.wallet.validPass().then((r) => { this.setState({ unlocked: r }); });
     }
 
-    onSelectedTokenUpdate(value){
+    onSelectedTokenUpdate(value) {
         console.log("in On onSelectedTokenUpdate")
         this.setState(
             { selected_token_name: value }
@@ -163,9 +177,9 @@ class CastIronStore extends Reflux.Store {
             })
         }
             , error => {
-            let gasPrice = this.wallet.toEth(this.wallet.configs.defaultGasPrice, 9).toString();
+                let gasPrice = this.wallet.toEth(this.wallet.configs.defaultGasPrice, 9).toString();
                 this.setState(() => {
-                    return { blockHeight: blockHeight, blockTime: blockTime, gasPrice: gasPrice }
+                    return { blockHeight: blockHeight, blockTime: blockTime, gasPricconfirmTXe: gasPrice }
                 })
             });
     }
@@ -177,52 +191,52 @@ class CastIronStore extends Reflux.Store {
         // we can perhaps store a copy of the state on disk?
     }
 
-    onAddQ(Q){
-        this.setState({Qs:[...this.state.Qs, Q]});
+    onAddQ(Q) {
+        this.setState({ Qs: [...this.state.Qs, Q] });
     }
 
-    onChangeView(view){
-        this.setState({currentView : view});
+    onChangeView(view) {
+        this.setState({ currentView: view });
     }
 
-    onUpdateReceipts(r){
+    onUpdateReceipts(r) {
         let data = r.data;
-        if(typeof(this.state.receipts[r.Q]) !== "undefined"){
+        if (typeof (this.state.receipts[r.Q]) !== "undefined") {
             data = this.merge(["transactionHash", "tx"], r.data, this.wallet.rcdQ[r.Q]);
-        } 
-        
-        this.setState({receipts : { ...this.state.receipts, ...{[r.Q] : data} }})
+        }
+
+        this.setState({ receipts: { ...this.state.receipts, ...{ [r.Q]: data } } })
     }
 
     processQPromise = (qPromise) => {
         qPromise.then((Q) => {
             // CastIronService.addQ(Q);
             CastIronActions.addQ(Q);
-	    try {
+            try {
                 let r = {
-                    Q : Q,
-                    data : this.wallet.rcdQ[Q],
+                    Q: Q,
+                    data: this.wallet.rcdQ[Q],
 
                 }
                 CastIronActions.updateReceipts(r)
-              	let batchTxHash = this.wallet.rcdQ[Q].map((o) => (o.tx));
-              	console.log("Sending batch txs:");
-              	console.log(this.state.queuedTxs);
-              	console.log(batchTxHash);
-              	return this.wallet.getReceipt(batchTxHash, 30000).then((data) => {return {data,Q}})
-	    } catch (err) {
-	        console.log("ERROR in processQPromise: " + err);
-	        console.log("rcdQ: " + Q + ">>");
-	        console.log(JSON.stringify(this.wallet.rcdQ[Q]));
-	        console.log("jobQ: " + Q + ">>");
-	        console.log(JSON.stringify(this.wallet.jobQ[Q]));
-		return Promise.resolve([]);
-	    }
+                let batchTxHash = this.wallet.rcdQ[Q].map((o) => (o.tx));
+                console.log("Sending batch txs:");
+                console.log(this.state.queuedTxs);
+                console.log(batchTxHash);
+                return this.wallet.getReceipt(batchTxHash, 30000).then((data) => { return { data, Q } })
+            } catch (err) {
+                console.log("ERROR in processQPromise: " + err);
+                console.log("rcdQ: " + Q + ">>");
+                console.log(JSON.stringify(this.wallet.rcdQ[Q]));
+                console.log("jobQ: " + Q + ">>");
+                console.log(JSON.stringify(this.wallet.jobQ[Q]));
+                return Promise.resolve([]);
+            }
         }).then((r) => {
             console.log("Receipts:")
             console.log(r.data);
             CastIronActions.updateReceipts(r);
-	})
+        })
     }
 
     getAccounts() {
@@ -235,18 +249,18 @@ class CastIronStore extends Reflux.Store {
             }
         ));
 
-        if(this.state.address){
-            this.setState(() => { return { accounts: accounts, balances: {'ETH' : accounts[this.state.address].balance}}})
+        if (this.state.address) {
+            this.setState(() => { return { accounts: accounts, balances: { 'ETH': accounts[this.state.address].balance } } })
             this.state.tokenList.map((t) => {
                 CastIronActions.statusUpdate({ [t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) });
             });
-    
+
             CastIronActions.statusUpdate({ 'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) });
-        }else{
-            this.setState({accounts: accounts});
+        } else {
+            this.setState({ accounts: accounts });
         }
-    
-        console.log(JSON.stringify(this.state, 0, 2));	
+
+        console.log(JSON.stringify(this.state, 0, 2));
     }
 
     updateInfo = () => {
@@ -259,51 +273,29 @@ class CastIronStore extends Reflux.Store {
             })
         }
             , error => {
-            let gasPrice = this.wallet.toEth(this.wallet.configs.defaultGasPrice, 9).toString();
+                let gasPrice = this.wallet.toEth(this.wallet.configs.defaultGasPrice, 9).toString();
                 this.setState(() => {
                     return { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice: gasPrice }
                 })
             });
     }
 
+    onConfirmTx() {
+        this.setState({ modalIsOpen: false });
+    }
 
-    // change from https://github.com/ZitRos/array-merge-by-key/blob/master/index.js
-    merge(keys, receipt, rcdq) {
 
-        // const array = [];
-        // const groups = new Map(); // key => [pos in array, [array, of, objects, with, the, same, key]]
     
-        // for (let i = 1; i < arguments.length; ++i) {
-        //     for (let j = 0; j < arguments[i].length; ++j) {
-        //         const element = arguments[i][j];
-        //         if (element.hasOwnProperty(keys[i-1])) {
-        //             const keyValue = element[keys[i-1]];
-        //             if (groups.has(keyValue)) {
-        //                 groups.get(keyValue)[1].push(element);
-        //             } else {
-        //                 array.push(element);
-        //                 groups.set(keyValue, [array.length - 1, []]);
-        //             }
-        //         } else {
-        //             array.push(element);
-        //         }
-        //     }
-        // }
-    
-        // for (let group of groups) {
-        //     if (group[1][1].length === 0)
-        //         continue;
-        //     array[group[1][0]] =
-        //         Object.assign.apply(Object, [{}, array[group[1][0]]].concat(group[1][1]));
-        // }
-    
-        // return array;
+    merge(keys, receipt, rcdq) {   
         let oout = [];
-        rcdq.map((rc) => { receipt.map( (o) => { if (o[keys[0]] === rc[keys[1]]) oout = [...oout, {...rc, ...o}] }) });
+        rcdq.map((rc) => { receipt.map((o) => { if (o[keys[0]] === rc[keys[1]]) oout = [...oout, { ...rc, ...o }] }) });
         return oout;
     }
 
 }
+
+
+
 
 //  const castIronStore = new CastIronStore()
 

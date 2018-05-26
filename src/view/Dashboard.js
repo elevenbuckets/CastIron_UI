@@ -8,17 +8,24 @@ import ReceiptsView from './ReceiptsView';
 import QueryForm from './QueryForm'
 import Footer from './Footer'
 import Transfer from './Transfer'
-import Trade from './Trade'
+import Trade from './Trade';
+import Modal from 'react-modal';
+import ConfirmTXModal from '../components/ComfirmTXModal';
+import CastIronActions from '../action/CastIronActions'
 
 class DashBoard extends Reflux.Component {
     constructor(props) {
         super(props);
         this.store = CastIronStore;
         this.map = {
-            Transfer : <Transfer />,
-            Receipts : <ReceiptsView />,
-            Trade : <Trade />
+            Transfer: <Transfer />,
+            Receipts: <ReceiptsView />,
+            Trade: <Trade />
         }
+    }
+
+    confirmTX = () =>{
+        CastIronActions.confirmTx();
     }
 
 
@@ -28,6 +35,9 @@ class DashBoard extends Reflux.Component {
             <div>
                 <QueryForm />
                 {this.map[this.state.currentView]}
+                <Modal isOpen={this.state.modalIsOpen}> This is modal!
+                <ConfirmTXModal confirmTX={this.confirmTX}/>
+                </Modal>
                 <Footer />
             </div>
 

@@ -15,7 +15,8 @@ class Sell extends Reflux.Component {
         this.state = {
             buckets: [],
             showIndex: null,
-            buyAmount: {}
+            buyAmount: {},
+            shopAddr : null
         }
 
 
@@ -28,6 +29,36 @@ class Sell extends Reflux.Component {
         this.ETHMall = this.wallet.CUE[__APP__]['ETHMall'];
         this.Registry = this.wallet.CUE[__APP__]['Registry'];
 
+    }
+
+    getShops= () =>{
+        let tk = {
+            type: 'BMart',
+            contract: 'ETHMall',
+            call: 'getStoreInfo',
+            args: ['addr'],
+            txObj: { value: 3000000000000000000, gas: 2200000 },
+            tkObj: {
+                addr : this.state.address
+            }
+        }
+
+        CastIronActions.sendTk(tk);
+    }
+
+    getEstimateDepoist(){
+        let tk = {
+            type: 'BMart',
+            contract: 'ETHMall',
+            call: 'getSecureDeposit',
+            args: ['addr'],
+            txObj: { value: 3000000000000000000, gas: 2200000 },
+            tkObj: {
+                addr : this.state.address
+            }
+        }
+
+        CastIronActions.sendTk(tk);
     }
 
     createStore = () =>{
@@ -44,6 +75,27 @@ class Sell extends Reflux.Component {
 
         CastIronActions.sendTk(tk);
     }
+
+    creaeteOrder = () =>{
+        // TO be implemented
+    }
+
+    cancelOrder = () =>{
+        // TO be implemented
+    }
+
+    changePrice = () =>{
+        // TO be implemented
+    }
+
+    restock = () =>{
+        // TO be implemented
+    }
+
+    useOtherStore = () =>{
+        // TO be implemented
+    }
+
 
     render() {
         console.log("in Sell render()");

@@ -26,6 +26,7 @@
     "react": "15.6.1",
     "react-dom": "15.6.1",
     "react-dropdown": "^1.4.0",
+    "react-modal": "^3.4.4",
     "react-router-dom": "^4.2.2",
     "react-toggle": "^4.0.2",
     "reflux": "^6.4.1",

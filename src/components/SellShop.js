@@ -14,7 +14,7 @@ class SellShop extends React.Component {
                 <table className="balance-sheet">
                     <tbody>
                         <tr className="balance-sheet">
-                            <th className="balance-sheet" style={{ color: '#111111' }} width='816px'>
+                            <th className="balance-sheet" style={{ color: '#111111' }} width='816px' colSpan='2' >
                                 <Dropdown options={this.state.otherstores}
                                     onChange={this.handleChange}
                                     value={ ''}
@@ -23,11 +23,10 @@ class SellShop extends React.Component {
                         <tr className="balance-sheet">
                             <td className="balance-sheet"> <input type="button" className="button" value="Create Store"
                                 onClick={this.props.createStore} /></td>
+                                <td className="balance-sheet">
+                                Estimate Gas Cost: 250000</td>
                         </tr>
-                        <tr className="balance-sheet">
-                            <td className="balance-sheet">
-                                EstimateGasCost: 250000</td>
-                        </tr>
+                        
                     </tbody>
                 </table>
             </div>
