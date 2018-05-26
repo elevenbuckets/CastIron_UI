@@ -5,6 +5,7 @@ import React from 'react';
 import CastIronActions from '../action/CastIronActions';
 import BlockTimer from '../util/BlockTimer';
 import { BADNAME } from "dns";
+import Sell from "./Sell"
 
 class Trade extends Reflux.Component {
     constructor(props) {
@@ -14,7 +15,8 @@ class Trade extends Reflux.Component {
         this.state = {
             buckets: [],
             showIndex: null,
-	    buyAmount: {}
+            buyAmount: {},
+            isSell: false
         }
 
 
@@ -35,7 +37,7 @@ class Trade extends Reflux.Component {
     }
 
     componentDidMount() {
-        this.setState({orders : this.readOrders()});
+        this.setState({ orders: this.readOrders() });
         console.log("in componet did mount in Trade.js");
         BlockTimer.register(this.refreshOrders);
     }
@@ -46,7 +48,7 @@ class Trade extends Reflux.Component {
     }
 
     buy = (order) => {
-    
+
         let posAddr = order.addr;
         let price = this.wallet.toWei(order.price, this.wallet.TokenList["ETH"].decimals);
         let buyAmount = this.state.buyAmount[order.addr]; console.log(`Buy amount is ${buyAmount}`);
@@ -57,25 +59,26 @@ class Trade extends Reflux.Component {
 
         let tk = {
             type: 'BMart',
-            contract : 'ETHMall',
-            call : 'buyProxy',
-            args:  ['posims', 'token', 'amount'],
-            txObj : {value :total.toString(), gas:2200000  },
-            tkObj : {
-                posims: posAddr, 
+            contract: 'ETHMall',
+            call: 'buyProxy',
+            args: ['posims', 'token', 'amount'],
+            txObj: { value: total.toString(), gas: 2200000 },
+            tkObj: {
+                posims: posAddr,
                 token: tokenAddr,
                 amount: buyAmountInUnit
             }
         }
 
         CastIronActions.sendTk(tk);
-        
+
 
 
     }
 
-    sell = () => {
-        //TODO: implement this 
+    sellOrBuy = () => {
+        let isSell = ! this.state.isSell;
+        this.setState({ isSell: isSell});
     }
 
     show = (index) => {
@@ -156,9 +159,9 @@ class Trade extends Reflux.Component {
     }
 
     updateAmount = (posims, event) => {
-	console.log(`updateAmount: got amount ${event.target.value}`)
-	this.setState({ buyAmount: { ...this.state.buyAmount, [posims]: event.target.value }});
-    } 
+        console.log(`updateAmount: got amount ${event.target.value}`)
+        this.setState({ buyAmount: { ...this.state.buyAmount, [posims]: event.target.value } });
+    }
 
     orders = () => {
         if (this.state.orders) {
@@ -166,69 +169,68 @@ class Trade extends Reflux.Component {
             return this.state.buckets.map((bucket) => {
                 if (bucket.index == this.state.showIndex) {
                     return (
-		     <table border="0"><tbody>
-		      <tr className="avatar" style={{padding: '3px'}}>
-                        <td className="avatar" style={{padding: '3px'}} width='49%' >{bucket.price}</td>
-                        <td className="avatar" style={{padding: '3px'}} width='26%' >{bucket.amount}</td>
-                        <td className="avatar" style={{padding: '3px', minWidth: '310px'}} colSpan="2"> <input type="button" className="button" value='Hide Stores'
-                            onClick={this.hide.bind(this, bucket.index)} />
-                        </td>
-                      </tr> 
-			{ this.state.orders.slice(bucket.start, bucket.end + 1).map( (order) =>
-                    		{
-					if (order.addr == this.ETHMall.getStoreInfo(this.state.address)[0]) {
-                       			    return (
-		      				<tr className="balance-sheet" style={{padding: '3px'}}>
-                          			<td className="balance-sheet" style={{padding: '3px'}} width='49%' >{order.price}</td>
-                          			<td className="balance-sheet" style={{padding: '3px'}} width='26%' >{order.amount}</td>
-                          			<td className="balance-sheet" style={{paddingLeft: '3px', paddingRight: '3px', paddingTop: '10px', paddingBottom: '10px', minWidth: '310px'}} colSpan="2" > 
-						  <label style={{padding: '4px'}}>Your Order</label>
-						</td></tr>
-                       			    )
-					} else {
-                       			    return (
-		      				<tr className="balance-sheet" style={{padding: '3px'}}>
-                          			<td className="balance-sheet" style={{padding: '3px'}} width='49%' >{order.price}</td>
-                          			<td className="balance-sheet" style={{padding: '3px'}} width='26%' >{order.amount}</td>
-                          			<td className="balance-sheet" style={{padding: '1px', minWidth: '156px'}} >
-						    <input placeholder="Input Amount" type="text" size="10" 
-						       onChange={this.updateAmount.bind(this, order.addr)} 
-						       style={{textAlign: 'center', paddingLeft: "3px", paddingRight: "3px"}} />
-						</td>
-                          			<td className="balance-sheet" style={{padding: '1px', minWidth: '155px'}} >
-						    <input type="button" className="bbutton" value='Buy' 
-                              			       onClick={this.buy.bind(this, order)} />
-						</td></tr>
-                       			    )
-					}
-                    		}) }
-                      </tbody></table>
-		      )
-		    } else if (this.state.showIndex !== null) {
-		      return (
-		     <table border="0"><tbody>
-		      <tr className="bucket-table" style={{textAlign: 'center'}}>
-                            <td className="bucket-table" width='49%' style={{textAlign: 'center'}}>{bucket.price}</td>
-                            <td className="bucket-table" width='26%' style={{textAlign: 'center'}}>{bucket.amount}</td>
-                            <td className="bucket-table" style={{minWidth:'310px', textAlign: 'center'}} colSpan="2">
-                                <input type="button" className="tbutton" value='Show Stores'
-                                    onClick={this.show.bind(this, bucket.index)} />
-                            </td>
-                      </tr> </tbody></table>
-		      )
-		    } else {
-		      return (
-		     <table border="0"><tbody>
-		      <tr className="bucket-table-init" style={{textAlign: 'center'}}>
-                            <td className="bucket-table-init" width='49%' style={{textAlign: 'center'}}>{bucket.price}</td>
-                            <td className="bucket-table-init" width='26%' style={{textAlign: 'center'}}>{bucket.amount}</td>
-                            <td className="bucket-table-init" style={{minWidth:'310px', textAlign: 'center'}} colSpan="2">
-                                <input type="button" className="tbutton" value='Show Stores'
-                                    onClick={this.show.bind(this, bucket.index)} />
-                            </td>
-                      </tr> </tbody></table>
-		      )
-		    }
+                        <table border="0"><tbody>
+                            <tr className="avatar" style={{ padding: '3px' }}>
+                                <td className="avatar" style={{ padding: '3px' }} width='49%' >{bucket.price}</td>
+                                <td className="avatar" style={{ padding: '3px' }} width='26%' >{bucket.amount}</td>
+                                <td className="avatar" style={{ padding: '3px', minWidth: '310px' }} colSpan="2"> <input type="button" className="button" value='Hide Stores'
+                                    onClick={this.hide.bind(this, bucket.index)} />
+                                </td>
+                            </tr>
+                            {this.state.orders.slice(bucket.start, bucket.end + 1).map((order) => {
+                                if (order.addr == this.ETHMall.getStoreInfo(this.state.address)[0]) {
+                                    return (
+                                        <tr className="balance-sheet" style={{ padding: '3px' }}>
+                                            <td className="balance-sheet" style={{ padding: '3px' }} width='49%' >{order.price}</td>
+                                            <td className="balance-sheet" style={{ padding: '3px' }} width='26%' >{order.amount}</td>
+                                            <td className="balance-sheet" style={{ paddingLeft: '3px', paddingRight: '3px', paddingTop: '10px', paddingBottom: '10px', minWidth: '310px' }} colSpan="2" >
+                                                <label style={{ padding: '4px' }}>Your Order</label>
+                                            </td></tr>
+                                    )
+                                } else {
+                                    return (
+                                        <tr className="balance-sheet" style={{ padding: '3px' }}>
+                                            <td className="balance-sheet" style={{ padding: '3px' }} width='49%' >{order.price}</td>
+                                            <td className="balance-sheet" style={{ padding: '3px' }} width='26%' >{order.amount}</td>
+                                            <td className="balance-sheet" style={{ padding: '1px', minWidth: '156px' }} >
+                                                <input placeholder="Input Amount" type="text" size="10"
+                                                    onChange={this.updateAmount.bind(this, order.addr)}
+                                                    style={{ textAlign: 'center', paddingLeft: "3px", paddingRight: "3px" }} />
+                                            </td>
+                                            <td className="balance-sheet" style={{ padding: '1px', minWidth: '155px' }} >
+                                                <input type="button" className="bbutton" value='Buy'
+                                                    onClick={this.buy.bind(this, order)} />
+                                            </td></tr>
+                                    )
+                                }
+                            })}
+                        </tbody></table>
+                    )
+                } else if (this.state.showIndex !== null) {
+                    return (
+                        <table border="0"><tbody>
+                            <tr className="bucket-table" style={{ textAlign: 'center' }}>
+                                <td className="bucket-table" width='49%' style={{ textAlign: 'center' }}>{bucket.price}</td>
+                                <td className="bucket-table" width='26%' style={{ textAlign: 'center' }}>{bucket.amount}</td>
+                                <td className="bucket-table" style={{ minWidth: '310px', textAlign: 'center' }} colSpan="2">
+                                    <input type="button" className="tbutton" value='Show Stores'
+                                        onClick={this.show.bind(this, bucket.index)} />
+                                </td>
+                            </tr> </tbody></table>
+                    )
+                } else {
+                    return (
+                        <table border="0"><tbody>
+                            <tr className="bucket-table-init" style={{ textAlign: 'center' }}>
+                                <td className="bucket-table-init" width='49%' style={{ textAlign: 'center' }}>{bucket.price}</td>
+                                <td className="bucket-table-init" width='26%' style={{ textAlign: 'center' }}>{bucket.amount}</td>
+                                <td className="bucket-table-init" style={{ minWidth: '310px', textAlign: 'center' }} colSpan="2">
+                                    <input type="button" className="tbutton" value='Show Stores'
+                                        onClick={this.show.bind(this, bucket.index)} />
+                                </td>
+                            </tr> </tbody></table>
+                    )
+                }
             });
         }
     }
@@ -236,7 +238,7 @@ class Trade extends Reflux.Component {
     render() {
         console.log("in Trade render()");
         return (
-           <div>
+            <div>
                 <table className="balance-sheet">
                     <tbody>
                         <tr className="avatar" style={{ textAlign: "center" }}>
@@ -244,26 +246,28 @@ class Trade extends Reflux.Component {
                                 {"ETH - " + this.state.selected_token_name}
                             </th>
                             <th className="balance-sheet" style={{ color: '#111111' }} width='316px'>
-                                   <input type="button" className="button" value='Sell' disabled='true'
-                                      onClick={this.sell} />
-			    </th>
+                                <input type="button" className="button" value={this.state.isSell? "Buy" : "Sell"}
+                                    onClick={this.sellOrBuy} />
+                            </th>
                         </tr>
-                     </tbody>
+                    </tbody>
                 </table>
-              <div style={{ width: '100%', overflow: 'scroll', margin: '0', maxHeight: "578px", height: '578px' }} >
-                <table className="balance-sheet">
-                    <tbody>
-                        <tr className="balance-sheet">
-                                <th className="balance-sheet" style={{ color: '#111111' }} width='816px'>Price</th>
-                                <th className="balance-sheet" style={{ color: '#111111' }} width='417px'>Amount</th>
-                                <th className="balance-sheet" style={{ color: '#111111' }} width='425px'>Action</th>
-                        </tr>
-			<tr><td colSpan="3">
-                            {this.orders()}
-			</td></tr>
-                     </tbody>
-                </table>
-               </div>
+                {this.state.isSell ? <Sell /> :
+                    <div style={{ width: '100%', overflow: 'scroll', margin: '0', maxHeight: "578px", height: '578px' }} >
+                        <table className="balance-sheet">
+                            <tbody>
+                                <tr className="balance-sheet">
+                                    <th className="balance-sheet" style={{ color: '#111111' }} width='816px'>Price</th>
+                                    <th className="balance-sheet" style={{ color: '#111111' }} width='417px'>Amount</th>
+                                    <th className="balance-sheet" style={{ color: '#111111' }} width='425px'>Action</th>
+                                </tr>
+                                <tr><td colSpan="3">
+                                    {this.orders()}
+                                </td></tr>
+                            </tbody>
+                        </table>
+                    </div>}
+
             </div>
         )
 
