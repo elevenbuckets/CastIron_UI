@@ -26,6 +26,7 @@ class CastIronStore extends Reflux.Store {
             modalIsOpen: false,
             unlocked: false
         }
+        this.funcToConfirm = null;
         this.listenables = CastIronActions;
         this.wallet = CastIronService.wallet;
         this.getAccounts = this.getAccounts.bind(this);
@@ -65,7 +66,7 @@ class CastIronStore extends Reflux.Store {
     }
 
     onSend(addr, type, amount, gasNumber) {
-        this.confirmTxs(this.send);
+        this.confirmTxs(this.send, arguments);
 
         this.setState({ modalIsOpen: true });
         // let wallet = CastIronService.wallet;
@@ -280,13 +281,32 @@ class CastIronStore extends Reflux.Store {
             });
     }
 
+    // to confirm tx in modal
     onConfirmTx() {
         this.setState({ modalIsOpen: false });
+        if (this.funcToConfirm) {
+            this.funcToConfirm(...this.argsToConfirm);
+            this.funcToConfirm = null;
+            this.argsToConfirm = [];
+        }
+    }
+
+    // to cancel tx in modal
+    onCancelTx() {
+        this.setState({ modalIsOpen: false });
+        this.funcToConfirm = null;
+        this.argsToConfirm = [];
+    }
+
+    confirmTxs = (func, args) => {
+        this.setState({ modalIsOpen: false });
+        this.funcToConfirm = func;
+        this.argsToConfirm = args;
     }
 
 
-    
-    merge(keys, receipt, rcdq) {   
+
+    merge(keys, receipt, rcdq) {
         let oout = [];
         rcdq.map((rc) => { receipt.map((o) => { if (o[keys[0]] === rc[keys[1]]) oout = [...oout, { ...rc, ...o }] }) });
         return oout;

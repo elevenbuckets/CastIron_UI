@@ -28,6 +28,10 @@ class DashBoard extends Reflux.Component {
         CastIronActions.confirmTx();
     }
 
+    cancelTX = () =>{
+        CastIronActions.cancelTx();
+    }
+
 
     render() {
 
