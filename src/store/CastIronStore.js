@@ -55,7 +55,7 @@ class CastIronStore extends Reflux.Store {
         }
         // this.setState((preState) => {
         //     preState.queuedTxs.splice(preState.queuedTxs.indexOf(tx), 1);
-        //     return { queuedTxs: preState.queuedTxs };
+        //     return { queuedTxs: preState.queuedTxs }; this.setState({ modalIsOpen: true });
         // })
         this.state.queuedTxs.splice(this.state.queuedTxs.indexOf(tx), 1);
         this.setState({ queuedTxs: this.state.queuedTxs })
@@ -67,17 +67,7 @@ class CastIronStore extends Reflux.Store {
 
     onSend(addr, type, amount, gasNumber) {
         this.confirmTxs(this.send, arguments);
-
-        this.setState({ modalIsOpen: true });
-        // let wallet = CastIronService.wallet;
-        // wallet.setAccount(this.state.address);
-        // let weiAmount = wallet.toWei(amount, wallet.TokenList[type].decimals).toString();
-        // let jobList = [];
-        // jobList.push(wallet.enqueueTx(type)(addr, weiAmount, gasNumber));
-        // let qPromise = wallet.processJobs(jobList);
-        // this.processQPromise(qPromise)
     }
-
     send(addr, type, amount, gasNumber) {
         let wallet = CastIronService.wallet;
         wallet.setAccount(this.state.address);
@@ -89,6 +79,10 @@ class CastIronStore extends Reflux.Store {
     }
 
     onSendTxInQueue(tx) {
+        this.confirmTxs(this.sendTxInQueue, arguments);
+    }
+
+    sendTxInQueue(tx) {
         CastIronActions.dequeue(tx);
         let wallet = CastIronService.wallet;
         wallet.setAccount(tx.from);
@@ -100,6 +94,10 @@ class CastIronStore extends Reflux.Store {
     }
 
     onSendTk(tk) {
+        this.confirmTxs(this.sendTk, arguments);
+    }
+
+    sendTk(tk) {
         let wallet = CastIronService.wallet;
         wallet.setAccount(this.state.address);
 
@@ -112,6 +110,9 @@ class CastIronStore extends Reflux.Store {
     }
 
     onBatchSend() {
+        this.confirmTxs(this.batchSend, arguments);
+    }
+    batchSend() {
         let wallet = CastIronService.wallet;
         let jobList = [];
         this.state.queuedTxs.map((tx) => {
@@ -124,6 +125,7 @@ class CastIronStore extends Reflux.Store {
         this.processQPromise(qPromise);
         CastIronActions.clearQueue();
     }
+
 
     onSelectAccount(value) {
         this.setState(() => {
@@ -240,6 +242,37 @@ class CastIronStore extends Reflux.Store {
         })
     }
 
+    processQReadPromise = (qPromise) => {
+        qPromise.then((Q) => {
+            // CastIronService.addQ(Q);
+            CastIronActions.addQ(Q);
+            try {
+                let r = {
+                    Q: Q,
+                    data: this.wallet.rcdQ[Q],
+
+                }
+                CastIronActions.updateReceipts(r)
+                let batchTxHash = this.wallet.rcdQ[Q].map((o) => (o.tx));
+                console.log("Sending batch txs:");
+                console.log(this.state.queuedTxs);
+                console.log(batchTxHash);
+                return this.wallet.getReceipt(batchTxHash, 30000).then((data) => { return { data, Q } })
+            } catch (err) {
+                console.log("ERROR in processQPromise: " + err);
+                console.log("rcdQ: " + Q + ">>");
+                console.log(JSON.stringify(this.wallet.rcdQ[Q]));
+                console.log("jobQ: " + Q + ">>");
+                console.log(JSON.stringify(this.wallet.jobQ[Q]));
+                return Promise.resolve([]);
+            }
+        }).then((r) => {
+            console.log("Receipts:")
+            console.log(r.data);
+            CastIronActions.updateReceipts(r);
+        })
+    }
+
     getAccounts() {
         let addrs = CastIronService.getAccounts();
         let accounts = {};
@@ -299,7 +332,7 @@ class CastIronStore extends Reflux.Store {
     }
 
     confirmTxs = (func, args) => {
-        this.setState({ modalIsOpen: false });
+        this.setState({ modalIsOpen: true });
         this.funcToConfirm = func;
         this.argsToConfirm = args;
     }
@@ -313,11 +346,6 @@ class CastIronStore extends Reflux.Store {
     }
 
 }
-
-
-
-
-//  const castIronStore = new CastIronStore()
 
 
 

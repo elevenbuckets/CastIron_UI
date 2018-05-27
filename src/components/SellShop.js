@@ -21,11 +21,17 @@ class SellShop extends React.Component {
                                     placeholder={'Use other shops'} /></th>
                         </tr>
                         <tr className="balance-sheet">
-                            <td className="balance-sheet"> <input type="button" className="button" value="Create Store"
-                                onClick={this.props.createStore} /></td>
+                            <td className="balance-sheet" rowSpan='2'> <input type="button" 
+                            className="button" value="Create Store" disabled={this.props.disableCreateStore}
+                                onClick={this.props.createStore}/></td>
                                 <td className="balance-sheet">
-                                Estimate Gas Cost: 250000</td>
+                                Estimate Gas Cost: 2000000</td>
                         </tr>
+
+                        <tr className="balance-sheet">
+                            <td className="balance-sheet">
+                            {"Estimate Deposit :" +  this.props.estimateDeposit + "ETH"}</td>
+                    </tr>
                         
                     </tbody>
                 </table>

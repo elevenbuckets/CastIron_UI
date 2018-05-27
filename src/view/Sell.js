@@ -6,6 +6,7 @@ import CastIronActions from '../action/CastIronActions';
 import BlockTimer from '../util/BlockTimer';
 import SellOrder from '../components/SellOrder';
 import SellShop from '../components/SellShop';
+import Constants from '../util/Constants'
 
 class Sell extends Reflux.Component {
     constructor(props) {
@@ -16,53 +17,51 @@ class Sell extends Reflux.Component {
             buckets: [],
             showIndex: null,
             buyAmount: {},
-            shopAddr : null
+            shopAddr: null,
+            estimateDeposit: null
         }
-
 
         // dApp specific info
         const __APP__ = 'BMart';
-
 
         // Expose internal binded contract instances.
         // This should not be necessary once CastIron provides constant functions observers.
         this.ETHMall = this.wallet.CUE[__APP__]['ETHMall'];
         this.Registry = this.wallet.CUE[__APP__]['Registry'];
-
-    }
-
-    getShops= () =>{
-        let tk = {
-            type: 'BMart',
-            contract: 'ETHMall',
-            call: 'getStoreInfo',
-            args: ['addr'],
-            txObj: { value: 3000000000000000000, gas: 2200000 },
-            tkObj: {
-                addr : this.state.address
-            }
-        }
-
-        CastIronActions.sendTk(tk);
-    }
-
-    getEstimateDepoist(){
-        let tk = {
-            type: 'BMart',
-            contract: 'ETHMall',
-            call: 'getSecureDeposit',
-            args: ['addr'],
-            txObj: { value: 3000000000000000000, gas: 2200000 },
-            tkObj: {
-                addr : this.state.address
-            }
-        }
-
-        CastIronActions.sendTk(tk);
-    }
-
-    createStore = () =>{
         
+    }
+
+    componentWillMount() {
+        super.componentWillMount();
+       
+    }
+
+    componentDidMount() {
+        console.log("in componet did mount in Sell.js");
+        this.getEstimateDeposit();
+        this.getShopAddr();
+        BlockTimer.register(this.getEstimateDeposit);
+    }
+
+    componentDidUnMount() {
+        super.componentDidUnMount();
+        BlockTimer.unRegister(this.getEstimateDeposit);
+    }
+
+
+    getShopAddr = () => {
+        this.setState({ shopAddr: this.ETHMall.getStoreInfo(this.state.address)[0] });
+    }
+
+    getEstimateDeposit = () => {
+        this.setState({
+            estimateDeposit: CastIronService.wallet.toEth(this.ETHMall.getSecureDeposit(),
+                CastIronService.wallet.TokenList[Constants.ETH].decimals).toFixed(6)
+        });
+    }
+
+    createStore = () => {
+
         let tk = {
             type: 'BMart',
             contract: 'ETHMall',
@@ -76,23 +75,23 @@ class Sell extends Reflux.Component {
         CastIronActions.sendTk(tk);
     }
 
-    creaeteOrder = () =>{
+    createOrder = () => {
         // TO be implemented
     }
 
-    cancelOrder = () =>{
+    cancelOrder = () => {
         // TO be implemented
     }
 
-    changePrice = () =>{
+    changePrice = () => {
         // TO be implemented
     }
 
-    restock = () =>{
+    restock = () => {
         // TO be implemented
     }
 
-    useOtherStore = () =>{
+    useOtherStore = () => {
         // TO be implemented
     }
 
@@ -109,8 +108,9 @@ class Sell extends Reflux.Component {
                             <th className="balance-sheet" style={{ color: '#111111' }} width='417px'>Shop</th>
                         </tr>
                         <tr>
-                            <td ><SellOrder /></td>
-                            <td ><SellShop createStore={this.createStore} /></td>
+                            <td ><SellOrder createOrder={this.createOrder}  /></td>
+                            <td ><SellShop createStore={this.createStore} disableCreateStore={this.state.shopAddr != null}
+                                estimateDeposit={this.state.estimateDeposit} /></td>
                         </tr>
                     </tbody>
                 </table>

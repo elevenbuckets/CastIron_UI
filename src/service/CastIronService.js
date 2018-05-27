@@ -14,8 +14,8 @@ class CastIronService {
 
         this.wallet = new Wallet('.local/config.json');
         // CastIron ABI + conditions loader
-        this.wallet.newApp(__APP__)('0.2', 'ETHMall', abiPath('ETHMall'), { 'Sanity': condPath('ETHMall', 'Sanity') });
-        this.wallet.newApp(__APP__)('0.2', 'Registry', abiPath('Registry'), { 'Sanity': condPath('Registry', 'Sanity') });
+        this.wallet.newApp(__APP__)('0.2', 'ETHMall', this.abiPath('ETHMall'), { 'Sanity': this.condPath('ETHMall', 'Sanity') });
+        this.wallet.newApp(__APP__)('0.2', 'Registry', this.abiPath('Registry'), { 'Sanity': this.condPath('Registry', 'Sanity') });
 
 
 
