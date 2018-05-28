@@ -186,7 +186,14 @@ class CastIronStore extends Reflux.Store {
     }
 
     onAddressUpdate(address, canvas){
+        this._count = 0;
+        this._target = this.state.tokenList.length + 1;
         this.setState({address : address});
+        this.state.tokenList.map((t) => {
+            CastIronActions.statusUpdate({ [t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) });
+        });
+
+        CastIronActions.statusUpdate({ 'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) });
         createCanvasWithAddress(canvas, this.state.address);
     }
 

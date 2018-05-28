@@ -10,15 +10,17 @@ class SellShop extends React.Component {
 
     render() {
         return (
-            <div>
+            <div style={{padding : "20px"}}>
                 <table className="balance-sheet">
                     <tbody>
                         <tr className="balance-sheet">
-                            <th className="balance-sheet" style={{ color: '#111111' }} width='816px' colSpan='2' >
+                        <td className="balance-sheet" >
+                                Shop Address</td>
+                            <td className="balance-sheet" style={{ color: '#111111' }} width='80%'  >
                                 <Dropdown options={this.props.shopAddrs}
                                     onChange={this.props.useOtherStore}
                                     value={''}
-                                    placeholder={this.props.disableCreateStore ? this.props.address : 'Use other shops'} /></th>
+                                    placeholder={this.props.disableCreateStore ? this.props.shopAddr : 'Use other shops'} /></td>
                         </tr>
                         <tr className="balance-sheet">
                             <td className="balance-sheet" rowSpan='2'> <input type="button"
@@ -29,7 +31,7 @@ class SellShop extends React.Component {
                         </tr>
 
                         <tr className="balance-sheet">
-                            <td className="balance-sheet">
+                            <td className="balance-sheet" style={{background: "#ffffff"}}>
                                 {"Estimate Deposit :" + this.props.estimateDeposit + "ETH"}</td>
                         </tr>
 

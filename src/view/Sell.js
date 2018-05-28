@@ -90,15 +90,15 @@ class Sell extends Reflux.Component {
 
     getShopAddrs = () => {
 
-        let shopAddrs = Object.keys(this.state.accounts).map((addr) =>{
-            return     this.ETHMall.getStoreInfo(addr)[0] == '0x'? null : addr 
-            
+        let shopAddrs = Object.keys(this.state.accounts).map((addr) => {
+            return this.ETHMall.getStoreInfo(addr)[0] == '0x' ? null : addr
 
-        }).filter((value) =>{
+
+        }).filter((value) => {
             return value !== null;
         })
-       
-        this.setState({shopAddrs : shopAddrs});
+
+        this.setState({ shopAddrs: shopAddrs });
         return shopAddrs;
     }
 
@@ -106,15 +106,17 @@ class Sell extends Reflux.Component {
     getSellOrder = () => {
         //TODO : udpate this
         console.log("sell Order : " + this.state.sellOrder);
-        if (this.getShopAddr()!= "0x") {
+        if (this.getShopAddr() != "0x") {
             let sellOrder = this.PoSIMS.getProductInfo(1);
-            if(sellOrder){
-                this.setState({ sellOrder: {
-                    amount : this.wallet.toEth(sellOrder[1], this.wallet.TokenList[this.state.selected_token_name].decimals).toFixed(6),
-                    price : this.wallet.toEth(sellOrder[2], this.wallet.TokenList[Constants.ETH].decimals).toFixed(6)
-                } });
-            }
-           
+
+            this.setState({
+                sellOrder: {
+                    amount: this.wallet.toEth(sellOrder[1], this.wallet.TokenList[this.state.selected_token_name].decimals).toFixed(6),
+                    price: this.wallet.toEth(sellOrder[2], this.wallet.TokenList[Constants.ETH].decimals).toFixed(6)
+                }
+            });
+
+
         }
     }
 
@@ -194,7 +196,7 @@ class Sell extends Reflux.Component {
             args: ['id'],
             txObj: { value: null, gas: 250000 },
             tkObj: {
-                id : 1
+                id: 1
             }
         }
         CastIronActions.sendTk(tk);
@@ -209,7 +211,7 @@ class Sell extends Reflux.Component {
             txObj: { value: null, gas: 250000 },
             tkObj: {
                 token: this.wallet.TokenList[this.state.selected_token_name].addr,
-                price:this.wallet.toWei(this.state.price, this.wallet.TokenList[Constants.ETH].decimals).toString()
+                price: this.wallet.toWei(this.state.price, this.wallet.TokenList[Constants.ETH].decimals).toString()
             }
         }
         CastIronActions.sendTk(tk);
@@ -220,7 +222,14 @@ class Sell extends Reflux.Component {
     }
 
     useOtherStore = (event) => {
-        CastIronActions.addressUpdate(event.value, this.props.canvas)
+        let stage = Promise.resolve(CastIronActions.addressUpdate(event.value, this.props.canvas))
+        stage.then(() => {
+            this.getShopAddr();
+            this.getSellOrder();
+        }
+
+        );
+
     }
 
 
@@ -231,13 +240,19 @@ class Sell extends Reflux.Component {
             <div style={{ width: '100%', overflow: 'scroll', margin: '0', maxHeight: "578px", height: '578px' }} >
                 <table className="balance-sheet">
                     <tbody>
-                        <tr className="balance-sheet">
-                            <th className="balance-sheet" style={{ color: '#111111' }} width='686px'>Order</th>
-                            <th className="balance-sheet" style={{ color: '#111111' }} width='617px'>Shop</th>
+
+                        <tr className="bucket-table-init">
+                            <td className="bucket-table-init"><SellShop createStore={this.createStore} disableCreateStore={this.state.shopAddr != "0x"}
+                                estimateDeposit={this.state.estimateDeposit} shopAddrs={this.state.shopAddrs}
+                                shopAddr={this.state.shopAddr}
+                                address={this.state.address} useOtherStore={this.useOtherStore} /></td>
                         </tr>
-                        <tr>
-                            <td ><SellOrder sellOrder={this.state.sellOrder} createOrder={this.createOrder}
-                                disableCreateOrder={this.state.shopAddr == "0x"}
+
+                        <tr className="bucket-table-init">
+                            <td className="bucket-table-init"><SellOrder sellOrder={this.state.sellOrder} createOrder={this.createOrder}
+                                disableCreateOrder={this.state.shopAddr == "0x" || 
+                                this.state.sellOrder === null ||
+                                 (this.state.sellOrder["amount"]) !=0 }
                                 disableChangePrice={this.state.shopAddr == "0x"}
                                 disableRestock={this.state.shopAddr == "0x"}
                                 disableCancelOrder={this.state.shopAddr == "0x"}
@@ -247,9 +262,7 @@ class Sell extends Reflux.Component {
                                 restock={this.restock}
                                 cancelOrder={this.cancelOrder}
                             /></td>
-                            <td ><SellShop createStore={this.createStore} disableCreateStore={this.state.shopAddr != "0x"}
-                                estimateDeposit={this.state.estimateDeposit} shopAddrs={this.state.shopAddrs} 
-                                address={this.state.address} useOtherStore={this.useOtherStore}/></td>
+
                         </tr>
                     </tbody>
                 </table>
