@@ -109,6 +109,26 @@ class CastIronStore extends Reflux.Store {
         this.processQPromise(qPromise)
     }
 
+    onSendTks(tks) {
+        this.confirmTxs(this.sendTks, arguments);
+    }
+
+    sendTks(tks) {
+        let wallet = CastIronService.wallet;
+        wallet.setAccount(this.state.address);
+        let gasPrice = this.wallet.gasPrice;
+        let length = tks.length;
+        let jobList = tks.map((tk, index) =>{
+            this.wallet.gasPrice =  this.wallet.web3.toBigNumber(gasPrice).add(this.wallet.web3.toBigNumber(length-1-index).mul(1000000000));
+            return this.wallet.enqueueTk(tk.type, tk.contract, tk.call,
+                tk.args)(tk.txObj.value, tk.txObj.gas,
+                    tk.tkObj);
+        })
+
+        let qPromise = wallet.processJobs(jobList);
+        this.processQPromise(qPromise)
+    }
+
     onBatchSend() {
         this.confirmTxs(this.batchSend, arguments);
     }
@@ -153,12 +173,20 @@ class CastIronStore extends Reflux.Store {
         this.wallet.setAccount(address);
         this.setState({ address: address, selected_token_name: '' });
 
+        
+
         this.state.tokenList.map((t) => {
             CastIronActions.statusUpdate({ [t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) });
         });
 
         CastIronActions.statusUpdate({ 'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) });
 
+        createCanvasWithAddress(canvas, this.state.address);
+        CastIronActions.changeView('Transfer');
+    }
+
+    onAddressUpdate(address, canvas){
+        this.setState({address : address});
         createCanvasWithAddress(canvas, this.state.address);
     }
 
@@ -175,15 +203,15 @@ class CastIronStore extends Reflux.Store {
 
         this.wallet.gasPriceEst().then(data => {
             let gasPrice = this.wallet.toEth(data.fast, 9).toString()
-            this.setState(() => {
-                return { blockHeight: blockHeight, blockTime: blockTime, gasPrice: gasPrice }
-            })
+            this.setState(
+                 { blockHeight: blockHeight, blockTime: blockTime, gasPrice: gasPrice }
+            )
         }
             , error => {
                 let gasPrice = this.wallet.toEth(this.wallet.configs.defaultGasPrice, 9).toString();
-                this.setState(() => {
-                    return { blockHeight: blockHeight, blockTime: blockTime, gasPricconfirmTXe: gasPrice }
-                })
+                this.setState(
+                    { blockHeight: blockHeight, blockTime: blockTime, gasPricconfirmTXe: gasPrice }
+                )
             });
     }
 
@@ -301,13 +329,15 @@ class CastIronStore extends Reflux.Store {
         this.getAccounts();
 
         this.wallet.gasPriceEst().then(data => {
-            let gasPrice = this.wallet.toEth(data.fast, 9).toString()
+            let gasPrice = this.wallet.toEth(data.fast, 9).toString();
+            this.wallet.gasPrice = data.fast;
             this.setState(() => {
                 return { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice: gasPrice }
             })
         }
             , error => {
                 let gasPrice = this.wallet.toEth(this.wallet.configs.defaultGasPrice, 9).toString();
+                this.wallet.gasPrice = this.wallet.configs.defaultGasPrice;
                 this.setState(() => {
                     return { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice: gasPrice }
                 })
@@ -343,6 +373,20 @@ class CastIronStore extends Reflux.Store {
         let oout = [];
         rcdq.map((rc) => { receipt.map((o) => { if (o[keys[0]] === rc[keys[1]]) oout = [...oout, { ...rc, ...o }] }) });
         return oout;
+    }
+
+    render(){
+         <canvas ref='canvas' width={66} height={66} style=
+            {
+                {
+                    border: "3px solid #ccc",
+                    borderBottomLeftRadius: "2.8em",
+                    borderBottomRightRadius: "2.8em",
+                    borderTopRightRadius: "2.8em",
+                    borderTopLeftRadius: "2.8em"
+                }
+            }
+        />
     }
 
 }

@@ -17,11 +17,12 @@ class DashBoard extends Reflux.Component {
     constructor(props) {
         super(props);
         this.store = CastIronStore;
-        this.map = {
-            Transfer: <Transfer />,
-            Receipts: <ReceiptsView />,
-            Trade: <Trade />
-        }
+        // this.map = {
+        //     Transfer: <Transfer />,
+        //     Receipts: <ReceiptsView />,
+        //     Trade: <Trade />
+        // }
+       
     }
 
     confirmTX = () => {
@@ -37,8 +38,9 @@ class DashBoard extends Reflux.Component {
 
         return (
             <div>
-                <QueryForm />
-                {this.map[this.state.currentView]}
+                <QueryForm ref="queryForm" />
+                {this.state.currentView == "Transfer" ? <Transfer /> : this.state.currentView == "Receipts" ? <ReceiptsView /> 
+                : <Trade canvas={this.refs.queryForm.refs.canvas}/>}
                 <Modal isOpen={this.state.modalIsOpen} style=
                     {
                         {

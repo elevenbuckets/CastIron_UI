@@ -42,8 +42,8 @@ class Trade extends Reflux.Component {
         BlockTimer.register(this.refreshOrders);
     }
 
-    componentDidUnMount() {
-        super.componentDidUnMount();
+    componentWillUnmount() {
+        super.componentWillUnmount();
         BlockTimer.unRegister(this.refreshOrders);
     }
 
@@ -114,7 +114,7 @@ class Trade extends Reflux.Component {
     readOrders = () => {
         let TKRAddr = this.wallet.TokenList[this.state.selected_token_name].addr;
         let TKRdecimal = this.wallet.TokenList[this.state.selected_token_name].decimals;
-        return this.Registry.browseStock(TKRAddr, 1, 100).map((rawOrder) => {
+        return this.Registry.browseStock(TKRAddr, 1, 1000).map((rawOrder) => {
             return {
                 addr: this.wallet.byte32ToAddress(rawOrder[0]),
                 amount: Number(this.wallet.toEth(rawOrder[1], this.wallet.TokenList[this.state.selected_token_name].decimals).toFixed(9)),
@@ -252,7 +252,7 @@ class Trade extends Reflux.Component {
                         </tr>
                     </tbody>
                 </table>
-                {this.state.isSell ? <Sell /> :
+                {this.state.isSell ? <Sell canvas={this.props.canvas}/> :
                     <div style={{ width: '100%', overflow: 'scroll', margin: '0', maxHeight: "578px", height: '578px' }} >
                         <table className="balance-sheet">
                             <tbody>

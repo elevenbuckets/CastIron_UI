@@ -10,17 +10,45 @@ class SellOrder extends React.Component {
                 <table className="balance-sheet">
                     <tbody>
                         <tr className="balance-sheet">
-                            <td colSpan="4" className="balance-sheet" >Amount : 20, Price: 0.15</td>
+                            <td colSpan="2" className="balance-sheet" >
+                                {this.props.sellOrder ? "Amount : " + this.props.sellOrder["amount"] + ", Price : " + this.props.sellOrder["price"] : "--"}</td>
                         </tr>
                         <tr className="balance-sheet">
-                            <td className="balance-sheet" > <input type="button" className="button" value="Create"
-                                onClick={this.createOrder} /></td>
-                            <td className="balance-sheet"> <input type="button" className="button" value="Cancel"
-                                onClick={this.cancelOrder} /></td>
+                            <td className="txform" width='73%'>
+                                Amount<br /><div style={{ textAlign: 'center', marginLeft: '30px' }}><input type='text' size='42' onChange={this.props.handleChangeAmount} /></div>
+                            </td>
+
+                            <td className="balance-sheet" rowSpan="2"> <input type="button" className="button" value="Create"
+                                disabled={this.props.disableCreateOrder} onClick={this.props.createOrder} /></td>
+                        </tr>
+                        <tr className="balance-sheet">
+                            <td className="txform" width='73%'>
+                                Price<br /><div style={{ textAlign: 'center', marginLeft: '30px' }}><input type='text' size='42'
+                                    onChange={this.props.handleChangePrice} /></div>
+                            </td>
+                        </tr>
+
+                        <tr className="balance-sheet">
+                            <td className="txform" width='73%'>
+                                Price <br /><div style={{ textAlign: 'center', marginLeft: '30px' }}><input type='text' size='42' onChange={this.props.handleChangePrice} /></div>
+                            </td>
+
                             <td className="balance-sheet"> <input type="button" className="button" value="Change Price"
-                                onClick={this.changePrice} /></td>
-                            <td className="balance-sheet"> <input type="button" className="button" value="Restock"
-                                onClick={this.restock} /></td>
+                                disabled={this.props.disableChangePrice} onClick={this.props.changePrice} /></td>
+                        </tr>
+
+                        <tr className="balance-sheet">
+                            <td className="txform" width='73%'>
+                                Amount <br /><div style={{ textAlign: 'center', marginLeft: '30px' }}><input type='text' size='42' onChange={this.props.handleChangeAmount} /></div>
+                            </td>
+
+                            <td className="txform"> <input type="button" className="button" value="Restock"
+                                disabled={this.props.disableRestock} onClick={this.props.restock} /></td>
+                        </tr>
+                        <tr className="balance-sheet">
+                            <td className="balance-sheet" colSpan='2'> <input type="button" className="button" value="Cancel"
+                                disabled={this.props.disableCancelOrder} onClick={this.props.cancelOrder} /></td>
+
                         </tr>
                     </tbody>
                 </table>

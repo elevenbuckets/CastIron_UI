@@ -1,3 +1,4 @@
+'use strict'
 import CastIronStore from "../store/CastIronStore";
 import Reflux from 'reflux';
 import CastIronActions from '../action/CastIronActions'
@@ -30,8 +31,8 @@ class Footer extends Reflux.Component {
         this.timer = setInterval(this.getDashInfo, 1000);
     }
 
-    componentDidUnMount() {
-        super.componentDidUnMount();
+    componentWillUnmount() {
+        super.componentWillUnmount();
         clearInterval(this.timer);
     }
 
