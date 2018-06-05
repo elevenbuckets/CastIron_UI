@@ -11,23 +11,23 @@ class QueryForm extends Reflux.Component {
     super(props);
     this.store = CastIronStore;
     this.state = {
-	    ptoggle: true, 
-	    pfield: '28px',
-	    visible: false,
-	    sbutton: 'none'
+      ptoggle: true,
+      pfield: '28px',
+      visible: false,
+      sbutton: 'none'
     };
   }
 
   handleMouseDown = (event) => {
     this.toggleSettings();
- 
+
     console.log("clicked");
     event.stopPropagation();
   }
- 
+
   toggleSettings = () => {
     this.setState({ visible: !this.state.visible });
-  } 
+  }
 
   handleChange = (event) => {
     CastIronActions.startUpdate(event.value, this.refs.canvas);
@@ -41,10 +41,15 @@ class QueryForm extends Reflux.Component {
     CastIronActions.masterUpdate(this.refs.mp.value);
   }
 
+  handleGasPriceSelect = (event) =>{
+    CastIronActions.gasPriceOptionSelect(event.currentTarget.defaultValue);
+  }
+
   render = () => {
     return (
       <div>
-        <Settings handleMouseDown={this.handleMouseDown} visibility={this.state.visible} />
+        <Settings handleMouseDown={this.handleMouseDown} visibility={this.state.visible} 
+        handleGasPriceSelect={this.handleGasPriceSelect}/>
         <table>
           <tbody>
             <tr>
@@ -67,16 +72,16 @@ class QueryForm extends Reflux.Component {
                 </label>
               </td>
               <td width={this.state.pfield} style={{ textAlign: 'center', minWidth: this.state.pfield }}
-		onMouseEnter={this.handleToggle} onMouseLeave={this.handleToggle}>
+                onMouseEnter={this.handleToggle} onMouseLeave={this.handleToggle}>
                 <table border="0"><tbody><tr style={{ border: '0px' }} align="center"><td style={{ border: '0px', color: this.state.unlocked ? '#4CAF50' : 'red' }}>
                   <label style={{ fontWeight: 'bold' }}>Master Password</label><br />
                   <input ref='mp' type='password' maxLength='200' hidden={this.state.ptoggle} style={{ marginTop: '7px' }} />
-		 </td>
+                </td>
                   <td style={{ border: '0px', display: this.state.sbutton, textAlign: "center" }}>
                     <input type="button" className="button" onMouseDown={this.handleMouseDown} style={{ marginTop: '7px' }} value="Settings" />
-	         </td></tr>
-		 </tbody></table>
-	      </td>
+                  </td></tr>
+                </tbody></table>
+              </td>
             </tr>
             <tr><td colSpan="3"><GenSheets /></td></tr>
           </tbody>
