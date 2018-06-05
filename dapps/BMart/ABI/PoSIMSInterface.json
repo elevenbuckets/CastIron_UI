@@ -3,19 +3,6 @@
   "abi": [
     {
       "constant": false,
-      "inputs": [],
-      "name": "sendDeposit",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "payable": true,
-      "type": "function"
-    },
-    {
-      "constant": false,
       "inputs": [
         {
           "name": "token",
@@ -72,6 +59,19 @@
       "type": "function"
     },
     {
+      "constant": true,
+      "inputs": [],
+      "name": "thisReg",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
       "constant": false,
       "inputs": [
         {
@@ -105,19 +105,6 @@
         {
           "name": "",
           "type": "bool"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "reg",
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
         }
       ],
       "payable": false,
@@ -272,5 +259,5 @@
   "unlinked_binary": "0x",
   "networks": {},
   "schema_version": "0.0.5",
-  "updated_at": 1525211474826
+  "updated_at": 1528173221579
 }
