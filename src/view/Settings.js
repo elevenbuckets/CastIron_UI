@@ -6,6 +6,14 @@ class Settings extends Reflux.Component {
 		super(props);
 	}
 
+	handleCustomGasPriceUpdate = (event) =>{
+		if(isNaN(event.target.value)){
+			alert("Please input a number!")
+		}else{
+			this.props.handleCustomGasPriceUpdate(parseInt(event.target.value))
+		}	
+	}
+
 	render = () => {
 		let visibility = 'hide';
 		if (this.props.visibility) visibility = 'show';
@@ -33,7 +41,7 @@ class Settings extends Reflux.Component {
 								</td>
 								<td className="settings-sheet" style={{ backgroundColor: "rgba(0,0,0,0)" }}>
 									<label style={{ fontSize: '1.05em', fontWeight: "bold" }}><input type="radio"
-										onClick={this.props.handleGasPriceSelect} name="gasprice" value="high" />Normal</label><br />
+										onClick={this.props.handleGasPriceSelect} name="gasprice" value="high" defaultChecked/>Normal</label><br />
 								</td>
 								<td className="settings-sheet" style={{ backgroundColor: "rgba(0,0,0,0)" }}>
 									<label style={{ fontSize: '1.05em', fontWeight: "bold" }}><input type="radio"
@@ -42,7 +50,7 @@ class Settings extends Reflux.Component {
 								<td className="settings-sheet" style={{ backgroundColor: "rgba(0,0,0,0)" }}>
 									<label style={{ fontSize: '1.05em', fontWeight: "bold" }}><input type="radio"
 										onClick={this.props.handleGasPriceSelect} name="gasprice" value="custom" />Custom
-		  <input type="text" style={{ marginLeft: '10px' }} name="custom_gasprice" placeholder="custom (in gwei)..." />
+		  <input type="text" style={{ marginLeft: '10px' }} name="custom_gasprice" onChange={this.handleCustomGasPriceUpdate} placeholder="custom (in gwei)..." />
 									</label>
 								</td></tr>
 						</form>

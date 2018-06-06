@@ -25,7 +25,8 @@ class CastIronStore extends Reflux.Store {
             currentView: 'Transfer',
             modalIsOpen: false,
             unlocked: false,
-            gasPriceOption: "high"
+            gasPriceOption: "high",
+            customGasPrice : null
         }
         this.funcToConfirm = null;
         this.listenables = CastIronActions;
@@ -259,7 +260,7 @@ class CastIronStore extends Reflux.Store {
     }
 
     onCustomGasPriceUpdate(price) {
-        let stage = Promise.resolve(this.setState({ gasPriceOption: option }))
+        let stage = Promise.resolve(this.setState({ customGasPrice: price }))
         stage.then(() => {
             this.updateInfo();
         }
@@ -365,8 +366,11 @@ class CastIronStore extends Reflux.Store {
                     { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice: gasPrice }
                 )
             } else {
+                if(this.state.customGasPrice){
+                    this.wallet.gasPrice = this.wallet.toWei(this.state.customGasPrice, 9);
+                }
                 this.setState(
-                    { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime }
+                    { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice : this.state.customGasPrice }
                 )
             }
 

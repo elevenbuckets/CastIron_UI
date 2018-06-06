@@ -45,11 +45,16 @@ class QueryForm extends Reflux.Component {
     CastIronActions.gasPriceOptionSelect(event.currentTarget.defaultValue);
   }
 
+  handleCustomGasPriceUpdate = (price) =>{
+    CastIronActions.customGasPriceUpdate(price);
+  }
+  
+
   render = () => {
     return (
       <div>
         <Settings handleMouseDown={this.handleMouseDown} visibility={this.state.visible} 
-        handleGasPriceSelect={this.handleGasPriceSelect}/>
+        handleGasPriceSelect={this.handleGasPriceSelect} handleCustomGasPriceUpdate={this.handleCustomGasPriceUpdate}/>
         <table>
           <tbody>
             <tr>
