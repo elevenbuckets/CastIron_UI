@@ -59,7 +59,7 @@ class Footer extends Reflux.Component {
             this.state.gasPrice;
 
         return (
-            <table className="Footer" style={{ paddingTop: '0px', paddingBottom: '0px' }}>
+            <table className="Footer" style={{ padding: '0px', margin: '0px', minWidth: '1280px', boxShadow: "rgba(200, 200, 200, 1) 0px 10px 16px"}}>
                 <tbody>
                     <tr style={{ paddingTop: '0px', paddingBottom: '0px' }}>
                         <th style={{ paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap' }}>
@@ -85,11 +85,16 @@ class Footer extends Reflux.Component {
                                 <dt>GasPrice:</dt><dd>{this.state.gasPrice}</dd>
                             </dl>
                         </th>
-                        <th width='99%' style={{ textAlign: 'right', paddingTop: '0px', paddingBottom: '0px' }}><input type="button" className="button" 
-                        onClick={this.handleClick} value="Receipts" /></th>
+                        <th style={{ paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap' }}>
+			   <input type="button" className="dbutton" onClick={this.props.handleDrawer} value="Drawer" style={{border: "0px", color: "white"}} />
+                        </th>
+                        <th width='99%' style={{ textAlign: 'right', paddingTop: '0px', paddingBottom: '0px' }}>
+			<input type="button" className="button" onClick={this.handleClick} value="Receipts" />
+			</th>
                     </tr>
                 </tbody>
-            </table>)
+            </table>
+	    )
     }
 }
 

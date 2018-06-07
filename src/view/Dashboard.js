@@ -6,7 +6,8 @@ import CastIronStore from '../store/CastIronStore';
 import WalletView from './WalletView';
 import ReceiptsView from './ReceiptsView';
 import QueryForm from './QueryForm'
-import Footer from './Footer'
+import Footer from './Footer';
+import Drawer from './Drawer';
 import Transfer from './Transfer'
 import Trade from './Trade';
 import Modal from 'react-modal';
@@ -17,6 +18,9 @@ class DashBoard extends Reflux.Component {
     constructor(props) {
         super(props);
         this.store = CastIronStore;
+	this.state = {
+		drawerOut: false
+	}
         // this.map = {
         //     Transfer: <Transfer />,
         //     Receipts: <ReceiptsView />,
@@ -33,11 +37,18 @@ class DashBoard extends Reflux.Component {
         CastIronActions.cancelTx();
     }
 
+    handleClick = (event) => {
+	this.setState({drawerOut: !this.state.drawerOut});
+	event.target.blur();
+	event.stopPropagation();
+    }
+
 
     render() {
 
         return (
-            <div>
+            <div id="dashboard" className={this.state.drawerOut ? 'raise' : 'close'}>
+	       <div>
                 <QueryForm ref="queryForm" />
                 {this.state.currentView == "Transfer" ? <Transfer /> : this.state.currentView == "Receipts" ? <ReceiptsView /> 
                 : <Trade canvas={this.refs.queryForm.refs.canvas}/>}
@@ -60,9 +71,10 @@ class DashBoard extends Reflux.Component {
                     }> Please confirm!
                 <ConfirmTXModal confirmTX={this.confirmTX} cancelTX={this.cancelTX} />
                 </Modal>
-                <Footer />
-            </div>
-
+                <Footer handleDrawer={this.handleClick} draw={this.state.drawerOut}/>
+	       </div>
+                <Drawer refs="underlayer" handleClick={this.handleClick} draw={this.state.drawerOut}/>
+	  </div>
         )
     }
 

@@ -1,3 +1,47 @@
+#dashboard {
+    position: fixed;
+    left: 0px;
+    top: 1px;
+    transform: translate3d(0, 0vh, 0);
+    width: 100vw;
+    height: 115vh;
+    z-index: 2;
+    overflow: hidden;
+}
+
+#dashboard.raise {
+    transform: translate3d(0, -15vh, 0);
+    transition-duration: 0.4s;
+    overflow: hidden;
+}
+
+#dashboard.close {
+    transform: translate3d(0, 0vh, 0);
+    transition-duration: 0.4s;
+}
+
+#drawer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    height: 15vh;
+    width: 100vw;
+    z-index: 300;
+    transform: translate3d(0, 15vh, 0);
+    overflow: hidden;
+}
+
+#drawer.raise {
+    transform: translate3d(0, 0vh, 0);
+    transition-duration: 0.1s;
+}
+
+#drawer.close {
+    transform: translate3d(0, 15vh, 0);
+    transition-duration: 6s;
+    overflow: hidden;
+}
+
 #settings {
     position: fixed;
     left: 0;
@@ -78,6 +122,22 @@
         cursor: default;
 }
 
+.dbutton {
+  background-color: rgba(255,255,255,0);
+  border: 0px;
+  color: white;
+  padding: 2px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 8px 7px;
+  cursor: pointer;
+  -webkit-transition-duration: 0.4s;
+  transition-duration: 0.4s;
+  font-weight: bold;
+}
+
 .bbutton {
   background-color: rgba(255,255,255,0);
   border: 1px solid black;
@@ -97,6 +157,11 @@
   background-color: #4CAF50;
   color: white;
   font-weight: bold;
+}
+
+.bbutton:not(:hover) {
+  background-color: rgba(255,255,255,0);
+  font-weight: normal;
 }
 
 .xbutton {
@@ -371,12 +436,12 @@ WalletView{
   position: fixed;
    display: block;
     margin-left: 5px;
-    margin-right: 5px;
+    margin-right: 0px;
     margin-bottom: 5px;
     left: 0;
-    bottom: 0;
+    bottom: 13.5%;
     width: 99%;
-    height: 7.5%;
+    height: 6.1%;
     //background-color: #343434;
     color: white;
     text-align: center;
