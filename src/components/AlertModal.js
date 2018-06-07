@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import Modal from 'react-modal';
 class AlertModal extends React.Component {
+
+    // For ex, <AlertModal content={this.state.alertContent} isAlertModalOpen={this.state.isAlertModalOpen} close={this.closeModal}/>
+    // need three props : content, isAlertModalOpen, close
     constructor(props) {
         super(props);
     }
