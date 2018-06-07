@@ -11,8 +11,9 @@ import Drawer from './Drawer';
 import Transfer from './Transfer'
 import Trade from './Trade';
 import Modal from 'react-modal';
-import ConfirmTXModal from '../components/ComfirmTXModal';
-import CastIronActions from '../action/CastIronActions'
+import ConfirmTXModal from '../components/ConfirmTXModal';
+import CastIronActions from '../action/CastIronActions';
+import AlertModal from '../components/AlertModal'
 
 class DashBoard extends Reflux.Component {
     constructor(props) {
@@ -52,7 +53,10 @@ class DashBoard extends Reflux.Component {
                 <QueryForm ref="queryForm" />
                 {this.state.currentView == "Transfer" ? <Transfer /> : this.state.currentView == "Receipts" ? <ReceiptsView /> 
                 : <Trade canvas={this.refs.queryForm.refs.canvas}/>}
-                <Modal isOpen={this.state.modalIsOpen} style=
+
+                <AlertModal content={"Please unlock with your master passward!"} 
+                isAlertModalOpen={this.state.modalIsOpen && (!this.state.unlocked) } close={this.cancelTX} />
+                <Modal isOpen={this.state.modalIsOpen && this.state.unlocked} style=
                     {
                         {
                             overlay: {
@@ -69,7 +73,7 @@ class DashBoard extends Reflux.Component {
                             }
                         }
                     }> Please confirm!
-                <ConfirmTXModal confirmTX={this.confirmTX} cancelTX={this.cancelTX} />
+                <ConfirmTXModal confirmTX={this.confirmTX} cancelTX={this.cancelTX}  />
                 </Modal>
                 <Footer handleDrawer={this.handleClick} draw={this.state.drawerOut}/>
 	       </div>

@@ -24,7 +24,9 @@ class CastIronStore extends Reflux.Store {
             selected_token_name: '',
             currentView: 'Transfer',
             modalIsOpen: false,
-            unlocked: false
+            unlocked: false,
+            gasPriceOption: "high",
+            customGasPrice : null
         }
         this.funcToConfirm = null;
         this.listenables = CastIronActions;
@@ -118,8 +120,8 @@ class CastIronStore extends Reflux.Store {
         wallet.setAccount(this.state.address);
         let gasPrice = this.wallet.gasPrice;
         let length = tks.length;
-        let jobList = tks.map((tk, index) =>{
-            this.wallet.gasPrice =  this.wallet.web3.toBigNumber(gasPrice).add(this.wallet.web3.toBigNumber(length-1-index).mul(1000000000));
+        let jobList = tks.map((tk, index) => {
+            this.wallet.gasPrice = this.wallet.web3.toBigNumber(gasPrice).add(this.wallet.web3.toBigNumber(length - 1 - index).mul(1000000000));
             return this.wallet.enqueueTk(tk.type, tk.contract, tk.call,
                 tk.args)(tk.txObj.value, tk.txObj.gas,
                     tk.tkObj);
@@ -173,7 +175,7 @@ class CastIronStore extends Reflux.Store {
         this.wallet.setAccount(address);
         this.setState({ address: address, selected_token_name: '' });
 
-        
+
 
         this.state.tokenList.map((t) => {
             CastIronActions.statusUpdate({ [t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) });
@@ -185,11 +187,11 @@ class CastIronStore extends Reflux.Store {
         CastIronActions.changeView('Transfer');
     }
 
-    onAddressUpdate(address, canvas){
+    onAddressUpdate(address, canvas) {
         this._count = 0;
         this._target = this.state.tokenList.length + 1;
         this.wallet.setAccount(address);
-        this.setState({address : address});
+        this.setState({ address: address });
         this.state.tokenList.map((t) => {
             CastIronActions.statusUpdate({ [t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) });
         });
@@ -212,7 +214,7 @@ class CastIronStore extends Reflux.Store {
         this.wallet.gasPriceEst().then(data => {
             let gasPrice = this.wallet.toEth(data.fast, 9).toString()
             this.setState(
-                 { blockHeight: blockHeight, blockTime: blockTime, gasPrice: gasPrice }
+                { blockHeight: blockHeight, blockTime: blockTime, gasPrice: gasPrice }
             )
         }
             , error => {
@@ -245,6 +247,26 @@ class CastIronStore extends Reflux.Store {
         }
 
         this.setState({ receipts: { ...this.state.receipts, ...{ [r.Q]: data } } })
+    }
+
+    onGasPriceOptionSelect(option) {
+        let stage = Promise.resolve(this.setState({ gasPriceOption: option }))
+        stage.then(() => {
+            this.updateInfo();
+        }
+
+        );
+
+    }
+
+    onCustomGasPriceUpdate(price) {
+        let stage = Promise.resolve(this.setState({ customGasPrice: price }))
+        stage.then(() => {
+            this.updateInfo();
+        }
+
+        );
+
     }
 
     processQPromise = (qPromise) => {
@@ -337,11 +359,22 @@ class CastIronStore extends Reflux.Store {
         this.getAccounts();
 
         this.wallet.gasPriceEst().then(data => {
-            let gasPrice = this.wallet.toEth(data.fast, 9).toString();
-            this.wallet.gasPrice = data.fast;
-            this.setState(() => {
-                return { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice: gasPrice }
-            })
+            if (this.state.gasPriceOption != "custom") {
+                let gasPrice = this.wallet.toEth(data[this.state.gasPriceOption], 9).toString();
+                this.wallet.gasPrice = data[this.state.gasPriceOption];
+                this.setState(
+                    { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice: gasPrice }
+                )
+            } else {
+                if(this.state.customGasPrice){
+                    this.wallet.gasPrice = this.wallet.toWei(this.state.customGasPrice, 9);
+                }
+                this.setState(
+                    { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice : this.state.customGasPrice }
+                )
+            }
+
+
         }
             , error => {
                 let gasPrice = this.wallet.toEth(this.wallet.configs.defaultGasPrice, 9).toString();
@@ -383,8 +416,8 @@ class CastIronStore extends Reflux.Store {
         return oout;
     }
 
-    render(){
-         <canvas ref='canvas' width={66} height={66} style=
+    render() {
+        <canvas ref='canvas' width={66} height={66} style=
             {
                 {
                     border: "3px solid #ccc",
