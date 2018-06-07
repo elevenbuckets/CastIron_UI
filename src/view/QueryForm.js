@@ -18,11 +18,16 @@ class QueryForm extends Reflux.Component {
     };
   }
 
-  handleMouseDown = (event) => {
+
+  handleClick = () => {
+
     this.toggleSettings();
 
     console.log("clicked");
-    event.stopPropagation();
+  }
+
+  isCustomGasPriceValid = () => {
+    return (this.state.gasPriceOption != "custom" || this.state.customGasPrice)
   }
 
   toggleSettings = () => {
@@ -41,20 +46,21 @@ class QueryForm extends Reflux.Component {
     CastIronActions.masterUpdate(this.refs.mp.value);
   }
 
-  handleGasPriceSelect = (event) =>{
+  handleGasPriceSelect = (event) => {
     CastIronActions.gasPriceOptionSelect(event.currentTarget.defaultValue);
   }
 
-  handleCustomGasPriceUpdate = (price) =>{
+  handleCustomGasPriceUpdate = (price) => {
     CastIronActions.customGasPriceUpdate(price);
   }
-  
+
 
   render = () => {
     return (
       <div>
-        <Settings handleMouseDown={this.handleMouseDown} visibility={this.state.visible} 
-        handleGasPriceSelect={this.handleGasPriceSelect} handleCustomGasPriceUpdate={this.handleCustomGasPriceUpdate}/>
+        <Settings handleClickBack={this.handleClick} isCustomGasPrice={this.state.gasPriceOption != "custom"}
+          visibility={this.state.visible} isCustomGasPriceValid={this.isCustomGasPriceValid}
+          handleGasPriceSelect={this.handleGasPriceSelect} handleCustomGasPriceUpdate={this.handleCustomGasPriceUpdate} />
         <table>
           <tbody>
             <tr>
@@ -83,7 +89,7 @@ class QueryForm extends Reflux.Component {
                   <input ref='mp' type='password' maxLength='200' hidden={this.state.ptoggle} style={{ marginTop: '7px' }} />
                 </td>
                   <td style={{ border: '0px', display: this.state.sbutton, textAlign: "center" }}>
-                    <input type="button" className="button" onMouseDown={this.handleMouseDown} style={{ marginTop: '7px' }} value="Settings" />
+                    <input type="button" className="button" onClick={this.handleClick} style={{ marginTop: '7px' }} value="Settings" />
                   </td></tr>
                 </tbody></table>
               </td>

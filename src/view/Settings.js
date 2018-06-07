@@ -1,18 +1,47 @@
 import Reflux from 'reflux';
 import React from 'react';
+import AlertModal from '../components/AlertModal'
+
 
 class Settings extends Reflux.Component {
 	constructor(props) {
 		super(props);
+		this.state = {
+			alertContent : "",
+			isAlertModalOpen : false
+		}
 	}
 
 	handleCustomGasPriceUpdate = (event) =>{
 		if(isNaN(event.target.value)){
-			alert("Please input a number!")
+			this.openModal("Please enter a number!")
 		}else{
 			this.props.handleCustomGasPriceUpdate(parseInt(event.target.value))
 		}	
 	}
+
+	handleClickBack = () =>{
+		if(!this.props.isCustomGasPriceValid()){
+			this.openModal("Please enter custom gas price!")
+		  }else{
+			this.props.handleClickBack();
+		  }
+	}
+
+	openModal = (content) =>{
+		this.setState({
+			alertContent : content,
+			isAlertModalOpen : true
+		})
+	}
+
+	closeModal = () =>{
+		this.setState({
+			alertContent : "",
+			isAlertModalOpen : false
+		})
+	}
+
 
 	render = () => {
 		let visibility = 'hide';
@@ -50,7 +79,8 @@ class Settings extends Reflux.Component {
 								<td className="settings-sheet" style={{ backgroundColor: "rgba(0,0,0,0)" }}>
 									<label style={{ fontSize: '1.05em', fontWeight: "bold" }}><input type="radio"
 										onClick={this.props.handleGasPriceSelect} name="gasprice" value="custom" />Custom
-		  <input type="text" style={{ marginLeft: '10px' }} name="custom_gasprice" onChange={this.handleCustomGasPriceUpdate} placeholder="custom (in gwei)..." />
+			<input type="text" style={{ marginLeft: '10px' }} name="custom_gasprice" 
+			disabled={this.props.isCustomGasPrice} onChange={this.handleCustomGasPriceUpdate} placeholder="custom (in gwei)..." />
 									</label>
 								</td></tr>
 						</form>
@@ -61,8 +91,13 @@ class Settings extends Reflux.Component {
 				<h2><a href="#">Apps (coming soon!)</a></h2><hr color='#333' width='90%' />
 				<div style={{ display: 'block', margin: '40px' }}>this is where app menu is</div>
 				<div style={{ margin: '60px', textAlign: "center" }}>
-					<input type="button" className="button" onMouseDown={this.props.handleMouseDown} value="Back" />
+					<input type="button" className="button" onClick={this.handleClickBack} value="Back" />
 				</div>
+
+				
+				<AlertModal content={this.state.alertContent} isAlertModalOpen={this.state.isAlertModalOpen} close={this.closeModal}/>
+
+				
 			</div>
 		);
 	}
