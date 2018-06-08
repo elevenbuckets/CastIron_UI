@@ -18,6 +18,7 @@ class TxQList extends Reflux.Component {
 
   handSendTxInQueue(tx, event) {
     CastIronActions.sendTxInQueue(tx);
+    event.target.blur();
   }
 
   render = () => {
