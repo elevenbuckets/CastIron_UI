@@ -86,7 +86,7 @@ class Footer extends Reflux.Component {
                             </dl>
                         </th>
                         <th style={{ paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap' }}>
-			   <input type="button" className="dbutton" onClick={this.props.handleDrawer} value="Drawer" style={{border: "0px", color: "white"}} />
+			      <input type="button" className="dbutton" onClick={this.props.handleDrawer} value="Drawer" style={{border: "0px", color: "white"}} />
                         </th>
                         <th width='99%' style={{ textAlign: 'right', paddingTop: '0px', paddingBottom: '0px' }}>
 			<input type="button" className="button" onClick={this.handleClick} value="Receipts" />

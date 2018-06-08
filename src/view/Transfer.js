@@ -111,8 +111,8 @@ class Transfer extends Reflux.Component {
               boxShadow: '0 -5px 6px -5px rgba(200,200,200,0.5)'
             }
           }>
-          <input type="button" className="button" value='BatchSend' onClick={this.handleBatchSend} style={{ width: '160px', marginTop: '9px', marginLeft: '5%', marginRight: '5%' }} />
-          <input type="button" className="button" value='ClearAll' onClick={this.handleClearQueue} style={{ backgroundColor: 'rgb(250,0,0)', width: '160px', marginTop: '9px', marginLeft: '5%', marginRight: '5%' }} />
+          <input type="button" className="button" value='BatchSend' onClick={this.handleBatchSend} style={{ width: '160px', marginTop: '19px', marginLeft: '5%', marginRight: '5%' }} />
+          <input type="button" className="button" value='ClearAll' onClick={this.handleClearQueue} style={{ backgroundColor: 'rgb(250,0,0)', width: '160px', marginTop: '19px', marginLeft: '5%', marginRight: '5%' }} />
         </div>
       </div>
     );
