@@ -2,10 +2,12 @@ import CastIronStore from "../store/CastIronStore";
 import Reflux from 'reflux';
 import React from 'react';
 import Dropdown from 'react-dropdown';
+import AlertModalUser from '../common/AlertModalUser'
+import AlertModal from '../components/AlertModal';
 
 // Reflux components
 
-class TxObjects extends Reflux.Component {
+class TxObjects extends AlertModalUser {
   constructor(props) {
     super(props);
     this.store = CastIronStore;
@@ -18,16 +20,30 @@ class TxObjects extends Reflux.Component {
 
   handleChangeAmount(event){
     console.log('got event: ' + event.target.value);
-    let amount = event.target.value;
-    console.log('got amount: ' + amount);
-    this.setState(() => { return { amount: amount } });
+
+    if(isNaN(event.target.value)){
+			this.openModal("Please enter a number!")
+		}else{
+      let amount = event.target.value;
+
+      console.log('got amount: ' + amount);
+      this.setState(() => { return { amount: amount } });
+    }
+    
   }
 
   handleChangeGas(event){
     console.log('got event: ' + event.target.value);
-    let gas = event.target.value;
-    console.log('got gas: ' + gas);
-    this.setState(() => { return { gas: gas } });
+
+    if(isNaN(event.target.value)){
+			this.openModal("Please enter a number!")
+		}else{
+      let gas = event.target.value;
+      console.log('got gas: ' + gas);
+      this.setState(() => { return { gas: gas } });
+    }
+    
+    
   }
 
   handleSend(event)
@@ -72,6 +88,7 @@ class TxObjects extends Reflux.Component {
             </tr>
           </tbody>
         </table>
+        <AlertModal content={this.state.alertContent} isAlertModalOpen={this.state.isAlertModalOpen} close={this.closeModal}/>
       </form>
     );
   }

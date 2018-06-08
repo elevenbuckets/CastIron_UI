@@ -1,15 +1,12 @@
 import Reflux from 'reflux';
 import React from 'react';
-import AlertModal from '../components/AlertModal'
+import AlertModal from '../components/AlertModal';
+import AlertModalUser from '../common/AlertModalUser'
 
 
-class Settings extends Reflux.Component {
+class Settings extends AlertModalUser {
 	constructor(props) {
 		super(props);
-		this.state = {
-			alertContent : "",
-			isAlertModalOpen : false
-		}
 	}
 
 	handleCustomGasPriceUpdate = (event) =>{
@@ -28,19 +25,7 @@ class Settings extends Reflux.Component {
 		  }
 	}
 
-	openModal = (content) =>{
-		this.setState({
-			alertContent : content,
-			isAlertModalOpen : true
-		})
-	}
 
-	closeModal = () =>{
-		this.setState({
-			alertContent : "",
-			isAlertModalOpen : false
-		})
-	}
 
 
 	render = () => {
