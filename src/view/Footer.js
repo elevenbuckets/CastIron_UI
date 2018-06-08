@@ -59,7 +59,7 @@ class Footer extends Reflux.Component {
             this.state.gasPrice;
 
         return (
-            <table className="Footer" style={{ padding: '0px', margin: '0px', minWidth: '1280px', boxShadow: "rgb(100, 100, 100) 0px 26px 24px"}}>
+            <table className="Footer" style={{ padding: '0px', margin: '0px', minWidth: '1280px', boxShadow: "rgb(10, 10, 10) 0px 26px 24px"}}>
                 <tbody>
                     <tr style={{ paddingTop: '0px', paddingBottom: '0px' }}>
                         <th style={{ paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap' }}>

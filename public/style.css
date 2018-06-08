@@ -29,11 +29,13 @@
     z-index: 300;
     transform: translate3d(0, 15vh, 0);
     overflow: hidden;
+    background-image: url('./assets/drawerBack.jpg');
 }
 
 #drawer.raise {
     transform: translate3d(0, 0vh, 0);
     transition-duration: 0.1s;
+    z-index: 1;
 }
 
 #drawer.close {
@@ -445,6 +447,66 @@ WalletView{
     //background-color: #343434;
     color: white;
     text-align: center;
+    z-index: 2;
+}
+
+/* normal button style */
+.card {
+    width: 96px;
+    height: 96px;
+    padding: 2px;
+    margin: 12px 12px;
+    background-color: rgba(200,200,200,0.5);
+    text-align: center;
+    color: #FFF;
+    position: relative;
+    display: inline-block;
+    border-radius: 8px;
+}
+/* button hover style if required */
+.card:hover {
+    transition-duration: 0.4s;
+    box-shadow: rgba(20,20,20,0.5) 15px 18px 6px;
+}
+/* generated element for shine effect.
+ * normal state is semi-transparent
+ * white but with zero width. Set no
+ * transition here for no mouse-leave
+ * animations. Otherwise the effect
+ * will play in reverse when your mouse
+ * leaves the element
+ */
+.card:after {
+    content: "";
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 0%;
+    height: 100%;
+    background-color: rgba(255,255,255,0.4);
+    -webkit-transition: none;
+    -moz-transition: none;
+    -ms-transition: none;
+    -o-transition: none;
+    transition: none;
+   
+}
+/* on hover we animate the width to
+ * 100% and opacity to 0 so the element
+ * grows and fades out
+ */
+.card:hover:after {
+    width: 120%;
+    background-color: rgba(255,255,255,0);
+    -webkit-transition: all 0.3s ease-out;
+    -moz-transition: all 0.3s ease-out;
+    -ms-transition: all 0.3s ease-out;
+    -o-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
+}
+
+.card:not(:hover){
+    transition-duration: 0.4s;
 }
 
 Toggle {

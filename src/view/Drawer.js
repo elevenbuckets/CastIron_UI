@@ -14,15 +14,11 @@ class Drawer extends Reflux.Component {
 
     render = () => {
         return (
-		<div id="drawer" className={this.props.draw ? 'raise' : 'close'}>
-		  <table className="settings-sheet" border="0"><tbody><tr height="100%">
-		  <td>App01</td>
-		  <td>App02</td>
-		  <td>App03</td>
-		  <td>App04</td>
-		  <td>App05</td>
-		  <td>App06</td>
-		  </tr></tbody></table>
+		<div id="drawer" className={this.props.draw ? 'raise' : 'close'} >
+			<div className="card">
+  				<img src="assets/clock-icon.png" style={{width: "64px", height: "64px", marginTop: "16px", marginBotton: "9px"}}/>
+				<p style={{textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontWeight: "bold"}}>Schedular</p>
+			</div>
 		</div>
 	)
     }
