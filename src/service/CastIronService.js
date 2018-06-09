@@ -18,6 +18,8 @@ class CastIronService {
         this.wallet.newApp(__APP__)('0.2', 'Registry', abiPath('Registry'), { 'Sanity': condPath('Registry', 'Sanity') });
 
 
+        this.ETHMall = this.wallet.CUE[__APP__]['ETHMall'];
+        this.Registry = this.wallet.CUE[__APP__]['Registry'];
 
 
         this.getAccounts = this.getAccounts.bind(this);
