@@ -10,8 +10,10 @@ class Settings extends AlertModalUser {
 	}
 
 	handleCustomGasPriceUpdate = (event) =>{
-		if(isNaN(event.target.value)){
+		let value = event.target.value;
+		if(isNaN(value)){
 			this.openModal("Please enter a number!")
+			 event.target.value = value.slice(0, -1);
 		}else{
 			this.props.handleCustomGasPriceUpdate(parseInt(event.target.value))
 		}	
@@ -38,7 +40,7 @@ class Settings extends AlertModalUser {
 				<h2><a href="#">General</a></h2><hr color='#333' width='90%' />
 				<div style={{ display: 'block', marginLeft: "7%", marginRight: "10%", marginTop: '40px', marginBottom: '40px', textAlign: "center" }}>
 					<table className="settings-sheet" border="0"><tbody>
-						<form>
+						<form onSubmit={(e) =>{e.preventDefault()}} >
 							<tr className="settings-sheet" style={{ backgroundColor: "rgba(0,0,0,0)" }}>
 								<td colSpan="5" className="settings-sheet" style={{ backgroundColor: "rgba(0,0,0,0)" }}>
 									<label style={{ fontSize: '1.2em', fontWeight: "bold" }}>Gas Price: </label><br />
