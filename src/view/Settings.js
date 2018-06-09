@@ -1,15 +1,24 @@
 import Reflux from 'reflux';
 import React from 'react';
 import AlertModal from '../components/AlertModal'
-
+import CastIronService from '../service/CastIronService';
+import AcctMgrService from '../service/AcctMgrService';
+import CastIronStore from '../store/CastIronStore';
 
 class Settings extends Reflux.Component {
 	constructor(props) {
 		super(props);
+		this.store = CastIronStore;
+
 		this.state = {
 			alertContent : "",
-			isAlertModalOpen : false
+			isAlertModalOpen : false,
+			reveal: false
 		}
+
+		this.wallet = CastIronService.wallet;
+		this.accMgr = AcctMgrService.accMgr;
+		this.masterPass = undefined;
 	}
 
 	handleCustomGasPriceUpdate = (event) =>{
@@ -20,12 +29,22 @@ class Settings extends Reflux.Component {
 		}	
 	}
 
-	handleClickBack = () =>{
+	handleClickBack = () => {
 		if(!this.props.isCustomGasPriceValid()){
 			this.openModal("Please enter custom gas price!")
 		  }else{
 			this.props.handleClickBack();
 		  }
+	}
+
+	handleNewArch = (event) => {
+		this.accMgr.newArchive(this.masterPass).then( () => { this.masterPass = undefined; });
+		// Should we update config.json with actual archive path, instead of pre-defined? 
+		// Should we *also* update config.json to store custom gas price, if set?
+	}
+
+	handleReveal = (event) => {
+		this.setState({reveal: !this.state.reveal});
 	}
 
 	openModal = (content) =>{
@@ -40,6 +59,26 @@ class Settings extends Reflux.Component {
 			alertContent : "",
 			isAlertModalOpen : false
 		})
+	}
+
+	accountMgr = () => {
+		if (this.wallet.archfile === null) {
+			// create new buttercup archive using one time password input
+			return (
+				<div>
+			          <p> Please enter new master password: </p><br/>	
+				  <input type={this.state.reveal ? "text" : "password"} value={this.masterPass} />
+				  <input type="button" value="Reveal Toggle" onClick={this.handleReveal} />
+				  <input type="button" value="Set Master Password" onClick={this.handleNewArch} />
+				</div>
+			       )
+		}
+
+		if (this.state.unlocked === false) {
+			return (<p> Please Unlock Your Master Password First! </p>);
+		} else {
+			return (<p> Should be able to begin account management setup here ...</p>);
+		}
 	}
 
 
@@ -87,7 +126,9 @@ class Settings extends Reflux.Component {
 					</tbody></table>
 				</div>
 				<h2><a href="#">Accounts</a></h2><hr color='#333' width='90%' />
-				<div style={{ display: 'block', margin: '40px' }}>this is where accounts information can be loaded and editted</div>
+				<div style={{ display: 'block', margin: '40px' }}>
+				{ this.accountMgr() }
+				</div>
 				<h2><a href="#">Apps (coming soon!)</a></h2><hr color='#333' width='90%' />
 				<div style={{ display: 'block', margin: '40px' }}>this is where app menu is</div>
 				<div style={{ margin: '60px', textAlign: "center" }}>
