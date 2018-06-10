@@ -54,8 +54,6 @@ class Footer extends Reflux.Component {
         })
 
         return pendingQs.length;
-
-
     }
 
     getReceiptComponent = () => {
@@ -63,15 +61,16 @@ class Footer extends Reflux.Component {
         return <table>
             <tbody>
                 <tr>
-                    <td >
-                        <input type="button" className="button" onClick={this.handleClick}
-                            value={n > 0 ? "Receipts(" + n + ")" : "Receipts"} />
+		    <td style={{border: '0px', width: '480px'}}>
+                    		{ 
+				  n > 0 
+			   		? <div className="loader"></div> 
+			   		: <div></div> 
+		    		}
+		    </td>
+                    <td style={{border: '0px'}}>
+                        <input type="button" className="button" value={n > 0 ? "Receipts(" + n + ")" : "Receipts"} onClick={this.handleClick} />
                     </td>
-                    {n > 0 ? <td>
-                        <div className="loader"></div>
-                    </td> : null
-                    }
-
                 </tr>
             </tbody>
         </table>
