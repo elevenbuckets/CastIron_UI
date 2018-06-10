@@ -94,6 +94,8 @@ class Footer extends Reflux.Component {
             return Constants.Failed;
         } else if (receipt.status === "0x1") {
             return Constants.Succeeded;
+        }else if(receipt.error){
+            return Constants.Errored;
         }
         return Constants.Pending;
     }
