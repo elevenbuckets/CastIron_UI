@@ -1,19 +1,20 @@
 import Reflux from 'reflux';
 import React from 'react';
+
+import AlertModal from '../components/AlertModal';
+import AlertModalUser from '../common/AlertModalUser'
 import fs from 'fs';
-import AlertModal from '../components/AlertModal'
 import CastIronService from '../service/CastIronService';
 import AcctMgrService from '../service/AcctMgrService';
 import CastIronStore from '../store/CastIronStore';
 
-class Settings extends Reflux.Component {
+
+class Settings extends AlertModalUser {
 	constructor(props) {
 		super(props);
 		this.store = CastIronStore;
 
 		this.state = {
-			alertContent : "",
-			isAlertModalOpen : false,
 			reveal: false
 		}
 
@@ -23,8 +24,10 @@ class Settings extends Reflux.Component {
 	}
 
 	handleCustomGasPriceUpdate = (event) =>{
-		if(isNaN(event.target.value)){
+		let value = event.target.value;
+		if(isNaN(value)){
 			this.openModal("Please enter a number!")
+			 event.target.value = value.slice(0, -1);
 		}else{
 			this.props.handleCustomGasPriceUpdate(parseInt(event.target.value))
 		}	
@@ -52,22 +55,9 @@ class Settings extends Reflux.Component {
 		this.setState({reveal: !this.state.reveal});
 	}
 
+	
 	updateVar = (event) => {
 		this.variable = event.target.value;
-	}
-
-	openModal = (content) =>{
-		this.setState({
-			alertContent : content,
-			isAlertModalOpen : true
-		})
-	}
-
-	closeModal = () =>{
-		this.setState({
-			alertContent : "",
-			isAlertModalOpen : false
-		})
 	}
 
 	accountMgr = () => {
@@ -109,7 +99,7 @@ class Settings extends Reflux.Component {
 				<h2><a href="#">General</a></h2><hr color='#333' width='90%' />
 				<div style={{ display: 'block', marginLeft: "7%", marginRight: "10%", marginTop: '40px', marginBottom: '40px', textAlign: "center" }}>
 					<table className="settings-sheet" border="0"><tbody>
-						<form>
+						<form onSubmit={(e) =>{e.preventDefault()}} >
 							<tr className="settings-sheet" style={{ backgroundColor: "rgba(0,0,0,0)" }}>
 								<td colSpan="5" className="settings-sheet" style={{ backgroundColor: "rgba(0,0,0,0)" }}>
 									<label style={{ fontSize: '1.2em', fontWeight: "bold" }}>Gas Price: </label><br />

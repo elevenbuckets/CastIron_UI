@@ -8,8 +8,10 @@ import BlockTimer from '../util/BlockTimer';
 import SellOrder from '../components/SellOrder';
 import SellShop from '../components/SellShop';
 import path from 'path';
+import AlertModal from '../components/AlertModal';
+import AlertModalUser from '../common/AlertModalUser'
 
-class Sell extends Reflux.Component {
+class Sell extends AlertModalUser {
     constructor(props) {
         super(props);
         this.store = CastIronStore;
@@ -128,17 +130,32 @@ class Sell extends Reflux.Component {
     }
 
     handleChangeAmount = (event) => {
-        console.log('got event: ' + event.target.value);
-        let amount = event.target.value;
-        console.log('got amount: ' + amount);
-        this.setState({ amount: amount });
+
+        let value = event.target.value;
+		if(isNaN(value)){
+			this.openModal("Please enter a number!")
+			 event.target.value = value.slice(0, -1);
+		}else{
+            console.log('got event: ' + event.target.value);
+            let amount = event.target.value;
+            console.log('got amount: ' + amount);
+            this.setState({ amount: amount });
+		}	
+      
     }
 
     handleChangePrice = (event) => {
-        console.log('got event: ' + event.target.value);
+
+        let value = event.target.value;
+		if(isNaN(value)){
+			this.openModal("Please enter a number!")
+			 event.target.value = value.slice(0, -1);
+		}else{
+            console.log('got event: ' + event.target.value);
         let price = event.target.value;
         console.log('got price: ' + price);
         this.setState({ price: price });
+		}	
     }
 
 
@@ -266,6 +283,8 @@ class Sell extends Reflux.Component {
                         </tr>
                     </tbody>
                 </table>
+                <AlertModal content={this.state.alertContent} isAlertModalOpen={this.state.isAlertModalOpen} close={this.closeModal}/>
+
             </div>
         )
 

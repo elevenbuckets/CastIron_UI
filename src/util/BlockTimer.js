@@ -1,4 +1,3 @@
-import BittrexService from '../service/BittrexService';
 import Reflux from 'reflux';
 import CastIronActions from '../action/CastIronActions'
 import CastIronService from '../service/CastIronService';

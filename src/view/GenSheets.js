@@ -2,11 +2,14 @@ import CastIronStore from "../store/CastIronStore";
 import Reflux from 'reflux';
 import React from 'react';
 import Dropdown from 'react-dropdown';
-import CastIronActions from '../action/CastIronActions'
+import CastIronActions from '../action/CastIronActions';
+import AlertModal from '../components/AlertModal';
+import AlertModalUser from '../common/AlertModalUser';
+import CastIronService from '../service/CastIronService';
 
 // Reflux components
 
-class GenSheets extends Reflux.Component {
+class GenSheets extends AlertModalUser {
   constructor(props) {
     super(props);
     this.store = CastIronStore;
@@ -21,16 +24,21 @@ class GenSheets extends Reflux.Component {
   }
 
   handleClickTransactETH = () => {
-      CastIronActions.changeView("Transfer");
-      CastIronActions.selectedTokenUpdate("")
+    CastIronActions.changeView("Transfer");
+    CastIronActions.selectedTokenUpdate("")
   }
 
   handleClickTransact = () => {
     CastIronActions.changeView("Transfer");
-}
+  }
 
   handleClickTrade = () => {
-    CastIronActions.changeView("Trade");
+    if (this.state.selected_token_name === "") {
+      this.openModal("Please select a token first!")
+    } else {
+      CastIronActions.changeView("Trade");
+    }
+
   }
   render = () => {
     if (this.state.address == '') return (<p />);
@@ -62,10 +70,13 @@ class GenSheets extends Reflux.Component {
               <Dropdown options={tokenBalances} onChange={this.handleChange} value={this.state.selected_token_name !== '' ? this.state.selected_token_name + ': ' + this.state.balances[this.state.selected_token_name] : ''} placeholder={'Found ' + tokenkinds + ' tokens'} />
             </td>
             <td className="balance-sheet"><input type="button" className="button" onClick={this.handleClickTransact} value={this.state.selected_token_name !== '' ? "Transact " + this.state.selected_token_name : 'Transact ...'} /></td>
-            <td className="balance-sheet"><input type="button" className="button" onClick={this.handleClickTrade} 
-            value={this.state.selected_token_name !== '' ? "Trade " + this.state.selected_token_name : 'Trade ...'} /></td>
+            <td className="balance-sheet"><input type="button" className="button" onClick={this.handleClickTrade}
+              value={this.state.selected_token_name !== '' ? "Trade " + this.state.selected_token_name : 'Trade ...'}
+              disabled={this.state.selected_token_name !== '' &&
+              !CastIronService.Registry.isListed(CastIronService.wallet.TokenList[this.state.selected_token_name].addr)} /></td>
           </tr>
         </tbody>
+        <AlertModal content={this.state.alertContent} isAlertModalOpen={this.state.isAlertModalOpen} close={this.closeModal} />
       </table>);
   }
 }

@@ -5,7 +5,8 @@ const Constants = {
     Succeeded: "Success",
     Failed : "Fail",
     Pending : "Pending",
-    Revert : "Revert"
+    Revert : "Revert",
+    Errored : "Error"
 }
 
 export default Constants

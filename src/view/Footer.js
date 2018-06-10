@@ -4,6 +4,7 @@ import Reflux from 'reflux';
 import CastIronActions from '../action/CastIronActions'
 import castIronService from "../service/CastIronService";
 import React from 'react';
+import Constants from '../util/Constants';
 
 // Reflux components
 
@@ -47,7 +48,59 @@ class Footer extends Reflux.Component {
         // }
     }
 
-    handleClick(){
+    hasNumberOfPendingReceipts = () => {
+        let pendingQs = Object.keys(this.state.receipts).filter(Q => {
+            return this.state.receipts[Q] && this.state.receipts[Q].length > 0 && this.hasPendingReceipt(this.state.receipts[Q])
+        })
+
+        return pendingQs.length;
+
+
+    }
+
+    getReceiptComponent = () => {
+        let n = this.hasNumberOfPendingReceipts();
+        return <table>
+            <tbody>
+                <tr>
+                    <td >
+                        <input type="button" className="button" onClick={this.handleClick}
+                            value={n > 0 ? "Receipts(" + n + ")" : "Receipts"} />
+                    </td>
+                    {n > 0 ? <td>
+                        <div className="loader"></div>
+                    </td> : null
+                    }
+
+                </tr>
+            </tbody>
+        </table>
+
+
+    }
+
+    hasPendingReceipt = (receipts) => {
+        for (let i in receipts) {
+            if (this.getStatus(receipts[i]) == Constants.Pending) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    getStatus(receipt) {
+        if (receipt.status === "0x0") {
+            return Constants.Failed;
+        } else if (receipt.status === "0x1") {
+            return Constants.Succeeded;
+        }else if(receipt.error){
+            return Constants.Errored;
+        }
+        return Constants.Pending;
+    }
+
+    handleClick() {
         CastIronActions.changeView("Receipts");
     }
 
@@ -59,7 +112,7 @@ class Footer extends Reflux.Component {
             this.state.gasPrice;
 
         return (
-            <table className="Footer" style={{ padding: '0px', margin: '0px', minWidth: '1280px', boxShadow: "rgb(10, 10, 10) 0px 26px 24px"}}>
+            <table className="Footer" style={{ padding: '0px', margin: '0px', minWidth: '1280px', boxShadow: "rgb(10, 10, 10) 0px 26px 24px" }}>
                 <tbody>
                     <tr style={{ paddingTop: '0px', paddingBottom: '0px' }}>
                         <th style={{ paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap' }}>
@@ -86,15 +139,15 @@ class Footer extends Reflux.Component {
                             </dl>
                         </th>
                         <th style={{ paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap' }}>
-			      <input type="button" className="dbutton" onClick={this.props.handleDrawer} value="Drawer" style={{border: "0px", color: "white"}} />
+                            <input type="button" className="dbutton" onClick={this.props.handleDrawer} value="Drawer" style={{ border: "0px", color: "white" }} />
                         </th>
                         <th width='99%' style={{ textAlign: 'right', paddingTop: '0px', paddingBottom: '0px' }}>
-			<input type="button" className="button" onClick={this.handleClick} value="Receipts" />
-			</th>
+                            {this.getReceiptComponent()}
+                        </th>
                     </tr>
                 </tbody>
             </table>
-	    )
+        )
     }
 }
 

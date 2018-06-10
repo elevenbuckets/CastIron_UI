@@ -5,9 +5,11 @@ import React from 'react';
 import CastIronActions from '../action/CastIronActions';
 import BlockTimer from '../util/BlockTimer';
 import { BADNAME } from "dns";
-import Sell from "./Sell"
+import Sell from "./Sell";
+import AlertModalUser from '../common/AlertModalUser'
+import AlertModal from '../components/AlertModal';
 
-class Trade extends Reflux.Component {
+class Trade extends AlertModalUser {
     constructor(props) {
         super(props);
         this.store = CastIronStore;
@@ -159,8 +161,16 @@ class Trade extends Reflux.Component {
     }
 
     updateAmount = (posims, event) => {
-        console.log(`updateAmount: got amount ${event.target.value}`)
-        this.setState({ buyAmount: { ...this.state.buyAmount, [posims]: event.target.value } });
+        let value = event.target.value;
+		if(isNaN(value)){
+			this.openModal("Please enter a number!")
+			 event.target.value = value.slice(0, -1);
+		}else{
+            console.log(`updateAmount: got amount ${event.target.value}`)
+            this.setState({ buyAmount: { ...this.state.buyAmount, [posims]: event.target.value } });
+		}	
+
+      
     }
 
     orders = () => {
@@ -267,6 +277,7 @@ class Trade extends Reflux.Component {
                             </tbody>
                         </table>
                     </div>}
+                    <AlertModal content={this.state.alertContent} isAlertModalOpen={this.state.isAlertModalOpen} close={this.closeModal}/>
 
             </div>
         )

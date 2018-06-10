@@ -1,4 +1,3 @@
-import BittrexService from '../service/BittrexService';
 import Reflux from 'reflux';
 import CastIronActions from '../action/CastIronActions'
 import CastIronService from '../service/CastIronService';
@@ -248,6 +247,12 @@ class CastIronStore extends Reflux.Store {
         if (typeof (this.state.receipts[r.Q]) !== "undefined") {
             data = this.merge(["transactionHash", "tx"], r.data, this.wallet.rcdQ[r.Q]);
         }
+
+        data.map((d) =>{
+            if(!d.tx){
+                d.tx = "0x0000000000000000000000000000000000000000000000000000000000000000";
+            }
+        })
 
         this.setState({ receipts: { ...this.state.receipts, ...{ [r.Q]: data } } })
     }

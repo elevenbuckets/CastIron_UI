@@ -29,7 +29,7 @@ class AlertModal extends React.Component {
                         }
                     }
                 }> {this.props.content}
-                <div style={{ margin: '60px', textAlign: "center" }}>
+                <div style={{ marginTop: '40px', textAlign: "center" }}>
                     <input type="button" className="button"
                         value='OK' onClick={this.props.close}
                     />
