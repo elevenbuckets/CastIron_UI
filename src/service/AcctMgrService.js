@@ -7,5 +7,6 @@ class AcctMgrService {
 }
 
 const AcctMgrServ = new AcctMgrService();
+console.log(AcctMgrServ.accMgr.config);
 
 export default AcctMgrServ;
