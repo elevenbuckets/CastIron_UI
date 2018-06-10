@@ -2,6 +2,7 @@ import BittrexService from '../service/BittrexService';
 import Reflux from 'reflux';
 import CastIronActions from '../action/CastIronActions'
 import CastIronService from '../service/CastIronService';
+import AcctMgrService from '../service/AcctMgrService';
 import { createCanvasWithAddress } from "../util/Utils"
 import BlockTimer from '../util/BlockTimer'
 
@@ -31,6 +32,7 @@ class CastIronStore extends Reflux.Store {
         this.funcToConfirm = null;
         this.listenables = CastIronActions;
         this.wallet = CastIronService.wallet;
+	this.accMgr = AcctMgrService.accMgr;
         this.getAccounts = this.getAccounts.bind(this);
         this.state.tokenList = this.wallet.configs.watchTokens || ['OMG'];
         this.wallet.hotGroups(this.state.tokenList);
@@ -158,6 +160,7 @@ class CastIronStore extends Reflux.Store {
 
     onMasterUpdate(value) {
         this.wallet.password(value);
+        this.accMgr.password(value);
         this.wallet.validPass().then((r) => { this.setState({ unlocked: r }); });
     }
 

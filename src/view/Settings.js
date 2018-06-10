@@ -1,5 +1,6 @@
 import Reflux from 'reflux';
 import React from 'react';
+import fs from 'fs';
 import AlertModal from '../components/AlertModal'
 import CastIronService from '../service/CastIronService';
 import AcctMgrService from '../service/AcctMgrService';
@@ -18,7 +19,7 @@ class Settings extends Reflux.Component {
 
 		this.wallet = CastIronService.wallet;
 		this.accMgr = AcctMgrService.accMgr;
-		this.masterPass = undefined;
+		this.variable = undefined;
 	}
 
 	handleCustomGasPriceUpdate = (event) =>{
@@ -38,13 +39,21 @@ class Settings extends Reflux.Component {
 	}
 
 	handleNewArch = (event) => {
-		this.accMgr.newArchive(this.masterPass).then( () => { this.masterPass = undefined; });
+		this.accMgr.newArchive(this.variable).then( () => { this.variable = undefined; });
 		// Should we update config.json with actual archive path, instead of pre-defined? 
 		// Should we *also* update config.json to store custom gas price, if set?
 	}
 
+	handleNewAcct = (event) => {
+		this.accMgr.newAccount(this.variable).then( () => { this.variable = undefined; });
+	}
+
 	handleReveal = (event) => {
 		this.setState({reveal: !this.state.reveal});
+	}
+
+	updateVar = (event) => {
+		this.variable = event.target.value;
 	}
 
 	openModal = (content) =>{
@@ -62,12 +71,12 @@ class Settings extends Reflux.Component {
 	}
 
 	accountMgr = () => {
-		if (this.wallet.archfile === null) {
+		if (fs.existsSync(this.wallet.archfile) === false) {
 			// create new buttercup archive using one time password input
 			return (
 				<div>
-			          <p> Please enter new master password: </p><br/>	
-				  <input type={this.state.reveal ? "text" : "password"} value={this.masterPass} />
+			          <p> Please Enter New Master Password: </p><br/>	
+				  <input type={this.state.reveal ? "text" : "password"} onChange={this.updateVar}/>
 				  <input type="button" value="Reveal Toggle" onClick={this.handleReveal} />
 				  <input type="button" value="Set Master Password" onClick={this.handleNewArch} />
 				</div>
@@ -77,7 +86,15 @@ class Settings extends Reflux.Component {
 		if (this.state.unlocked === false) {
 			return (<p> Please Unlock Your Master Password First! </p>);
 		} else {
-			return (<p> Should be able to begin account management setup here ...</p>);
+			return (
+				<div>
+				  <p> Create New Account: </p>
+			          <p> Please Enter Password For New Account: </p><br/>	
+				  <input type={this.state.reveal ? "text" : "password"} onChange={this.updateVar}/>
+				  <input type="button" value="Reveal Toggle" onClick={this.handleReveal} />
+				  <input type="button" value="Create" onClick={this.handleNewAcct} />
+				</div>
+				)
 		}
 	}
 
