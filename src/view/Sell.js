@@ -254,7 +254,7 @@ class Sell extends AlertModalUser {
         console.log("in Sell render()");
         return (
 
-            <div style={{ width: '100%', overflow: 'scroll', margin: '0', maxHeight: "578px", height: '578px' }} >
+            <div style={{ width: '100%', overflow: 'scroll', margin: '0', maxHeight: "593px", height: '593px' }} >
                 <table className="balance-sheet">
                     <tbody>
 

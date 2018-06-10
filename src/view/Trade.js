@@ -263,7 +263,7 @@ class Trade extends AlertModalUser {
                     </tbody>
                 </table>
                 {this.state.isSell ? <Sell canvas={this.props.canvas}/> :
-                    <div style={{ width: '100%', overflow: 'scroll', margin: '0', maxHeight: "578px", height: '578px' }} >
+                    <div style={{ width: '100%', overflow: 'scroll', margin: '0', maxHeight: "593px", height: '593px' }} >
                         <table className="balance-sheet">
                             <tbody>
                                 <tr className="balance-sheet">
@@ -271,7 +271,7 @@ class Trade extends AlertModalUser {
                                     <th className="balance-sheet" style={{ color: '#111111' }} width='417px'>Amount</th>
                                     <th className="balance-sheet" style={{ color: '#111111' }} width='425px'>Action</th>
                                 </tr>
-                                <tr><td colSpan="3">
+                                <tr><td colSpan="3" style={{paddingTop: "16px", paddingBottom: "16px"}}>
                                     {this.orders()}
                                 </td></tr>
                             </tbody>
