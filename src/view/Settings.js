@@ -15,7 +15,8 @@ class Settings extends AlertModalUser {
 		this.store = CastIronStore;
 
 		this.state = {
-			reveal: false
+			reveal: false,
+			waiting: false
 		}
 
 		this.wallet = CastIronService.wallet;
@@ -48,7 +49,19 @@ class Settings extends AlertModalUser {
 	}
 
 	handleNewAcct = (event) => {
-		this.accMgr.newAccount(this.variable).then( () => { this.variable = undefined; });
+		let stage = Promise.resolve();
+		stage
+		  .then( () => { return this.setState({waiting: true}) })
+		  .then( () => { this.updateNew(); } );
+	}
+
+	updateNew = () => {
+		console.log("calling update now");
+		return this.accMgr.newAccount(this.variable).then( () => { 
+			this.variable = undefined; 
+			this.refs.vip.value = '';
+			this.setState({waiting: false});
+		});
 	}
 
 	handleReveal = (event) => {
@@ -65,10 +78,12 @@ class Settings extends AlertModalUser {
 			// create new buttercup archive using one time password input
 			return (
 				<div>
-			          <p> Please Enter New Master Password: </p><br/>	
-				  <input type={this.state.reveal ? "text" : "password"} onChange={this.updateVar}/>
-				  <input type="button" value="Reveal Toggle" onClick={this.handleReveal} />
-				  <input type="button" value="Set Master Password" onClick={this.handleNewArch} />
+			          <fieldset>
+				    <legend>Please Enter New Master Password:</legend>
+				      <input type={this.state.reveal ? "text" : "password"} onChange={this.updateVar}/>
+				      <input type="button" value="Reveal Toggle" onClick={this.handleReveal} />
+				      <input type="button" value="Set Master Password" onClick={this.handleNewArch} />
+			          </fieldset>
 				</div>
 			       )
 		}
@@ -78,11 +93,13 @@ class Settings extends AlertModalUser {
 		} else {
 			return (
 				<div>
-				  <p> Create New Account: </p>
-			          <p> Please Enter Password For New Account: </p><br/>	
-				  <input type={this.state.reveal ? "text" : "password"} onChange={this.updateVar}/>
-				  <input type="button" value="Reveal Toggle" onClick={this.handleReveal} />
-				  <input type="button" value="Create" onClick={this.handleNewAcct} />
+				  <fieldset>
+				    <legend>Create New Account:</legend>
+			              <p> Please Enter Password For New Account: </p>	
+				      <input ref="vip" type={this.state.reveal ? "text" : "password"} onChange={this.updateVar}/>
+				      <input type="button" value="Reveal Toggle" onClick={this.handleReveal} />
+				      { this.state.waiting ? <div className="loader"></div> : <input type="button" value="Create" onClick={this.handleNewAcct} /> }
+				  </fieldset>
 				</div>
 				)
 		}
