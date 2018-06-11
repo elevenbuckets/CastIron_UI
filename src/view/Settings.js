@@ -2,6 +2,7 @@ import Reflux from 'reflux';
 import React from 'react';
 
 import AlertModal from '../components/AlertModal';
+import WaitModal from '../components/WaitModal';
 import AlertModalUser from '../common/AlertModalUser'
 import fs from 'fs';
 import CastIronService from '../service/CastIronService';
@@ -16,7 +17,8 @@ class Settings extends AlertModalUser {
 
 		this.state = {
 			reveal: false,
-			waiting: false
+			waiting: false,
+			waitModalOpen: false,
 		}
 
 		this.wallet = CastIronService.wallet;
@@ -43,7 +45,10 @@ class Settings extends AlertModalUser {
 	}
 
 	handleNewArch = (event) => {
-		this.accMgr.newArchive(this.variable).then( () => { this.variable = undefined; });
+		this.accMgr.newArchive(this.variable).then( () => { 
+			this.variable = undefined; 
+			this.openModal("New Archive created. You still needs to be unlocked to use it.");
+		});
 		// Should we update config.json with actual archive path, instead of pre-defined? 
 		// Should we *also* update config.json to store custom gas price, if set?
 	}
@@ -57,12 +62,15 @@ class Settings extends AlertModalUser {
 
 	updateNew = () => {
 		console.log("calling update now");
-		return this.accMgr.newAccount(this.variable).then( () => { 
+		return this.accMgr.newAccount(this.variable).then( (address) => { 
 			this.variable = undefined; 
 			this.refs.vip.value = '';
 			this.setState({waiting: false});
+			this.openModal("New Address: " + address);
 		});
 	}
+
+	closeWaitModal = () => { this.setState({waitModalOpen: false}) };
 
 	handleReveal = (event) => {
 		this.setState({reveal: !this.state.reveal});
@@ -98,13 +106,14 @@ class Settings extends AlertModalUser {
 			              <p> Please Enter Password For New Account: </p>	
 				      <input ref="vip" type={this.state.reveal ? "text" : "password"} onChange={this.updateVar}/>
 				      <input type="button" value="Reveal Toggle" onClick={this.handleReveal} />
-				      { this.state.waiting ? <div className="loader"></div> : <input type="button" value="Create" onClick={this.handleNewAcct} /> }
+				      { this.state.waiting 
+					      ? <div className="loader" style={{display: "inline-block"}}></div>
+					      : <input type="button" value="Create" onClick={this.handleNewAcct} /> }
 				  </fieldset>
 				</div>
 				)
 		}
 	}
-
 
 	render = () => {
 		let visibility = 'hide';
