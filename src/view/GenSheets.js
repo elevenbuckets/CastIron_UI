@@ -6,9 +6,9 @@ import CastIronActions from '../action/CastIronActions';
 import AlertModal from '../components/AlertModal';
 import AlertModalUser from '../common/AlertModalUser';
 import CastIronService from '../service/CastIronService';
+import BMartService from '../service/BMartService';
 
-// Reflux components
-
+// Reflux components and Alert Modal user
 class GenSheets extends AlertModalUser {
   constructor(props) {
     super(props);
@@ -18,8 +18,6 @@ class GenSheets extends AlertModalUser {
   handleChange = (event) => {
     console.log("event.value in GenSheets handleChange is " + event.value);
     let symbol = event.value.substring(0, event.value.indexOf(':'));
-    // this.setState( () => { return {selected_token_name: symbol}; } );
-
     CastIronActions.selectedTokenUpdate(symbol);
   }
 
@@ -73,7 +71,7 @@ class GenSheets extends AlertModalUser {
             <td className="balance-sheet"><input type="button" className="button" onClick={this.handleClickTrade}
               value={this.state.selected_token_name !== '' ? "Trade " + this.state.selected_token_name : 'Trade ...'}
               disabled={this.state.selected_token_name !== '' &&
-              !CastIronService.Registry.isListed(CastIronService.wallet.TokenList[this.state.selected_token_name].addr)} /></td>
+              !BMartService.Registry.isListed(CastIronService.wallet.TokenList[this.state.selected_token_name].addr)} /></td>
           </tr>
         </tbody>
         <AlertModal content={this.state.alertContent} isAlertModalOpen={this.state.isAlertModalOpen} close={this.closeModal} />

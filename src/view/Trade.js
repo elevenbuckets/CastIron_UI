@@ -8,6 +8,7 @@ import { BADNAME } from "dns";
 import Sell from "./Sell";
 import AlertModalUser from '../common/AlertModalUser'
 import AlertModal from '../components/AlertModal';
+import BMartService from '../service/BMartService';
 
 class Trade extends AlertModalUser {
     constructor(props) {
@@ -22,14 +23,9 @@ class Trade extends AlertModalUser {
         }
 
 
-        // dApp specific info
-        const __APP__ = 'BMart';
-
-
-        // Expose internal binded contract instances.
-        // This should not be necessary once CastIron provides constant functions observers.
-        this.ETHMall = this.wallet.CUE[__APP__]['ETHMall'];
-        this.Registry = this.wallet.CUE[__APP__]['Registry'];
+     
+        this.ETHMall = BMartService.ETHMall;
+        this.Registry = BMartService.Registry;
 
     }
 
@@ -128,7 +124,8 @@ class Trade extends AlertModalUser {
 
     sortOrders() {
         this.state.orders.sort((a, b) => {
-            return a.price > b.price ? 1 : -1;
+            // TODO: in future if the price are the same we may want to sort by created time of the store
+            return a.price > b.price ? 1 : (a.price == b.price? (a.addr > b.addr ? 1 :-1) : -1 );
         })
 
         let arr = Array.from(Array(11).keys());
