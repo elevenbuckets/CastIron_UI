@@ -1,7 +1,7 @@
 import Reflux from 'reflux';
 class AlertModalUser extends Reflux.Component {
 
-   
+	// This needs to be used with AlertModal, one can refer to ../view/Settings.js for usage
     constructor(props) {
         super(props);
         this.state = {

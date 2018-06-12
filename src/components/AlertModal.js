@@ -8,8 +8,6 @@ class AlertModal extends React.Component {
         super(props);
     }
 
-
-
     render() {
         return (
             <Modal isOpen={this.props.isAlertModalOpen} style=

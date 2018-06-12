@@ -9,7 +9,8 @@ import SellOrder from '../components/SellOrder';
 import SellShop from '../components/SellShop';
 import path from 'path';
 import AlertModal from '../components/AlertModal';
-import AlertModalUser from '../common/AlertModalUser'
+import AlertModalUser from '../common/AlertModalUser';
+import BMartService from '../service/BMartService';
 
 class Sell extends AlertModalUser {
     constructor(props) {
@@ -25,23 +26,7 @@ class Sell extends AlertModalUser {
 
         }
 
-
-
-        const __pkgdir = path.join('dapps', 'BMart');
-        const __abidir = path.join(__pkgdir, 'ABI');
-        const __condir = path.join(__pkgdir, 'conditions');
-
-        const abiPath = ctrName => { return path.join(__abidir, ctrName + '.json'); }
-        const condPath = (ctrName, condName) => { return path.join(__condir, ctrName, condName + '.json') };
-        // dApp specific info
-        const __APP__ = 'BMart';
-
-
-        // Expose internal binded contract instances.
-        // This should not be necessary once CastIron provides constant functions observers.
-        this.ETHMall = this.wallet.CUE[__APP__]['ETHMall'];
-        this.Registry = this.wallet.CUE[__APP__]['Registry'];
-
+        this.ETHMall = BMartService.ETHMall;
     }
 
     componentWillMount() {
@@ -72,19 +57,9 @@ class Sell extends AlertModalUser {
         if (shopAddr != this.state.shopAddr) {
             this.setState({ shopAddr: shopAddr });
 
-            // dApp specific info
-            const __APP__ = 'BMart';
-
-            const __pkgdir = path.join('dapps', 'BMart');
-            const __abidir = path.join(__pkgdir, 'ABI');
-            const __condir = path.join(__pkgdir, 'conditions');
-
-            const abiPath = ctrName => { return path.join(__abidir, ctrName + '.json'); }
-            const condPath = (ctrName, condName) => { return path.join(__condir, ctrName, condName + '.json') };
-
             // CastIron ABI + conditions loader
-            this.wallet.newApp(__APP__)('0.2', 'PoSIMS' + this.state.address, abiPath('PoSIMS'), { 'Sanity': condPath('PoSIMS', 'Sanity') }, shopAddr);
-            this.PoSIMS = this.wallet.CUE[__APP__]['PoSIMS' + this.state.address];
+            BMartService.generateNewPoSIMSApp(this.state.address, shopAddr);
+            this.PoSIMS = BMartService.getPoSIMS(this.state.address);
         }
 
         return shopAddr;

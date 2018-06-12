@@ -54,6 +54,16 @@ class QueryForm extends Reflux.Component {
     CastIronActions.customGasPriceUpdate(price);
   }
 
+  copyAddress = () => {
+    var dummy = document.createElement("input");
+    document.body.appendChild(dummy);
+    dummy.setAttribute("id", "dummy_id");
+    document.getElementById("dummy_id").value=this.state.address;
+    dummy.select();
+    document.execCommand("copy");
+    document.body.removeChild(dummy);
+  }
+
 
   render = () => {
     return (
@@ -77,10 +87,21 @@ class QueryForm extends Reflux.Component {
                   }
                 /></td>
               <td>
-                <label>
-                  Address:
+                <table border="0"><tbody><tr style={{ border: '0px' }} align="center">
+                  <td style={{ border: '0px' }}>
+                    <label>
+                      Address:
 	     <Dropdown ref='addrlist' options={Object.keys(this.state.accounts)} onChange={this.handleChange} value={this.state.address} placeholder="Select an option" />
-                </label>
+
+                    </label>
+                  </td>
+                  <td style={{ border: '0px', display: this.state.address, textAlign: "center" }}>
+                    <input type="button" className="button"
+                      value='Copy' onClick={this.copyAddress}
+                    />
+                  </td></tr>
+                </tbody></table>
+
               </td>
               <td width={this.state.pfield} style={{ textAlign: 'center', minWidth: this.state.pfield }}
                 onMouseEnter={this.handleToggle} onMouseLeave={this.handleToggle}>
