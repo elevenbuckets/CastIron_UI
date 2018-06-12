@@ -40,11 +40,11 @@ class Transfer extends Reflux.Component {
 
 
   handleChange = (event) => {
-    console.log('got event: ' + event.target.value);
     let addr = event.target.value;
     console.log('got addr: ' + addr);
     try {
-      if (CastIronService.wallet.web3.toAddress(addr) === addr) {
+      if (CastIronService.wallet.web3.toAddress(addr) === addr || CastIronService.wallet.web3.toChecksumAddress(addr) == addr) {
+	addr = CastIronService.wallet.web3.toAddress(addr);
         createCanvasWithAddress(this.refs.canvas, addr);
       } else {
         this.refs.canvas.getContext('2d').clearRect(0, 0, this.refs.canvas.width, this.refs.canvas.height);
