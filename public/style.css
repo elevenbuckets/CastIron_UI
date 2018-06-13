@@ -105,6 +105,10 @@
     cursor: pointer;
 }
 
+.button:disabled {
+	border: 1px solid #ffffff;
+}
+
 .tbutton {
     background-color: #4CAF50;
     border: none;
@@ -333,9 +337,10 @@ tr:nth-child(odd) {
 
 .Dropdown-root {
   position: relative;
-  margin-left: 15%;
-  margin-right: 15%;
-  width: 70%
+  margin-left: 10%;
+  margin-right: 10%;
+  width: 80%;
+  display: inline-block;
 }
 
 .Dropdown-control {
