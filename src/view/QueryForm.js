@@ -89,17 +89,14 @@ class QueryForm extends Reflux.Component {
               <td>
                 <table border="0"><tbody><tr style={{ border: '0px' }} align="center">
                   <td style={{ border: '0px' }}>
-                    <label>
-                      Address:
+                    <label style={{fontWeight: 'bold'}}>Address:
 	     <Dropdown ref='addrlist' options={Object.keys(this.state.accounts)} onChange={this.handleChange} value={this.state.address} placeholder="Select an option" />
-
                     </label>
-                  </td>
-                  <td style={{ border: '0px', display: this.state.address, textAlign: "center" }}>
-                    <input type="button" className="button"
+                    <input style={{display: 'inline-block', padding: '5px', margin: '0px', color: '#ffffff', borderColor: '#ffffff'}} type="button" className="bbutton"
                       value='Copy' onClick={this.copyAddress}
                     />
-                  </td></tr>
+                  </td>
+                  </tr>
                 </tbody></table>
 
               </td>

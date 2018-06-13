@@ -107,7 +107,7 @@ const createCanvasWithAddress = (canvas, address) => {
     }
 
     let hex_address = address.replace('x', '0');
-    if (hex_address.match(/[0-9a-f]{42}/ig)) {
+    if (hex_address.match(/[0-9a-fA-F]{42}/ig)) {
         let opts = buildOpts(address);
         return renderIcon(opts, canvas);
     }

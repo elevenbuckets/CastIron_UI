@@ -2,12 +2,12 @@ import Reflux from 'reflux';
 import React from 'react';
 
 import AlertModal from '../components/AlertModal';
+import WaitModal from '../components/WaitModal';
 import AlertModalUser from '../common/AlertModalUser'
 import fs from 'fs';
 import CastIronService from '../service/CastIronService';
 import AcctMgrService from '../service/AcctMgrService';
 import CastIronStore from '../store/CastIronStore';
-
 
 class Settings extends AlertModalUser {
 	constructor(props) {
@@ -16,12 +16,15 @@ class Settings extends AlertModalUser {
 
 		this.state = {
 			reveal: false,
-			waiting: false
+			reveal2: false,
+			waiting: false,
+			waitModalOpen: false,
 		}
 
 		this.wallet = CastIronService.wallet;
 		this.accMgr = AcctMgrService.accMgr;
 		this.variable = undefined;
+		this.keypath = undefined;
 	}
 
 	handleCustomGasPriceUpdate = (event) =>{
@@ -43,7 +46,10 @@ class Settings extends AlertModalUser {
 	}
 
 	handleNewArch = (event) => {
-		this.accMgr.newArchive(this.variable).then( () => { this.variable = undefined; });
+		this.accMgr.newArchive(this.variable).then( () => { 
+			this.variable = undefined; 
+			this.openModal("New Archive created. You still needs to be unlocked to use it.");
+		});
 		// Should we update config.json with actual archive path, instead of pre-defined? 
 		// Should we *also* update config.json to store custom gas price, if set?
 	}
@@ -57,20 +63,48 @@ class Settings extends AlertModalUser {
 
 	updateNew = () => {
 		console.log("calling update now");
-		return this.accMgr.newAccount(this.variable).then( () => { 
+		return this.accMgr.newAccount(this.variable).then( (address) => { 
 			this.variable = undefined; 
 			this.refs.vip.value = '';
 			this.setState({waiting: false});
+			this.openModal("New Address: " + address);
 		});
 	}
+
+	closeWaitModal = () => { this.setState({waitModalOpen: false}) };
 
 	handleReveal = (event) => {
 		this.setState({reveal: !this.state.reveal});
 	}
 
+	handleReveal2 = (event) => {
+		this.setState({reveal2: !this.state.reveal2});
+	}
+
+	handleImport = (event) => {
+		console.log("Importing " + this.keypath);
+		this.setState({waiting: true});
+		this.accMgr.importFromJSON(this.keypath, this.variable).then( (r) => {
+			this.accMgr.update(r.keyObj, r.password).then( (address) => {
+				r = {};
+				this.refs.vif.files[0] = {};
+				this.refs.vif.value = '';
+				this.keypath = undefined;
+				this.refs.vop.value = '';
+				this.variable = undefined;
+				this.setState({waiting: false});
+				this.openModal("Imported Address: " + address);
+			});
+		})
+	}
 	
 	updateVar = (event) => {
 		this.variable = event.target.value;
+	}
+
+	updatePath = (event) => {
+		console.log(this.refs.vif.files[0].path);
+		this.keypath = this.refs.vif.files[0].path;
 	}
 
 	accountMgr = () => {
@@ -92,19 +126,31 @@ class Settings extends AlertModalUser {
 			return (<p> Please Unlock Your Master Password First! </p>);
 		} else {
 			return (
-				<div>
-				  <fieldset>
-				    <legend>Create New Account:</legend>
-			              <p> Please Enter Password For New Account: </p>	
-				      <input ref="vip" type={this.state.reveal ? "text" : "password"} onChange={this.updateVar}/>
-				      <input type="button" value="Reveal Toggle" onClick={this.handleReveal} />
-				      { this.state.waiting ? <div className="loader"></div> : <input type="button" value="Create" onClick={this.handleNewAcct} /> }
+				<div style={{align: 'center'}}>
+				  <fieldset style={{display: 'inline-block', marginLeft: '160px'}}>
+				    <legend style={{fontWeight: 'bold', marginBottom: '3px'}}>Create New Account:</legend>
+			              Please Enter Password For New Account:<br/>
+				      <input ref="vip" style={{marginLeft: '6px'}} type={this.state.reveal ? "text" : "password"} onChange={this.updateVar}/>
+				      <input type="button" style={{marginRight: '6px'}} value={this.state.reveal ? "Hide" : "Reveal"} onClick={this.handleReveal} />
+				      { this.state.waiting 
+					      ? <div className="loader" style={{height: '13px', width: '13px', display: "inline-block"}}></div>
+					      : <input type="button" value="Create" onClick={this.handleNewAcct} /> }
+				  </fieldset>
+				  <fieldset style={{display: 'inline-block'}}>
+				    <legend style={{fontWeight: 'bold'}}>Import Account:</legend>
+				      Please Select File:
+				      <input ref="vif" style={{marginLeft: '6px'}} type='file' onChange={this.updatePath}/><br/>
+			              Please Enter Password Of The Account:
+				      <input ref="vop" style={{marginLeft: '6px'}} type={this.state.reveal2 ? "text" : "password"} onChange={this.updateVar}/>
+				      <input type="button" style={{marginRight: '6px'}} value={this.state.reveal2 ? "Hide" : "Reveal"} onClick={this.handleReveal2} />
+				      { this.state.waiting 
+					      ? <div className="loader" style={{height: '13px', width: '13px', display: "inline-block"}}></div>
+					      : <input type="button" value="Create" onClick={this.handleImport} /> }
 				  </fieldset>
 				</div>
 				)
 		}
 	}
-
 
 	render = () => {
 		let visibility = 'hide';
@@ -159,10 +205,7 @@ class Settings extends AlertModalUser {
 					<input type="button" className="button" onClick={this.handleClickBack} value="Back" />
 				</div>
 
-				
 				<AlertModal content={this.state.alertContent} isAlertModalOpen={this.state.isAlertModalOpen} close={this.closeModal}/>
-
-				
 			</div>
 		);
 	}
