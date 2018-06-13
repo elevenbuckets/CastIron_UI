@@ -2,7 +2,6 @@ import Reflux from 'reflux';
 import React from 'react';
 
 import AlertModal from '../components/AlertModal';
-import WaitModal from '../components/WaitModal';
 import AlertModalUser from '../common/AlertModalUser'
 import fs from 'fs';
 import CastIronService from '../service/CastIronService';
