@@ -86,7 +86,6 @@ class Settings extends AlertModalUser {
 		this.accMgr.importFromJSON(this.keypath, this.variable).then( (r) => {
 			this.accMgr.update(r.keyObj, r.password).then( (address) => {
 				r = {};
-				this.refs.vif.files[0] = {};
 				this.refs.vif.value = '';
 				this.keypath = undefined;
 				this.refs.vop.value = '';
