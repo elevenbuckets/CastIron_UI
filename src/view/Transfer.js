@@ -109,7 +109,7 @@ class Transfer extends Reflux.Component {
               minHeight: '58',
               zIndex: '1',
               position: "fixed",
-              bottom: '21%',
+              bottom: '20%',
               boxShadow: '0 -5px 6px -5px rgba(200,200,200,0.5)'
             }
           }>

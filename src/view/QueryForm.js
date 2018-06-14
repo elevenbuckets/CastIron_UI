@@ -86,16 +86,19 @@ class QueryForm extends Reflux.Component {
                     }
                   }
                 /></td>
-              <td>
-                <table border="0"><tbody><tr style={{ border: '0px' }} align="center">
-                  <td style={{ border: '0px' }}>
-                    <label style={{fontWeight: 'bold'}}>Address:
-	     <Dropdown ref='addrlist' options={Object.keys(this.state.accounts)} onChange={this.handleChange} value={this.state.address} placeholder="Select an option" />
-                    </label>
-                    <input style={{display: 'inline-block', padding: '5px', margin: '0px', color: '#ffffff', borderColor: '#ffffff'}} type="button" className="bbutton"
-                      value='Copy' onClick={this.copyAddress}
-                    />
-                  </td>
+              <td style={{padding: "0px 25px 0px 45px", margin: "0px"}}>
+                <table border="0"><tbody><tr style={{ border: '0px'}} align="center">
+                  <td style={{ border: '0px', padding: '0px', width: '10px'}}>
+                    <p style={{fontWeight: 'bold', fontSize: "1.2em", display: "inline-block", margin: "0px", padding: "0px", width: "80px"}}>Address:</p></td>
+		  <td rowSpan='2' style={{ border: '0px', padding: '0px'}}>
+	            <Dropdown ref='addrlist' id="mainaddr" options={Object.keys(this.state.accounts)} onChange={this.handleChange} 
+		            value={this.state.address} placeholder="Select an option" />
+                  </td></tr>
+		  <tr style={{ border: '0px' }} align="center">
+		  <td style={{ border: '0px', padding: '0px', width: '110px'}}>
+                    <input style={{display: 'inline-block', padding: '2px', margin: '0px', color: '#ffffff', borderColor: '#ffffff'}} 
+		            type="button" className="bbutton" value='Copy' onClick={this.copyAddress} />
+		  </td>
                   </tr>
                 </tbody></table>
 
