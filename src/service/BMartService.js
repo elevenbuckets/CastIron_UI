@@ -15,8 +15,16 @@ class BMartService {
         this.wallet = CastIronService.wallet;
 
         // CastIron ABI + conditions loader
-        this.wallet.newApp(__APP__)('0.2', 'ETHMall', abiPath('ETHMall'), { 'Sanity': condPath('ETHMall', 'Sanity') });
-        this.wallet.newApp(__APP__)('0.2', 'Registry', abiPath('Registry'), { 'Sanity': condPath('Registry', 'Sanity') });
+	// TODO: for now BMART is only available on privnet
+	// In the future we should have package manifest to declare which network IDs a dApp is available, and use that information
+	// to build the if statements below! 
+	if (this.wallet.networkID === 1100) {
+           this.wallet.newApp(__APP__)('0.2', 'ETHMall', abiPath('ETHMall'), { 'Sanity': condPath('ETHMall', 'Sanity') });
+           this.wallet.newApp(__APP__)('0.2', 'Registry', abiPath('Registry'), { 'Sanity': condPath('Registry', 'Sanity') });
+	} else {
+           this.wallet.newApp(__APP__)('0.2', 'ETHMall', abiPath('ETHMall'), { 'Sanity': condPath('ETHMall', 'Sanity')}, this.wallet.web3.toAddress('0x0'));
+           this.wallet.newApp(__APP__)('0.2', 'Registry', abiPath('Registry'), { 'Sanity': condPath('Registry', 'Sanity')}, this.wallet.web3.toAddress('0x0'));
+	}
 
         this.ETHMall = this.wallet.CUE[__APP__]['ETHMall'];
         this.Registry = this.wallet.CUE[__APP__]['Registry'];
