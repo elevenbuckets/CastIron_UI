@@ -10,12 +10,16 @@ import React from 'react';
 class Drawer extends Reflux.Component {
     constructor(props) {
         super(props);
-    }
+	}
+	
+	changeView(view){
+		CastIronActions.changeView(view);
+	}
 
     render = () => {
         return (
 		<div id="drawer" className={this.props.draw ? 'raise' : 'close'} >
-			<div className="card">
+			<div className="card" onClick={this.changeView.bind(this, "Scheduler")}>
   				<img src="assets/clock-icon.png" style={{width: "64px", height: "64px", marginTop: "16px", marginBotton: "9px"}}/>
 				<p style={{textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontWeight: "bold"}}>Schedular</p>
 			</div>
