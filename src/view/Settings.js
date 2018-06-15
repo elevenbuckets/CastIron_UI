@@ -67,10 +67,14 @@ class Settings extends AlertModalUser {
 			this.refs.vip.value = '';
 			this.setState({waiting: false});
 			this.openModal("New Address: " + address);
+		})
+		.catch((err) => { 
+			this.variable = undefined;
+			this.refs.vip.value = '';
+			this.setState({waiting: false});
+			this.openModal(err);
 		});
 	}
-
-	closeWaitModal = () => { this.setState({waitModalOpen: false}) };
 
 	handleReveal = (event) => {
 		this.setState({reveal: !this.state.reveal});
@@ -93,6 +97,14 @@ class Settings extends AlertModalUser {
 				this.setState({waiting: false});
 				this.openModal("Imported Address: " + address);
 			});
+		})
+		.catch((err) => {
+			this.refs.vif.value = '';
+			this.keypath = undefined;
+			this.refs.vop.value = '';
+			this.variable = undefined;
+			this.setState({waiting: false});
+			this.openModal(err);
 		})
 	}
 	
