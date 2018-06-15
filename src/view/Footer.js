@@ -64,7 +64,7 @@ class Footer extends Reflux.Component {
 		    <td style={{border: '0px', width: '480px'}}>
                     		{ 
 				  n > 0 
-			   		? <div className="loader"></div> 
+			   		? <div align="right" className="loader"></div> 
 			   		: <div></div> 
 		    		}
 		    </td>
@@ -119,12 +119,12 @@ class Footer extends Reflux.Component {
                         </th>
                         <th style={{ paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap' }}>
                             <dl style={{ paddingTop: '0px', paddingBottom: '0px' }}>
-                                <dt>Unix Time:</dt><dd>{this.state.unixTime}</dd>
+                                <dt>Unix Time:</dt><dd>{Math.floor(this.state.unixTime)}</dd>
                             </dl>
                         </th>
                         <th style={{ paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap' }}>
                             <dl style={{ paddingTop: '0px', paddingBottom: '0px' }}>
-                                <dt>Local Time:</dt><dd>{String(this.state.localTime)}</dd>
+                                <dt>Local Time:</dt><dd>{String(this.state.localTime).substring(0,24)}</dd>
                             </dl>
                         </th>
                         <th style={{ paddingTop: '0px', paddingBottom: '0px', whiteSpace: 'nowrap' }}>
