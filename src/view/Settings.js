@@ -72,7 +72,7 @@ class Settings extends AlertModalUser {
 			this.variable = undefined;
 			this.refs.vip.value = '';
 			this.setState({waiting: false});
-			this.openModal(err);
+			this.openModal("Creation Failed");
 		});
 	}
 
@@ -104,7 +104,7 @@ class Settings extends AlertModalUser {
 			this.refs.vop.value = '';
 			this.variable = undefined;
 			this.setState({waiting: false});
-			this.openModal(err);
+			this.openModal("Import Failed!");
 		})
 	}
 	

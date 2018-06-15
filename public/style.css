@@ -542,10 +542,12 @@ Toggle {
     border-top: 6px solid #3498db; /* Blue */
     border-radius: 50%;
     width: 20px;
+    max-width: 20px;
     height: 20px;
     margin: 0px;
     padding: 0px;
     animation: spin 2s linear infinite;
+    display: inline-block;
 }
 
 @-webkit-keyframes spin {
