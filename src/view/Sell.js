@@ -22,7 +22,8 @@ class Sell extends AlertModalUser {
             estimateDeposit: null,
             sellOrder: null,
             price: 0,
-            amount: 0
+            amount: 0,
+	    shopDeposit: 0
 
         }
 
@@ -51,6 +52,9 @@ class Sell extends AlertModalUser {
         BlockTimer.unRegister(this.getShopAddrs);
     }
 
+    getShopDeposit = (shopAddr, posims) => {
+	    this.setState({shopDeposit: this.wallet.toEth(posims.deposit(), 18)});
+    }
 
     getShopAddr = () => {
         let shopAddr = this.ETHMall.getStoreInfo(this.state.address)[0];
@@ -60,6 +64,10 @@ class Sell extends AlertModalUser {
             // CastIron ABI + conditions loader
             BMartService.generateNewPoSIMSApp(this.state.address, shopAddr);
             this.PoSIMS = BMartService.getPoSIMS(this.state.address);
+
+	    if (shopAddr != '0x') {
+		    this.getShopDeposit(shopAddr, this.PoSIMS);
+	    }
         }
 
         return shopAddr;
@@ -236,7 +244,7 @@ class Sell extends AlertModalUser {
                         <tr className="bucket-table-init">
                             <td className="bucket-table-init"><SellShop createStore={this.createStore} disableCreateStore={this.state.shopAddr != "0x"}
                                 estimateDeposit={this.state.estimateDeposit} shopAddrs={this.state.shopAddrs}
-                                shopAddr={this.state.shopAddr}
+                                shopAddr={this.state.shopAddr} shopDeposit={this.state.shopDeposit}
                                 address={this.state.address} useOtherStore={this.useOtherStore} /></td>
                         </tr>
 
