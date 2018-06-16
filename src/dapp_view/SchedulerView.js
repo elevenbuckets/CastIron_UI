@@ -12,7 +12,12 @@ class SchedulerView extends Reflux.Component {
     constructor(props) {
         super(props);
         this.store = CastIronStore;
-        this.state = { recipient: '' };
+        this.state = {
+            recipient: '',
+        };
+
+        this.state.ScheduledQs = [{ Qid: "1123123123", Name: "paly", Trigger: "BlockHeight", Target: "1235" }]
+
         this.wallet = CastIronService.wallet;
         this.timeout;
     }
@@ -58,63 +63,79 @@ class SchedulerView extends Reflux.Component {
         this.setState(() => { return { recipient: addr } });
     }
 
+
+    getQsComponent = () => {
+        if (this.state.ScheduledQs) {
+            return this.state.ScheduledQs.map((q) => {
+                return (
+                    <tr className="balance-sheet">
+                        <td className="balance-sheet"
+                            width='5%'><input
+                            name="check"
+                            type="checkbox" /></td>
+                        <td className="balance-sheet"
+                            width='35%'>{q.Qid}</td>
+                        <td className="balance-sheet"
+                            width='20%'>{q.Name}</td>
+                        <td className="balance-sheet"
+                            width='20%'>{q.Trigger}</td>
+                        <td className="balance-sheet"
+                            width='20%'>{q.Target}</td>
+
+                    </tr>
+                );
+            })
+        }
+
+    }
+
     render = () => {
         return (
             <div>
                 <table className="balance-sheet">
                     <tbody>
                         <tr className="avatar" style={{ textAlign: "center" }}>
-                            <th colSpan="2" className="avatar" style={{ textAlign: "center" }}>Schedule</th>
+                            <th colSpan="3" className="avatar" style={{ textAlign: "center" }}>Schedular</th>
                         </tr>
                         <tr className="balance-sheet">
-                            <td className="balance-sheet">
-                                <label>
-                                    Recipient:
-       <input size={62} style={{ marginLeft: '30', fontFamily: 'monospace', fontSize: '1.09em' }} type='text'
-                                        onChange={this.handleChange} value={this.state.recipient} placeholder="Ethereum Address" />
-                                </label>
-                            </td>
-                            <td className="balance-sheet" width={211} rowSpan='2' style={{ backgroundColor: '#eeeeee' }}>
-                                <table className="txform"><tbody><tr className="txform"><td className="txform" style={{ textAlign: 'center' }}>
-                                    <canvas ref='canvas' width={66} height={66} style=
-                                        {
-                                            {
-                                                border: "3px solid #ccc",
-                                                borderBottomLeftRadius: "2.8em",
-                                                borderBottomRightRadius: "2.8em",
-                                                borderTopRightRadius: "2.8em",
-                                                borderTopLeftRadius: "2.8em"
-                                            }
-                                        }
-                                    /></td></tr></tbody></table>
-                            </td>
+                            <td className="txform" ><input type="button" className="button" value='New' onClick={null} /></td>
+                            <td className="txform"><input type="button" className="button" value='Edit' onClick={null} /></td>
+                            <td className="txform"><input type="button" className="button" value='Search' onClick={null} /></td>
+
                         </tr>
-                        <tr className="balance-sheet">
-                            <td className="balance-sheet">
-                                <TxObjects selected_token_name={this.state.selected_token_name}
-                                    handleEnqueue={this.handleEnqueue} handleSend={this.handleSend}
-                                    recipient={this.state.recipient} send_button_value="Schedular" />
-                            </td>
-                        </tr>
+
                     </tbody>
                 </table>
-                <TxQList style={{ marginTop: '0', marginBottom: '0', paddingTop: '0', paddingBottom: '0' }} />
-                <div style=
-                    {
+
+                <div style={{ overflow: 'scroll', margin: '0', maxHeight: "490px", height: '490px' }} >
+                    <table className="balance-sheet">
+                        <tbody>
+                            <tr className="balance-sheet">
+                                <th className="balance-sheet" style={{ color: '#111111' }} width='5%'>Select</th>
+                                <th className="balance-sheet" style={{ color: '#111111' }} width='35%'>Qid</th>
+                                <th className="balance-sheet" style={{ color: '#111111' }} width='20%'>Name</th>
+                                <th className="balance-sheet" style={{ color: '#111111' }} width='20%'>Trigger</th>
+                                <th className="balance-sheet" style={{ color: '#111111' }} width='20%'>Target</th>
+                            </tr>
+                            {this.getQsComponent()}
+                        </tbody>
+                    </table>
+                    <div style=
                         {
-                            textAlign: 'center',
-                            backgroundColor: '#ffffff',
-                            width: '100%',
-                            maxHeight: '58',
-                            minHeight: '58',
-                            zIndex: '1',
-                            position: "fixed",
-                            bottom: '20%',
-                            boxShadow: '0 -5px 6px -5px rgba(200,200,200,0.5)'
-                        }
-                    }>
-                    <input type="button" className="button" value='Schedule' onClick={this.handleBatchSend} style={{ width: '160px', marginTop: '19px', marginLeft: '5%', marginRight: '5%' }} />
-                    <input type="button" className="button" value='ClearAll' onClick={this.handleClearQueue} style={{ backgroundColor: 'rgb(250,0,0)', width: '160px', marginTop: '19px', marginLeft: '5%', marginRight: '5%' }} />
+                            {
+                                textAlign: 'center',
+                                backgroundColor: '#ffffff',
+                                width: '99.5%',
+                                maxHeight: '58',
+                                minHeight: '58',
+                                zIndex: '2',
+                                position: "fixed",
+                                bottom: '20%',
+                                boxShadow: '0 -5px 6px -5px rgba(200,200,200,0.5)'
+                            }
+                        }>
+                        <input type='text' style={{ paddingTop: '15px', fontFamily: 'monospace', border: 0, width: '85%', fontSize: '1.11em', textAlign: 'center' }} align='center' ref='infocache' value='' />
+                    </div>
                 </div>
             </div>
         );
