@@ -159,13 +159,19 @@
   transition-duration: 0.4s;
 }
 
-.bbutton:hover {
+.bbutton:disabled {
+  color: grey;
+  border: 1px solid grey;
+  cursor: not-allowed;
+}
+
+.bbutton:enabled:hover {
   background-color: #4CAF50;
   color: white;
   font-weight: bold;
 }
 
-.bbutton:not(:hover) {
+.bbutton:enabled:not(:hover) {
   background-color: rgba(255,255,255,0);
   font-weight: normal;
 }

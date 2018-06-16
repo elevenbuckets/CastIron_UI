@@ -72,7 +72,7 @@ class SchedulerView extends Reflux.Component {
                         <td className="balance-sheet"
                             width='5%'><input
                             name="check"
-                            type="checkbox" /></td>
+                            type="checkbox" style={{width: "25px", height: "25px"}}/></td>
                         <td className="balance-sheet"
                             width='35%'>{q.Qid}</td>
                         <td className="balance-sheet"
@@ -95,13 +95,17 @@ class SchedulerView extends Reflux.Component {
                 <table className="balance-sheet">
                     <tbody>
                         <tr className="avatar" style={{ textAlign: "center" }}>
-                            <th colSpan="3" className="avatar" style={{ textAlign: "center" }}>Schedular</th>
+                            <th colSpan="2" className="avatar" style={{ textAlign: "center" }}>Schedular</th>
                         </tr>
                         <tr className="balance-sheet">
-                            <td className="txform" ><input type="button" className="button" value='New' onClick={null} /></td>
-                            <td className="txform"><input type="button" className="button" value='Edit' onClick={null} /></td>
-                            <td className="txform"><input type="button" className="button" value='Search' onClick={null} /></td>
-
+                            <td className="txform" style={{border: '0', textAlign: "left"}}>
+			      <input type="button" className="bbutton" value='New' onClick={null} />
+                              <input type="button" className="bbutton" value='Edit' onClick={null} disabled="true"/>
+                              <input type="button" className="bbutton" value='Search' onClick={null} />
+			    </td>
+                            <td className="txform" style={{border: '0', textAlign: "center"}}>
+			      <p>Active Tasks: {1}</p>
+			    </td>
                         </tr>
 
                     </tbody>
