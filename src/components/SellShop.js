@@ -26,14 +26,20 @@ class SellShop extends React.Component {
                             <td className="balance-sheet" rowSpan='2'> <input type="button"
                                 className="button" value="Create Store" disabled={this.props.disableCreateStore}
                                 onClick={this.props.createStore} /></td>
-                            <td className="balance-sheet">
-                                Estimate Gas Cost: 2000000</td>
+                            <td className="balance-sheet" rowSpan={this.props.disableCreateStore ? 2 : 1}>
+			    	{ this.props.disableCreateStore 
+					? "Your Security Deposit: " + this.props.shopDeposit.toFixed(5) + " ETH" 
+					: "Estimate Gas Cost: 2000000"
+				}
+			    </td>
                         </tr>
 
-                        <tr className="balance-sheet">
-                            <td className="balance-sheet" style={{background: "#ffffff"}}>
-                                {"Estimate Deposit :" + this.props.estimateDeposit + "ETH"}</td>
-                        </tr>
+			{ this.props.disableCreateStore ? null :
+                          <tr className="balance-sheet">
+                              <td className="balance-sheet" style={{background: "#ffffff"}}>
+                                  {"Estimate Deposit :" + this.props.estimateDeposit + "ETH"}</td>
+                          </tr>
+			}
 
                     </tbody>
                 </table>

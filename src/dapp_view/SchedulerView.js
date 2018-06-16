@@ -30,16 +30,16 @@ class SchedulerView extends Reflux.Component {
     }
 
     checked = (Qid, event) => {
-        if(event.target.checked){
-            setDappLocalState(this, {selectedQids: [...this.state.dappLocal.selectedQids, Qid] })
-        }else{
-            if(this.state.dappLocal.selectedQids.indexOf(Qid) != -1){
-                this.state.dappLocal.selectedQids.splice(  this.state.dappLocal.selectedQids.indexOf(Qid), 1);
-                setDappLocalState(this, {selectedQids : this.state.dappLocal.selectedQids})
+        if (event.target.checked) {
+            setDappLocalState(this, { selectedQids: [...this.state.dappLocal.selectedQids, Qid] })
+        } else {
+            if (this.state.dappLocal.selectedQids.indexOf(Qid) != -1) {
+                this.state.dappLocal.selectedQids.splice(this.state.dappLocal.selectedQids.indexOf(Qid), 1);
+                setDappLocalState(this, { selectedQids: this.state.dappLocal.selectedQids })
             }
-            
+
         }
-    } 
+    }
 
     getQsComponent = () => {
         if (this.state.ScheduledQs) {
@@ -50,7 +50,8 @@ class SchedulerView extends Reflux.Component {
                             width='5%'><input
                                 name="check"
                                 type="checkbox"
-                                onChange={this.checked.bind(this,q.Qid)}  /></td>
+                                onChange={this.checked.bind(this, q.Qid)}
+                                style={{ width: "25px", height: "25px" }} /></td>
                         <td className="balance-sheet"
                             width='35%'>{q.Qid}</td>
                         <td className="balance-sheet"
@@ -74,13 +75,17 @@ class SchedulerView extends Reflux.Component {
             <table className="balance-sheet">
                 <tbody>
                     <tr className="avatar" style={{ textAlign: "center" }}>
-                        <th colSpan="3" className="avatar" style={{ textAlign: "center" }}>Schedular</th>
+                        <th colSpan="2" className="avatar" style={{ textAlign: "center" }}>Schedular</th>
                     </tr>
                     <tr className="balance-sheet">
-                        <td className="txform" ><input type="button" className="button" value='New' onClick={this.goTo.bind(this, "New")} /></td>
-                        <td className="txform"><input type="button" className="button" value='Edit' onClick={this.goTo.bind(this, "Edit")} /></td>
-                        <td className="txform"><input type="button" className="button" value='Search' onClick={null} /></td>
-
+                        <td className="txform" style={{ border: '0', textAlign: "left" }}>
+                            <input type="button" className="bbutton" value='New' onClick={this.goTo.bind(this, "New")} />
+                            <input type="button" className="bbutton" value='Edit' onClick={this.goTo.bind(this, "New")} disabled="true" />
+                            <input type="button" className="bbutton" value='Search' onClick={null} />
+                        </td>
+                        <td className="txform" style={{ border: '0', textAlign: "center" }}>
+                            <p>Active Tasks: {1}</p>
+                        </td>
                     </tr>
 
                 </tbody>
@@ -95,6 +100,7 @@ class SchedulerView extends Reflux.Component {
                             <th className="balance-sheet" style={{ color: '#111111' }} width='20%'>Name</th>
                             <th className="balance-sheet" style={{ color: '#111111' }} width='20%'>Trigger</th>
                             <th className="balance-sheet" style={{ color: '#111111' }} width='20%'>Target</th>
+
                         </tr>
                         {this.getQsComponent()}
                     </tbody>
