@@ -14,6 +14,7 @@ class CastIronStore extends Reflux.Store {
             queuedTxs: [
             ],
             Qs: [],
+            ScheduledQs : [{ Qid: "1123123123", Name: "paly", Trigger: "BlockHeight", Target: "1235" , queuedTxs: []}],
             finishedQs: [],
             receipts: {},
             address: null,
@@ -71,6 +72,11 @@ class CastIronStore extends Reflux.Store {
     onSend(addr, type, amount, gasNumber) {
         this.confirmTxs(this.send, arguments);
     }
+
+    onSchedule(addr, type, amount, gasNumber) {
+        this.setUpSchedule(this.send, arguments);
+    }
+
     send(addr, type, amount, gasNumber) {
         let wallet = CastIronService.wallet;
         wallet.setAccount(this.state.address);
@@ -410,11 +416,16 @@ class CastIronStore extends Reflux.Store {
         this.argsToConfirm = [];
     }
 
+    // Open confirm modal for tx sending
     confirmTxs = (func, args) => {
         this.setState({ modalIsOpen: true });
         this.funcToConfirm = func;
         this.argsToConfirm = args;
     }
+
+    
+
+
 
 
 

@@ -6,13 +6,17 @@ import Dropdown from 'react-dropdown';
 import CastIronActions from '../action/CastIronActions';
 import TxObjects from '../view/TxObjects';
 import TxQList from '../view/TxQList';
-import { createCanvasWithAddress } from "../util/Utils";
+import { createCanvasWithAddress, setDappLocalState } from "../util/Utils";
 
 class SchedulerJob extends Reflux.Component {
     constructor(props) {
         super(props);
         this.store = CastIronStore;
-        this.state = { recipient: '' };
+        this.state = {
+            dappLocal: {
+                recipient: ''
+            }
+        };
         this.wallet = CastIronService.wallet;
         this.timeout;
     }
@@ -30,11 +34,11 @@ class SchedulerJob extends Reflux.Component {
     }
 
 
-    handleSend(addr, type, amount, gasNumber) {
-        // CastIronActions.send(addr, type, amount, gasNumber);
+    handleSchedule(addr, type, amount, gasNumber) {
+        CastIronActions.schedule(addr, type, amount, gasNumber);
     }
 
-    handleBatchSend() {
+    handleBatchSchedule() {
         // CastIronActions.batchSend();
     }
 
@@ -55,7 +59,7 @@ class SchedulerJob extends Reflux.Component {
             this.refs.canvas.getContext('2d').clearRect(0, 0, this.refs.canvas.width, this.refs.canvas.height);
         }
 
-        this.setState(() => { return { recipient: addr } });
+        setDappLocalState(this, { recipient: addr });
     }
 
     render = () => {
@@ -64,14 +68,14 @@ class SchedulerJob extends Reflux.Component {
                 <table className="balance-sheet">
                     <tbody>
                         <tr className="avatar" style={{ textAlign: "center" }}>
-                            <th colSpan="2" className="avatar" style={{ textAlign: "center" }}>Schedule</th>
+                            <th colSpan="2" className="avatar" style={{ textAlign: "center" }}>Schedular</th>
                         </tr>
                         <tr className="balance-sheet">
                             <td className="balance-sheet">
                                 <label>
                                     Recipient:
        <input size={62} style={{ marginLeft: '30', fontFamily: 'monospace', fontSize: '1.09em' }} type='text'
-                                        onChange={this.handleChange} value={this.state.recipient} placeholder="Ethereum Address" />
+                                        onChange={this.handleChange} value={this.state.dappLocal.recipient} placeholder="Ethereum Address" />
                                 </label>
                             </td>
                             <td className="balance-sheet" width={211} rowSpan='2' style={{ backgroundColor: '#eeeeee' }}>
@@ -92,8 +96,8 @@ class SchedulerJob extends Reflux.Component {
                         <tr className="balance-sheet">
                             <td className="balance-sheet">
                                 <TxObjects selected_token_name={this.state.selected_token_name}
-                                    handleEnqueue={this.handleEnqueue} handleSend={this.handleSend}
-                                    recipient={this.state.recipient} send_button_value="Schedular" />
+                                    handleEnqueue={this.handleEnqueue} handleSend={this.handleSchedule}
+                                    recipient={this.state.recipient} send_button_value="Schedule" />
                             </td>
                         </tr>
                     </tbody>
@@ -113,7 +117,7 @@ class SchedulerJob extends Reflux.Component {
                             boxShadow: '0 -5px 6px -5px rgba(200,200,200,0.5)'
                         }
                     }>
-                    <input type="button" className="button" value='Schedule' onClick={this.handleBatchSend} style={{ width: '160px', marginTop: '19px', marginLeft: '5%', marginRight: '5%' }} />
+                    <input type="button" className="button" value='Schedule' onClick={this.handleBatchSchedule} style={{ width: '160px', marginTop: '19px', marginLeft: '5%', marginRight: '5%' }} />
                     <input type="button" className="button" value='ClearAll' onClick={this.handleClearQueue} style={{ backgroundColor: 'rgb(250,0,0)', width: '160px', marginTop: '19px', marginLeft: '5%', marginRight: '5%' }} />
                 </div>
             </div>

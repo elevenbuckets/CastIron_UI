@@ -4,5 +4,5 @@ import Reflux from 'reflux';
 let CastIronActions = Reflux.createActions(['enqueue', 'dequeue', 'clearQueue', 'send', 'sendTxInQueue',
 'selectAccount', 'batchSend','startUpdate', 'statusUpdate', 'finishUpdate', 'infoUpdate','selectedTokenUpdate',
 'addQ', 'changeView', 'updateReceipts', 'sendTk','masterUpdate', 'confirmTx', 'cancelTx', 'sendTks', 
-'addressUpdate', 'gasPriceOptionSelect', 'customGasPriceUpdate']);
+'addressUpdate', 'gasPriceOptionSelect', 'customGasPriceUpdate', "schedule"]);
 export default CastIronActions
