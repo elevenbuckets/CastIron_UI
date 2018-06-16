@@ -54,6 +54,10 @@ class QueryForm extends Reflux.Component {
     CastIronActions.customGasPriceUpdate(price);
   }
 
+  handleEnter = (event) => {
+	  if (event.keyCode === 13) CastIronActions.masterUpdate(this.refs.mp.value);
+  }
+
   copyAddress = () => {
     var dummy = document.createElement("input");
     document.body.appendChild(dummy);
@@ -107,7 +111,7 @@ class QueryForm extends Reflux.Component {
                 onMouseEnter={this.handleToggle} onMouseLeave={this.handleToggle}>
                 <table border="0"><tbody><tr style={{ border: '0px' }} align="center"><td style={{ border: '0px', color: this.state.unlocked ? '#4CAF50' : 'red' }}>
                   <label style={{ fontWeight: 'bold' }}>Master Password</label><br />
-                  <input ref='mp' type='password' maxLength='200' hidden={this.state.ptoggle} style={{ marginTop: '7px' }} />
+                  <input ref='mp' type='password' maxLength='200' hidden={this.state.ptoggle} style={{ marginTop: '7px' }} onKeyUp={this.handleEnter} />
                 </td>
                   <td style={{ border: '0px', display: this.state.sbutton, textAlign: "center" }}>
                     <input type="button" className="button" onClick={this.handleClick} style={{ marginTop: '7px' }} value="Settings" />
