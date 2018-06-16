@@ -550,6 +550,18 @@ Toggle {
     display: inline-block;
 }
 
+#fa:hover {
+    color: #111100;
+    background-color: rgba(100,200,200,0.8);
+    box-shadow: rgba(20,20,20,0.5) 15px 18px 6px;
+}
+
+#fi:hover {
+    color: #111100;
+    background-color: rgba(100,200,200,0.8);
+    box-shadow: rgba(20,20,20,0.5) 15px 18px 6px;
+}
+
 @-webkit-keyframes spin {
     0% { -webkit-transform: rotate(0deg); }
     100% { -webkit-transform: rotate(360deg); }
