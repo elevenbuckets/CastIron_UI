@@ -18,7 +18,7 @@ class BMartService {
 	// TODO: for now BMART is only available on privnet
 	// In the future we should have package manifest to declare which network IDs a dApp is available, and use that information
 	// to build the if statements below! 
-	if (this.wallet.networkID === 1100) {
+	if (this.wallet.networkID === '1100') {
            this.wallet.newApp(__APP__)('0.2', 'ETHMall', abiPath('ETHMall'), { 'Sanity': condPath('ETHMall', 'Sanity') });
            this.wallet.newApp(__APP__)('0.2', 'Registry', abiPath('Registry'), { 'Sanity': condPath('Registry', 'Sanity') });
 	} else {
