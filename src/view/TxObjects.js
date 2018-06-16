@@ -86,7 +86,7 @@ class TxObjects extends AlertModalUser {
               <td className="txform" width='43%'>
                 Gas<br /><div style={{ textAlign: 'center' }}><input type='text' size='32' onChange={this.handleChangeGas} /></div>
               </td>
-              <td className="txform" ><input type="button" className="button" value='Send' onClick={this.handleSend} /></td>
+              <td className="txform" ><input type="button" className="button" value={this.props.send_button_value} onClick={this.handleSend} /></td>
               <td className="txform"><input type="button" className="button" value='Enqueue' onClick={this.handleEnqueue} /></td>
             </tr>
           </tbody>

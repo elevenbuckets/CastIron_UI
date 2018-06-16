@@ -14,20 +14,17 @@ import Modal from 'react-modal';
 import ConfirmTXModal from '../components/ConfirmTXModal';
 import CastIronActions from '../action/CastIronActions';
 import AlertModal from '../components/AlertModal'
+import DappViewService from '../service/DappViewService'
 
 class DashBoard extends Reflux.Component {
     constructor(props) {
         super(props);
         this.store = CastIronStore;
-	this.state = {
-		drawerOut: false
-	}
-        // this.map = {
-        //     Transfer: <Transfer />,
-        //     Receipts: <ReceiptsView />,
-        //     Trade: <Trade />
-        // }
-       
+        this.state = {
+            drawerOut: false
+        }
+
+
     }
 
     confirmTX = () => {
@@ -39,46 +36,47 @@ class DashBoard extends Reflux.Component {
     }
 
     handleClick = (event) => {
-	this.setState({drawerOut: !this.state.drawerOut});
-	event.target.blur();
-	event.stopPropagation();
+        this.setState({ drawerOut: !this.state.drawerOut });
+        event.target.blur();
+        event.stopPropagation();
     }
 
 
     render() {
-
+        console.log("in Dashboard render()")
         return (
             <div id="dashboard" className={this.state.drawerOut ? 'raise' : 'close'}>
-	       <div>
-                <QueryForm ref="queryForm" />
-                {this.state.currentView == "Transfer" ? <Transfer /> : this.state.currentView == "Receipts" ? <ReceiptsView /> 
-                : <Trade canvas={this.refs.queryForm.refs.canvas}/>}
+                <div>
+                    <QueryForm ref="queryForm" />
+                    {this.state.currentView == "Transfer" ? <Transfer /> : this.state.currentView == "Receipts" ? <ReceiptsView />
+                        : this.state.currentView == "Trade"? <Trade canvas={this.refs.queryForm.refs.canvas}/> : 
+                        DappViewService.getView(this.state.currentView)}
 
-                <AlertModal content={"Please unlock with your master passward!"} 
-                isAlertModalOpen={this.state.modalIsOpen && (!this.state.unlocked) } close={this.cancelTX} />
-                <Modal isOpen={this.state.modalIsOpen && this.state.unlocked} style=
-                    {
+                    <AlertModal content={"Please unlock with your master passward!"}
+                        isAlertModalOpen={this.state.modalIsOpen && (!this.state.unlocked)} close={this.cancelTX} />
+                    <Modal isOpen={this.state.modalIsOpen && this.state.unlocked} style=
                         {
-                            overlay: {
-                                width: '100%',
-                                maxHeight: '100%',
-                                zIndex: '5'
-                            },
-                            content: {
-                                top: '400px',
-                                left: '400px',
-                                right: '400px',
-                                bottom: '400px'
+                            {
+                                overlay: {
+                                    width: '100%',
+                                    maxHeight: '100%',
+                                    zIndex: '5'
+                                },
+                                content: {
+                                    top: '400px',
+                                    left: '400px',
+                                    right: '400px',
+                                    bottom: '400px'
 
+                                }
                             }
-                        }
-                    }> Please confirm!
-                <ConfirmTXModal confirmTX={this.confirmTX} cancelTX={this.cancelTX}  />
-                </Modal>
-                <Footer handleDrawer={this.handleClick} draw={this.state.drawerOut}/>
-	       </div>
-                <Drawer refs="underlayer" handleClick={this.handleClick} draw={this.state.drawerOut}/>
-	  </div>
+                        }> Please confirm!
+                <ConfirmTXModal confirmTX={this.confirmTX} cancelTX={this.cancelTX} />
+                    </Modal>
+                    <Footer handleDrawer={this.handleClick} draw={this.state.drawerOut} />
+                </div>
+                <Drawer refs="underlayer" handleClick={this.handleClick} draw={this.state.drawerOut} />
+            </div>
         )
     }
 

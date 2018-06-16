@@ -93,7 +93,7 @@ class Transfer extends Reflux.Component {
               <td className="balance-sheet">
                 <TxObjects selected_token_name={this.state.selected_token_name}
                   handleEnqueue={this.handleEnqueue} handleSend={this.handleSend}
-                  recipient={this.state.recipient} />
+                  recipient={this.state.recipient} send_button_value="Send"/>
               </td>
             </tr>
           </tbody>

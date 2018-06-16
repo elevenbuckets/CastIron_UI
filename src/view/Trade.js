@@ -87,28 +87,6 @@ class Trade extends AlertModalUser {
         this.setState({ showIndex: null });
     }
 
-    /*
-    showBuckets = (bucket) => {
-        if (bucket.index == this.state.showIndex) {
-	     return ( 
-	        <tr>
-		{ this.state.orders.slice(bucket.start, bucket.end + 1).map( (order) => 
-		    {
-                       return (
-                          <td className="balance-sheet" width='20%' >{order.price}</td>
-                          <td className="balance-sheet" width='20%' >{order.amount}</td>
-                          <td className="balance-sheet" width='40%' ><input type="button" className="button" value='Buy'
-                              onClick={this.buy.bind(this, order)} /></td>
-                       )
-                    }); }
-		</tr>
-	    )
-//	    res2.push(middle);
-//	    res2.push(`</tbody></table></td></tr>`);
-        }
-    }
-    */
-
     readOrders = () => {
         let TKRAddr = this.wallet.TokenList[this.state.selected_token_name].addr;
         let TKRdecimal = this.wallet.TokenList[this.state.selected_token_name].decimals;
