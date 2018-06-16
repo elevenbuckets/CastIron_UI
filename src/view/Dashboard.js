@@ -41,7 +41,6 @@ class DashBoard extends Reflux.Component {
         event.stopPropagation();
     }
 
-
     render() {
         console.log("in Dashboard render()")
         return (
