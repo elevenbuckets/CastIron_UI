@@ -97,33 +97,48 @@ class SchedulerView extends Reflux.Component {
                 <table className="balance-sheet">
                     <tbody>
                         <tr className="balance-sheet">
-                            <th className="balance-sheet" style={{ color: '#111111' }} width='5%'>Select</th>
-                            <th className="balance-sheet" style={{ color: '#111111' }} width='35%'>Qid</th>
-                            <th className="balance-sheet" style={{ color: '#111111' }} width='20%'>Name</th>
-                            <th className="balance-sheet" style={{ color: '#111111' }} width='20%'>Trigger</th>
-                            <th className="balance-sheet" style={{ color: '#111111' }} width='10%'>Target</th>
-                            <th className="balance-sheet" style={{ color: '#111111' }} width='10%'>Tolerance</th>
-
-
+                            <td className="txform" style={{border: '0', padding: '2px', textAlign: "left"}}>
+			      <input type="button" className="bbutton" value='New' onClick={null} />
+                              <input type="button" className="bbutton" value='Edit' onClick={null} disabled="true"/>
+                              <input type="button" className="bbutton" value='Search' onClick={null} />
+			    </td>
+                            <td className="txform" style={{border: '0', textAlign: "center", padding: '0px'}}>
+			      <p style={{fontSize: '1.2em', padding: '0px', margin: '0px'}}>Active Tasks: {1}</p>
+			    </td>
                         </tr>
                         {this.getQsComponent()}
                     </tbody>
                 </table>
-                <div style=
-                    {
+
+                <div style={{ overflow: 'scroll', margin: '0', maxHeight: "495px", height: '495px' }} >
+                    <table className="balance-sheet">
+                        <tbody>
+                            <tr className="balance-sheet">
+                                <th className="balance-sheet" style={{ color: '#111111' }} width='5%'>Select</th>
+                                <th className="balance-sheet" style={{ color: '#111111' }} width='35%'>Qid</th>
+                                <th className="balance-sheet" style={{ color: '#111111' }} width='20%'>Name</th>
+                                <th className="balance-sheet" style={{ color: '#111111' }} width='20%'>Trigger</th>
+                                <th className="balance-sheet" style={{ color: '#111111' }} width='20%'>Target</th>
+                            </tr>
+                            {this.getQsComponent()}
+                        </tbody>
+                    </table>
+                    <div style=
                         {
-                            textAlign: 'center',
-                            backgroundColor: '#ffffff',
-                            width: '99.5%',
-                            maxHeight: '58',
-                            minHeight: '58',
-                            zIndex: '2',
-                            position: "fixed",
-                            bottom: '20%',
-                            boxShadow: '0 -5px 6px -5px rgba(200,200,200,0.5)'
-                        }
-                    }>
-                    <input type='text' style={{ paddingTop: '15px', fontFamily: 'monospace', border: 0, width: '85%', fontSize: '1.11em', textAlign: 'center' }} align='center' ref='infocache' value='' />
+                            {
+                                textAlign: 'center',
+                                backgroundColor: '#ffffff',
+                                width: '99.5%',
+                                maxHeight: '46',
+                                minHeight: '46',
+                                zIndex: '2',
+                                position: "fixed",
+                                bottom: '20%',
+                                boxShadow: '0 -5px 6px -5px rgba(200,200,200,0.5)'
+                            }
+                        }>
+                        <input type='text' style={{ paddingTop: '5px', fontFamily: 'monospace', border: 0, width: '85%', fontSize: '1.11em', textAlign: 'center' }} align='center' ref='infocache' value='' />
+                    </div>
                 </div>
             </div>
         </div>) : <SchedulerJob goTo={this.goTo} Qid={this.state.dappLocal.selectedQids.length == 0 ?

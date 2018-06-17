@@ -16,7 +16,19 @@ class Settings extends AlertModalUser {
 		this.state = {
 			reveal: false,
 			reveal2: false,
-			waiting: false
+			waiting: false,
+			dappList: [
+				    'Scheduler',
+				    'Eleven Peers',
+				    'Mesh Eleven',
+				    'My Profolios',
+				    'Blood Line Registry',
+				    'ENS bidding app',
+				    'Club Badge',
+				    '11BE Blog',
+				    'Zombie Battles',
+				    'Crypto Fighters'
+				  ],
 		}
 
 		this.wallet = CastIronService.wallet;
@@ -57,6 +69,18 @@ class Settings extends AlertModalUser {
 		stage
 		  .then( () => { return this.setState({waiting: true}) })
 		  .then( () => { this.updateNew(); } );
+	}
+
+	dappTable = () => {
+		//react understand array
+		return this.state.dappList.map((appName) => {
+			return ( <tr className="balance-sheet">
+			    <td className="balance-sheet" style={{width: "1000px"}}>{appName}</td>
+			    <td className="balance-sheet" style={{width: "10%"}}>y</td>
+			    <td className="balance-sheet" style={{width: "10%"}}>y</td>
+			    <td className="balance-sheet" style={{width: "10%"}}>n</td>
+			  </tr> )
+		});
 	}
 
 	updateNew = () => {
@@ -158,7 +182,7 @@ class Settings extends AlertModalUser {
 		}
 
 		if (this.state.unlocked === false) {
-			return (<p> Please Unlock Your Master Password First! </p>);
+			return (<p style={{fontSize: '1.5em', height: '102px', textAlign: 'center'}}> Please Unlock Your Master Password First! </p>);
 		} else {
 			return (
 				<div style={{align: 'center'}}>
@@ -196,15 +220,14 @@ class Settings extends AlertModalUser {
 		return (
 			<div id="settings"
 				className={visibility}>
-				<h2><a href="#">General</a></h2><hr color='#333' width='90%' />
+				<h2><a style={{display: 'inline'}} href="#">General</a>
+				    <p style={{display: 'inline', margin: "0 0 0 71%"}}>{"Network ID: " + this.wallet.networkID}</p>
+				</h2><hr color='#333' width='90%' />
 				<div style={{ display: 'block', marginLeft: "7%", marginRight: "10%", marginTop: '40px', marginBottom: '40px', textAlign: "center" }}>
 					<table className="settings-sheet" border="0"><tbody>
-						<form onSubmit={(e) =>{e.preventDefault()}} >
-							<tr className="settings-sheet" style={{ backgroundColor: "rgba(0,0,0,0)" }}>
-								<td colSpan="5" className="settings-sheet" style={{ backgroundColor: "rgba(0,0,0,0)" }}>
-									<label style={{ fontSize: '1.2em', fontWeight: "bold" }}>Gas Price: </label><br />
-								</td>
-							</tr>
+						<form style={{textAlign: 'center'}} onSubmit={(e) =>{e.preventDefault()}} >
+						    <fieldset style={{marginLeft: "7.5%", padding: "5px 25px 5px 25px", width: "83%", textAlign: "center"}}>
+							<legend style={{textAlign: 'left', fontWeight: "bold" }}>Gas Price: </legend>
 							<tr className="settings-sheet" style={{ backgroundColor: "rgba(0,0,0,0)" }}>
 								<td className="settings-sheet" style={{ backgroundColor: "rgba(0,0,0,0)", marginLeft: "30px" }}>
 									<label style={{ fontSize: '1.05em', fontWeight: "bold" }}><input type="radio"
@@ -229,6 +252,7 @@ class Settings extends AlertModalUser {
 			disabled={this.props.isCustomGasPrice} onChange={this.handleCustomGasPriceUpdate} placeholder="custom (in gwei)..." />
 									</label>
 								</td></tr>
+						   </fieldset>
 						</form>
 					</tbody></table>
 				</div>
@@ -236,9 +260,20 @@ class Settings extends AlertModalUser {
 				<div style={{ display: 'block', margin: '40px' }}>
 				{ this.accountMgr() }
 				</div>
-				<h2><a href="#">Apps (coming soon!)</a></h2><hr color='#333' width='90%' />
-				<div style={{ display: 'block', margin: '40px' }}>this is where app menu is</div>
-				<div style={{ margin: '60px', textAlign: "center" }}>
+				<h2><a href="#">Applications</a></h2><hr color='#333' width='90%' />
+				  <table border="1" className="appList"><tbody style={{display: 'block', height: '340px', overflow: "hidden"}}>
+					  <tr>
+					    <td style={{width: "1000px"}}>App Name</td>
+					    <td style={{width: "10%"}}>installed</td>
+					    <td style={{width: "10%"}}>drawer</td>
+					    <td style={{width: "10%"}}>launch</td>
+					    <td style={{width: "2px", padding: "0px", border: "0px", color: "black"}}>.</td>
+					  </tr>
+					  <table><tbody style={{display: 'block', height: '300px', overflow: "scroll"}}>
+					  { this.dappTable() }
+					  </tbody></table>
+				    </tbody></table>
+				<div style={{ margin: '20px', textAlign: "center" }}>
 					<input type="button" className="button" onClick={this.handleClickBack} value="Back" />
 				</div>
 
