@@ -3,7 +3,9 @@ import CastIronActions from '../action/CastIronActions'
 import CastIronService from '../service/CastIronService';
 import AcctMgrService from '../service/AcctMgrService';
 import { createCanvasWithAddress } from "../util/Utils"
-import BlockTimer from '../util/BlockTimer'
+import BlockTimer from '../util/BlockTimer';
+import Scheduler from '../util/Scheduler';
+import uuid from 'uuid/v4';
 
 class CastIronStore extends Reflux.Store {
     constructor() {
@@ -14,7 +16,7 @@ class CastIronStore extends Reflux.Store {
             queuedTxs: [
             ],
             Qs: [],
-            ScheduledQs : [{ Qid: "1123123123", Name: "paly", Trigger: "BlockHeight", Target: "1235" , queuedTxs: []}],
+            scheduledQs: [],
             finishedQs: [],
             receipts: {},
             address: null,
@@ -25,14 +27,15 @@ class CastIronStore extends Reflux.Store {
             selected_token_name: '',
             currentView: 'Transfer',
             modalIsOpen: false,
+            scheduleModalIsOpen : false,
             unlocked: false,
             gasPriceOption: "high",
-            customGasPrice : null
+            customGasPrice: null
         }
         this.funcToConfirm = null;
         this.listenables = CastIronActions;
         this.wallet = CastIronService.wallet;
-	this.accMgr = AcctMgrService.accMgr;
+        this.accMgr = AcctMgrService.accMgr;
         this.getAccounts = this.getAccounts.bind(this);
         this.state.tokenList = this.wallet.configs.watchTokens || ['OMG'];
         this.wallet.hotGroups(this.state.tokenList);
@@ -69,23 +72,26 @@ class CastIronStore extends Reflux.Store {
         this.setState({ queuedTxs: [] })
     }
 
-    onSend(addr, type, amount, gasNumber) {
+    onSend( fromAddr, addr, type, amount, gasNumber) {
         this.confirmTxs(this.send, arguments);
     }
 
-    onSchedule(addr, type, amount, gasNumber) {
-        this.setUpSchedule(this.send, arguments);
-    }
-
-    send(addr, type, amount, gasNumber) {
+    send(fromAddr, addr, type, amount, gasNumber) {
         let wallet = CastIronService.wallet;
-        wallet.setAccount(this.state.address);
+        wallet.setAccount(fromAddr);
         let weiAmount = wallet.toWei(amount, wallet.TokenList[type].decimals).toString();
         let jobList = [];
         jobList.push(wallet.enqueueTx(type)(addr, weiAmount, gasNumber));
         let qPromise = wallet.processJobs(jobList);
         this.processQPromise(qPromise)
     }
+
+    onSchedule(fromAddr, addr, type, amount, gasNumber) {
+        let tx = {from: fromAddr, to : addr, type, amount, gas: gasNumber};
+        this.setUpSchedule(this.batchSend.bind(this), [[tx]]);
+    }
+
+
 
     onSendTxInQueue(tx) {
         this.confirmTxs(this.sendTxInQueue, arguments);
@@ -139,12 +145,12 @@ class CastIronStore extends Reflux.Store {
     }
 
     onBatchSend() {
-        this.confirmTxs(this.batchSend, arguments);
+        this.confirmTxs(this.batchSend, [this.state.queuedTxs]);
     }
-    batchSend() {
+    batchSend(queuedTxs) {
         let wallet = CastIronService.wallet;
         let jobList = [];
-        this.state.queuedTxs.map((tx) => {
+        queuedTxs.map((tx) => {
             wallet.setAccount(tx.from);
             let weiAmount = wallet.toWei(tx.amount, wallet.TokenList[tx.type].decimals).toString();
             jobList.push(wallet.enqueueTx(tx.type)(tx.to, weiAmount, tx.gas));
@@ -254,8 +260,8 @@ class CastIronStore extends Reflux.Store {
             data = this.merge(["transactionHash", "tx"], r.data, this.wallet.rcdQ[r.Q]);
         }
 
-        data.map((d) =>{
-            if(!d.tx){
+        data.map((d) => {
+            if (!d.tx) {
                 d.tx = "0x0000000000000000000000000000000000000000000000000000000000000000";
             }
         })
@@ -380,11 +386,11 @@ class CastIronStore extends Reflux.Store {
                     { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice: gasPrice }
                 )
             } else {
-                if(this.state.customGasPrice){
+                if (this.state.customGasPrice) {
                     this.wallet.gasPrice = this.wallet.toWei(this.state.customGasPrice, 9);
                 }
                 this.setState(
-                    { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice : this.state.customGasPrice }
+                    { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice: this.state.customGasPrice }
                 )
             }
 
@@ -423,7 +429,40 @@ class CastIronStore extends Reflux.Store {
         this.argsToConfirm = args;
     }
 
-    
+    // to confirm schedule tx in modal
+    onConfirmScheduleTx(queue) {
+        
+        this.setState({ scheduleModalIsOpen: false });
+        if (this.funcToScheudle) {
+            let Qid = uuid();
+            queue.Qid = Qid;
+            queue.func = this.funcToScheudle;
+            queue.args = this.argsToSchedule;
+            queue.status = "Scheduled";
+            let __queue = {...queue}
+            Scheduler.schedule( __queue );
+           
+            this.state.scheduledQs.push(__queue) ;
+            this.setState({scheduledQs : this.state.scheduledQs})
+            this.funcToScheudle = null;
+            this.argsToSchedule = [];
+        }
+    }
+
+    // to cancel schedule tx in modal
+    onCancelScheduleTx() {
+        this.setState({ scheduleModalIsOpen: false });
+        this.funcToScheudle = null;
+        this.argsToSchedule = [];
+    }
+
+
+    // Open Schedular modal for tx sending
+    setUpSchedule = (func, args) => {
+        this.setState({ scheduleModalIsOpen: true });
+        this.funcToScheudle = func;
+        this.argsToSchedule = args;
+    }
 
 
 

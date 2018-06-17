@@ -13,7 +13,8 @@ import Trade from './Trade';
 import Modal from 'react-modal';
 import ConfirmTXModal from '../components/ConfirmTXModal';
 import CastIronActions from '../action/CastIronActions';
-import AlertModal from '../components/AlertModal'
+import AlertModal from '../components/AlertModal';
+import ScheduleTXModal from '../components/ScheduleTXModal';
 import DappViewService from '../service/DappViewService'
 
 class DashBoard extends Reflux.Component {
@@ -35,6 +36,14 @@ class DashBoard extends Reflux.Component {
         CastIronActions.cancelTx();
     }
 
+    confirmScheduleTX = (queue) => {
+        CastIronActions.confirmScheduleTx(queue);
+    }
+
+    cancelScheduleTX = () => {
+        CastIronActions.cancelScheduleTx();
+    }
+
     handleClick = (event) => {
         this.setState({ drawerOut: !this.state.drawerOut });
         event.target.blur();
@@ -53,7 +62,8 @@ class DashBoard extends Reflux.Component {
 
                     <AlertModal content={"Please unlock with your master passward!"}
                         isAlertModalOpen={this.state.modalIsOpen && (!this.state.unlocked)} close={this.cancelTX} />
-                    <Modal isOpen={this.state.modalIsOpen && this.state.unlocked} style=
+                        {/*TODO: refactor this later*/}
+                        <Modal isOpen={this.state.modalIsOpen && this.state.unlocked} style=
                         {
                             {
                                 overlay: {
@@ -72,6 +82,8 @@ class DashBoard extends Reflux.Component {
                         }> Please confirm!
                 <ConfirmTXModal confirmTX={this.confirmTX} cancelTX={this.cancelTX} />
                     </Modal>
+                    <ScheduleTXModal confirmScheduleTX={this.confirmScheduleTX} cancelScheduleTX={this.cancelScheduleTX} 
+                    isScheduleModalOpen={this.state.scheduleModalIsOpen}/>
                     <Footer handleDrawer={this.handleClick} draw={this.state.drawerOut} />
                 </div>
                 <Drawer refs="underlayer" handleClick={this.handleClick} draw={this.state.drawerOut} />

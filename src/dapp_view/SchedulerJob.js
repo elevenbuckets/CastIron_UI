@@ -34,8 +34,8 @@ class SchedulerJob extends Reflux.Component {
     }
 
 
-    handleSchedule(addr, type, amount, gasNumber) {
-        CastIronActions.schedule(addr, type, amount, gasNumber);
+    handleSchedule = (addr, type, amount, gasNumber) => {
+        CastIronActions.schedule(this.state.address, addr, type, amount, gasNumber);
     }
 
     handleBatchSchedule() {
@@ -97,7 +97,7 @@ class SchedulerJob extends Reflux.Component {
                             <td className="balance-sheet">
                                 <TxObjects selected_token_name={this.state.selected_token_name}
                                     handleEnqueue={this.handleEnqueue} handleSend={this.handleSchedule}
-                                    recipient={this.state.recipient} send_button_value="Schedule" />
+                                    recipient={this.state.dappLocal.recipient} send_button_value="Schedule" />
                             </td>
                         </tr>
                     </tbody>
@@ -117,7 +117,7 @@ class SchedulerJob extends Reflux.Component {
                             boxShadow: '0 -5px 6px -5px rgba(200,200,200,0.5)'
                         }
                     }>
-                    <input type="button" className="button" value='Schedule' onClick={this.handleBatchSchedule} style={{ width: '160px', marginTop: '19px', marginLeft: '5%', marginRight: '5%' }} />
+                    <input type="button" className="button" value='BatchSchedule' onClick={this.handleBatchSchedule} style={{ width: '160px', marginTop: '19px', marginLeft: '5%', marginRight: '5%' }} />
                     <input type="button" className="button" value='ClearAll' onClick={this.handleClearQueue} style={{ backgroundColor: 'rgb(250,0,0)', width: '160px', marginTop: '19px', marginLeft: '5%', marginRight: '5%' }} />
                 </div>
             </div>

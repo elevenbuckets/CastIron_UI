@@ -42,8 +42,8 @@ class SchedulerView extends Reflux.Component {
     }
 
     getQsComponent = () => {
-        if (this.state.ScheduledQs) {
-            return this.state.ScheduledQs.map((q) => {
+        if (this.state.scheduledQs) {
+            return this.state.scheduledQs.map((q) => {
                 return (
                     <tr className="balance-sheet">
                         <td className="balance-sheet"
@@ -55,11 +55,13 @@ class SchedulerView extends Reflux.Component {
                         <td className="balance-sheet"
                             width='35%'>{q.Qid}</td>
                         <td className="balance-sheet"
-                            width='20%'>{q.Name}</td>
+                            width='20%'>{q.name}</td>
                         <td className="balance-sheet"
-                            width='20%'>{q.Trigger}</td>
+                            width='20%'>{q.trigger}</td>
                         <td className="balance-sheet"
-                            width='20%'>{q.Target}</td>
+                            width='10%'>{q.target}</td>
+                        <td className="balance-sheet"
+                            width='10%'>{q.tolerance}</td>
 
                     </tr>
                 );
@@ -99,7 +101,9 @@ class SchedulerView extends Reflux.Component {
                             <th className="balance-sheet" style={{ color: '#111111' }} width='35%'>Qid</th>
                             <th className="balance-sheet" style={{ color: '#111111' }} width='20%'>Name</th>
                             <th className="balance-sheet" style={{ color: '#111111' }} width='20%'>Trigger</th>
-                            <th className="balance-sheet" style={{ color: '#111111' }} width='20%'>Target</th>
+                            <th className="balance-sheet" style={{ color: '#111111' }} width='10%'>Target</th>
+                            <th className="balance-sheet" style={{ color: '#111111' }} width='10%'>Tolerance</th>
+
 
                         </tr>
                         {this.getQsComponent()}
