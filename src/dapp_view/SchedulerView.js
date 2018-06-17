@@ -98,20 +98,20 @@ class SchedulerView extends Reflux.Component {
                             <th colSpan="2" className="avatar" style={{ textAlign: "center" }}>Schedular</th>
                         </tr>
                         <tr className="balance-sheet">
-                            <td className="txform" style={{border: '0', textAlign: "left"}}>
+                            <td className="txform" style={{border: '0', padding: '2px', textAlign: "left"}}>
 			      <input type="button" className="bbutton" value='New' onClick={null} />
                               <input type="button" className="bbutton" value='Edit' onClick={null} disabled="true"/>
                               <input type="button" className="bbutton" value='Search' onClick={null} />
 			    </td>
-                            <td className="txform" style={{border: '0', textAlign: "center"}}>
-			      <p>Active Tasks: {1}</p>
+                            <td className="txform" style={{border: '0', textAlign: "center", padding: '0px'}}>
+			      <p style={{fontSize: '1.2em', padding: '0px', margin: '0px'}}>Active Tasks: {1}</p>
 			    </td>
                         </tr>
 
                     </tbody>
                 </table>
 
-                <div style={{ overflow: 'scroll', margin: '0', maxHeight: "490px", height: '490px' }} >
+                <div style={{ overflow: 'scroll', margin: '0', maxHeight: "495px", height: '495px' }} >
                     <table className="balance-sheet">
                         <tbody>
                             <tr className="balance-sheet">
@@ -130,15 +130,15 @@ class SchedulerView extends Reflux.Component {
                                 textAlign: 'center',
                                 backgroundColor: '#ffffff',
                                 width: '99.5%',
-                                maxHeight: '58',
-                                minHeight: '58',
+                                maxHeight: '46',
+                                minHeight: '46',
                                 zIndex: '2',
                                 position: "fixed",
                                 bottom: '20%',
                                 boxShadow: '0 -5px 6px -5px rgba(200,200,200,0.5)'
                             }
                         }>
-                        <input type='text' style={{ paddingTop: '15px', fontFamily: 'monospace', border: 0, width: '85%', fontSize: '1.11em', textAlign: 'center' }} align='center' ref='infocache' value='' />
+                        <input type='text' style={{ paddingTop: '5px', fontFamily: 'monospace', border: 0, width: '85%', fontSize: '1.11em', textAlign: 'center' }} align='center' ref='infocache' value='' />
                     </div>
                 </div>
             </div>
