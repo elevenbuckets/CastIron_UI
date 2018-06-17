@@ -113,5 +113,10 @@ const createCanvasWithAddress = (canvas, address) => {
     }
 }
 
-export { createCanvasWithAddress }
+// self will be the dapp view. EX usage: setDappLocalState(this, { SchedulerViewType: view })
+const setDappLocalState = (self, state) => {
+    return self.setState({dappLocal : {...self.state.dappLocal, ...state}});
+}
+
+export { createCanvasWithAddress, setDappLocalState}
 

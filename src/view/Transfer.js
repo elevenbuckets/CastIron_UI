@@ -30,8 +30,8 @@ class Transfer extends Reflux.Component {
   }
 
 
-  handleSend(addr, type, amount, gasNumber) {
-    CastIronActions.send(addr, type, amount, gasNumber);
+  handleSend = (addr, type, amount, gasNumber) => {
+    CastIronActions.send(this.state.address, addr, type, amount, gasNumber);
   }
 
   handleBatchSend() {
