@@ -139,6 +139,19 @@
     {
       "constant": true,
       "inputs": [],
+      "name": "payback",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
       "name": "owner",
       "outputs": [
         {
@@ -259,5 +272,5 @@
   "unlinked_binary": "0x",
   "networks": {},
   "schema_version": "0.0.5",
-  "updated_at": 1528173221579
+  "updated_at": 1529254745335
 }
