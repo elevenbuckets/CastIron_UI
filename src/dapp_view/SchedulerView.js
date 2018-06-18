@@ -8,6 +8,8 @@ import TxObjects from '../view/TxObjects';
 import TxQList from '../view/TxQList';
 import { createCanvasWithAddress, setDappLocalState } from "../util/Utils";
 import SchedulerJob from './SchedulerJob';
+import EditScheduleTXModal from '../components/EditScheduleTXModal';
+import Scheduler from '../util/Scheduler'
 
 class SchedulerView extends Reflux.Component {
     constructor(props) {
@@ -17,25 +19,54 @@ class SchedulerView extends Reflux.Component {
             dappLocal: {
                 recipient: '',
                 schedulerViewType: "List", // Options are List, New, Edit
-                selectedQids: []
+                selectedQs: []
             }
 
         };
         this.wallet = CastIronService.wallet;
     }
 
+    saveScheduleTX = (Q) =>{
+        // Use Schedule now, need to figure out how to change from state
+        Scheduler.state.Qs.map( q => {
+            if(q.Qid == Q.Qid){
+                Object.keys(q).map(key=>{
+                    q[key] = Q[key]; 
+                })
+            }
+        })
+    }
+
+    cancelChangeScheduleTX = () =>{
+        this.goTo("List");
+    }
 
     goTo = (view) => {
         setDappLocalState(this, { schedulerViewType: view });
+        // if (view == "Edit") {
+        //     if(this.state.dappLocal.selectedQs[0].args[0]){
+        //         this.state.dappLocal.selectedQs[0].args[0].map(tx =>{
+        //             CastIronActions.enqueueSchedule(tx);
+        //         })
+        //     }
+            
+        // }
     }
 
-    checked = (Qid, event) => {
+    cleanEdit(){
+        CastIronActions.clearQueueSchedule();
+        setDappLocalState(this, { selectedQs: []});
+    }
+
+    
+
+    checked = (Q, event) => {
         if (event.target.checked) {
-            setDappLocalState(this, { selectedQids: [...this.state.dappLocal.selectedQids, Qid] })
+            setDappLocalState(this, { selectedQs: [...this.state.dappLocal.selectedQs, Q] })
         } else {
-            if (this.state.dappLocal.selectedQids.indexOf(Qid) != -1) {
-                this.state.dappLocal.selectedQids.splice(this.state.dappLocal.selectedQids.indexOf(Qid), 1);
-                setDappLocalState(this, { selectedQids: this.state.dappLocal.selectedQids })
+            if (this.state.dappLocal.selectedQs.indexOf(Q) != -1) {
+                this.state.dappLocal.selectedQs.splice(this.state.dappLocal.selectedQs.indexOf(Q), 1);
+                setDappLocalState(this, { selectedQs: this.state.dappLocal.selectedQs })
             }
 
         }
@@ -50,10 +81,10 @@ class SchedulerView extends Reflux.Component {
                             width='5%'><input
                                 name="check"
                                 type="checkbox"
-                                onChange={this.checked.bind(this, q.Qid)}
+                                onChange={this.checked.bind(this, q)}
                                 style={{ width: "25px", height: "25px" }} /></td>
                         <td className="balance-sheet"
-                            width='35%'>{q.Qid}</td>
+                            width='30%'>{q.Qid}</td>
                         <td className="balance-sheet"
                             width='20%'>{q.name}</td>
                         <td className="balance-sheet"
@@ -61,7 +92,9 @@ class SchedulerView extends Reflux.Component {
                         <td className="balance-sheet"
                             width='10%'>{q.target}</td>
                         <td className="balance-sheet"
-                            width='10%'>{q.tolerance}</td>
+                            width='5%'>{q.tolerance}</td>
+                        <td className="balance-sheet"
+                            width='10%'>{q.status}</td>
 
                     </tr>
                 );
@@ -73,7 +106,7 @@ class SchedulerView extends Reflux.Component {
 
 
     render = () => {
-        return this.state.dappLocal.schedulerViewType == "List" ? (<div>
+        return this.state.dappLocal.schedulerViewType != "New" ? (<div>
             <table className="balance-sheet">
                 <tbody>
                     <tr className="avatar" style={{ textAlign: "center" }}>
@@ -82,7 +115,8 @@ class SchedulerView extends Reflux.Component {
                     <tr className="balance-sheet">
                         <td className="txform" style={{ border: '0', textAlign: "left" }}>
                             <input type="button" className="bbutton" value='New' onClick={this.goTo.bind(this, "New")} />
-                            <input type="button" className="bbutton" value='Edit' onClick={this.goTo.bind(this, "New")} disabled="true" />
+                            <input type="button" className="bbutton" value='Edit' onClick={this.goTo.bind(this, "Edit")}
+                                disabled={this.state.dappLocal.selectedQs.length != 1} />
                             <input type="button" className="bbutton" value='Search' onClick={null} />
                         </td>
                         <td className="txform" style={{ border: '0', textAlign: "center" }}>
@@ -98,11 +132,12 @@ class SchedulerView extends Reflux.Component {
                     <tbody>
                         <tr className="balance-sheet">
                             <th className="balance-sheet" style={{ color: '#111111' }} width='5%'>Select</th>
-                            <th className="balance-sheet" style={{ color: '#111111' }} width='35%'>Qid</th>
+                            <th className="balance-sheet" style={{ color: '#111111' }} width='30%'>Qid</th>
                             <th className="balance-sheet" style={{ color: '#111111' }} width='20%'>Name</th>
                             <th className="balance-sheet" style={{ color: '#111111' }} width='20%'>Trigger</th>
                             <th className="balance-sheet" style={{ color: '#111111' }} width='10%'>Target</th>
-                            <th className="balance-sheet" style={{ color: '#111111' }} width='10%'>Tolerance</th>
+                            <th className="balance-sheet" style={{ color: '#111111' }} width='5%'>Tolerance</th>
+                            <th className="balance-sheet" style={{ color: '#111111' }} width='10%'>Status</th>
 
 
                         </tr>
@@ -126,8 +161,16 @@ class SchedulerView extends Reflux.Component {
                     <input type='text' style={{ paddingTop: '15px', fontFamily: 'monospace', border: 0, width: '85%', fontSize: '1.11em', textAlign: 'center' }} align='center' ref='infocache' value='' />
                 </div>
             </div>
-        </div>) : <SchedulerJob goTo={this.goTo} Qid={this.state.dappLocal.selectedQids.length == 0 ?
-            null : this.state.dappLocal.selectedQids[0]} />
+            {this.state.dappLocal.selectedQs.length == 0 ? '': <EditScheduleTXModal saveScheduleTX={this.saveScheduleTX} cancelChangeScheduleTX={this.cancelChangeScheduleTX} 
+            Q={ this.state.dappLocal.selectedQs[0]}
+            isEditScheduleModalOpen={this.state.dappLocal.schedulerViewType == "Edit"} gasPrice = {this.state.gasPrice}/>}
+            
+        </div>) : this.state.dappLocal.schedulerViewType == "New" ? <SchedulerJob viewType={this.state.dappLocal.schedulerViewType}
+            goTo={this.goTo} /> :
+                <SchedulerJob goTo={this.goTo} cleanEdit={this.cleanEdit} viewType={this.state.dappLocal.schedulerViewType} Q={this.state.dappLocal.selectedQs.length == 0 ?
+                    null : this.state.dappLocal.selectedQs[0]} />
+
+                   
 
 
     }

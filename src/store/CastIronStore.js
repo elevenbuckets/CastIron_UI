@@ -15,6 +15,7 @@ class CastIronStore extends Reflux.Store {
             ,
             queuedTxs: [
             ],
+            scheduleQueuedTxs: [],
             Qs: [],
             scheduledQs: [],
             finishedQs: [],
@@ -27,7 +28,7 @@ class CastIronStore extends Reflux.Store {
             selected_token_name: '',
             currentView: 'Transfer',
             modalIsOpen: false,
-            scheduleModalIsOpen : false,
+            scheduleModalIsOpen: false,
             unlocked: false,
             gasPriceOption: "high",
             customGasPrice: null
@@ -56,6 +57,13 @@ class CastIronStore extends Reflux.Store {
             { queuedTxs: this.state.queuedTxs })
     }
 
+
+    onEnqueueSchedule(tx) {
+        this.state.scheduleQueuedTxs.push(tx);
+        this.setState(
+            { scheduleQueuedTxs: this.state.scheduleQueuedTxs })
+    }
+
     onDequeue(tx) {
         if (this.state.queuedTxs.indexOf(tx) == -1) {
             return;
@@ -68,11 +76,22 @@ class CastIronStore extends Reflux.Store {
         this.setState({ queuedTxs: this.state.queuedTxs })
     }
 
+    onDequeueSchedule(tx) {
+        if (this.state.scheduleQueuedTxs.indexOf(tx) == -1) {
+            return;
+        }
+        this.state.scheduleQueuedTxs.splice(this.state.scheduleQueuedTxs.indexOf(tx), 1);
+        this.setState({ scheduleQueuedTxs: this.state.scheduleQueuedTxs })
+    }
+
     onClearQueue() {
         this.setState({ queuedTxs: [] })
     }
+    onClearQueueSchedule() {
+        this.setState({ scheduleQueuedTxs: [] })
+    }
 
-    onSend( fromAddr, addr, type, amount, gasNumber) {
+    onSend(fromAddr, addr, type, amount, gasNumber) {
         this.confirmTxs(this.send, arguments);
     }
 
@@ -87,15 +106,23 @@ class CastIronStore extends Reflux.Store {
     }
 
     onSchedule(fromAddr, addr, type, amount, gasNumber) {
-        let tx = {from: fromAddr, to : addr, type, amount, gas: gasNumber};
+        let tx = { from: fromAddr, to: addr, type, amount, gas: gasNumber };
         this.setUpSchedule(this.batchSend.bind(this), [[tx]]);
     }
+
+   
+    onScheduleTxInQueue(tx) {
+        this.setUpSchedule(this.batchSend.bind(this), [[tx]], CastIronActions.dequeueSchedule, arguments) ;
+    }
+
 
 
 
     onSendTxInQueue(tx) {
         this.confirmTxs(this.sendTxInQueue, arguments);
     }
+
+   
 
     sendTxInQueue(tx) {
         CastIronActions.dequeue(tx);
@@ -145,8 +172,15 @@ class CastIronStore extends Reflux.Store {
     }
 
     onBatchSend() {
-        this.confirmTxs(this.batchSend, [this.state.queuedTxs]);
+        this.confirmTxs(this.batchSend, [this.state.queuedTxs],
+        CastIronActions.clearQueue, arguments);
     }
+
+    onBatchSchedule() {
+        this.setUpSchedule(this.batchSend.bind(this), [this.state.scheduleQueuedTxs],
+         CastIronActions.clearQueueSchedule, arguments);
+    }
+
     batchSend(queuedTxs) {
         let wallet = CastIronService.wallet;
         let jobList = [];
@@ -158,9 +192,7 @@ class CastIronStore extends Reflux.Store {
 
         let qPromise = wallet.processJobs(jobList);
         this.processQPromise(qPromise);
-        CastIronActions.clearQueue();
     }
-
 
     onSelectAccount(value) {
         this.setState(() => {
@@ -243,7 +275,7 @@ class CastIronStore extends Reflux.Store {
         console.log(`-|| Account: ${this.state.address} ||-`);
         console.log(JSON.stringify(this.state.balances, 0, 2));
         console.log(`--------------------`);
-        // we can perhaps store a copy of the state on disk?
+        // we can perhaps store a copy of the state o CastIronActions.clearQueue();n disk?
     }
 
     onAddQ(Q) {
@@ -413,6 +445,12 @@ class CastIronStore extends Reflux.Store {
             this.funcToConfirm = null;
             this.argsToConfirm = [];
         }
+
+        if(this.funcAfterConfirmTx){
+            this.funcAfterConfirmTx(...this.argsAfterConfirmTx);
+            this.funcAfterConfirmTx = null;
+            this.argsAfterConfirmTx = [];
+        }
     }
 
     // to cancel tx in modal
@@ -423,15 +461,17 @@ class CastIronStore extends Reflux.Store {
     }
 
     // Open confirm modal for tx sending
-    confirmTxs = (func, args) => {
+    confirmTxs = (func, args,afterConfirmFunc, afterConfirmArgs) => {
         this.setState({ modalIsOpen: true });
         this.funcToConfirm = func;
         this.argsToConfirm = args;
+        this.funcAfterConfirmTx = afterConfirmFunc;
+        this.argsAfterConfirmTx = afterConfirmArgs;
     }
 
     // to confirm schedule tx in modal
     onConfirmScheduleTx(queue) {
-        
+
         this.setState({ scheduleModalIsOpen: false });
         if (this.funcToScheudle) {
             let Qid = uuid();
@@ -439,13 +479,19 @@ class CastIronStore extends Reflux.Store {
             queue.func = this.funcToScheudle;
             queue.args = this.argsToSchedule;
             queue.status = "Scheduled";
-            let __queue = {...queue}
-            Scheduler.schedule( __queue );
-           
-            this.state.scheduledQs.push(__queue) ;
-            this.setState({scheduledQs : this.state.scheduledQs})
+            let __queue = { ...queue }
+            Scheduler.schedule(__queue);
+
+            this.state.scheduledQs.push(__queue);
+            this.setState({ scheduledQs: this.state.scheduledQs })
             this.funcToScheudle = null;
             this.argsToSchedule = [];
+        }
+
+        if(this.funcAfterConfirmSchedule){
+            this.funcAfterConfirmSchedule(...this.argsAfterConfirmSchedule);
+            this.funcAfterConfirmSchedule = null;
+            this.argsAfterConfirmSchedule = [];
         }
     }
 
@@ -458,10 +504,12 @@ class CastIronStore extends Reflux.Store {
 
 
     // Open Schedular modal for tx sending
-    setUpSchedule = (func, args) => {
+    setUpSchedule = (func, args, afterConfirmFunc, afterConfirmArgs ) => {
         this.setState({ scheduleModalIsOpen: true });
         this.funcToScheudle = func;
         this.argsToSchedule = args;
+        this.funcAfterConfirmSchedule = afterConfirmFunc;
+        this.argsAfterConfirmSchedule = afterConfirmArgs;
     }
 
 
