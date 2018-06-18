@@ -17,13 +17,18 @@ class Sell extends AlertModalUser {
         super(props);
         this.store = CastIronStore;
         this.wallet = CastIronService.wallet;
+	this.shopAddr = '0x';
+
         this.state = {
-            shopAddr: '0x',
             estimateDeposit: null,
             sellOrder: null,
             price: 0,
             amount: 0,
-	    shopDeposit: 0
+	    shopDeposit: 0,
+	    shopBalance: 0,
+	    paidback: false,
+	    canTakeSD: false,
+	    totalTake: 0
 
         }
 
@@ -35,8 +40,17 @@ class Sell extends AlertModalUser {
 
     }
 
+    componentDidUpdate(prevProps, prevState) {
+	if (this.state.address !== prevState.address) {
+		this.shopAddr = this.ETHMall.getStoreInfo(this.state.address)[0];
+		this.getShopAddr();
+		this.getSellOrder();
+	}
+    }
+
     componentDidMount() {
         console.log("in componet did mount in Sell.js");
+	this.getShopAddr();
         this.getEstimateDeposit();
         this.getSellOrder();
         this.getShopAddrs();
@@ -50,27 +64,50 @@ class Sell extends AlertModalUser {
         BlockTimer.unRegister(this.getEstimateDeposit);
         BlockTimer.unRegister(this.getSellOrder);
         BlockTimer.unRegister(this.getShopAddrs);
+	if (this.state.shopAddr != '0x') BlockTimer.unRegister(this.watchShopInfo);
     }
 
-    getShopDeposit = (shopAddr, posims) => {
-	    this.setState({shopDeposit: this.wallet.toEth(posims.deposit(), 18)});
-    }
 
-    getShopAddr = () => {
-        let shopAddr = this.ETHMall.getStoreInfo(this.state.address)[0];
-        if (shopAddr != this.state.shopAddr) {
-            this.setState({ shopAddr: shopAddr });
-
-            // CastIron ABI + conditions loader
+    watchShopInfo = () => {
+	    let shopAddr = this.shopAddr;
+	    // CastIron ABI + conditions loader
             BMartService.generateNewPoSIMSApp(this.state.address, shopAddr);
             this.PoSIMS = BMartService.getPoSIMS(this.state.address);
 
-	    if (shopAddr != '0x') {
-		    this.getShopDeposit(shopAddr, this.PoSIMS);
-	    }
-        }
+	    this.getShopDeposit(shopAddr, this.PoSIMS);
+    }
 
-        return shopAddr;
+    getShopDeposit = (shopAddr, posims) => {
+	    let p = posims.paid();
+	    let d = Number(this.wallet.toEth(posims.deposit(), 18).toString());
+	    let t = Number(this.wallet.toEth(this.wallet.web3.eth.getBalance(shopAddr), 18).toString());
+	    let c = this.ETHMall.isExpired(shopAddr);
+	    let e;
+
+	    if (p === false) {
+		    c === true ? e = t : e = t - d;
+	    } else {
+		    e = t;
+	    }
+
+	    this.setState({
+		    shopDeposit: d, 
+	    	    shopBalance: t,
+		    canTakeSD: c,
+		    paidback: p,
+		    totalTake: e
+	    });
+    }
+
+    getShopAddr = () => {
+        this.shopAddr = this.ETHMall.getStoreInfo(this.state.address)[0];
+
+    	if (this.shopAddr != '0x') {
+	        this.watchShopInfo();
+       	        BlockTimer.register(this.watchShopInfo);
+    	}
+
+        return this.shopAddr;
     }
 
     getShopAddrs = () => {
@@ -166,7 +203,7 @@ class Sell extends AlertModalUser {
             args: ['spender', 'amount'],
             txObj: { value: null, gas: 250000 },
             tkObj: {
-                spender: this.state.shopAddr,
+                spender: this.shopAddr,
                 amount: this.wallet.toWei(this.state.amount, this.wallet.TokenList[this.state.selected_token_name].decimals).toString()
             }
         }
@@ -217,8 +254,20 @@ class Sell extends AlertModalUser {
         CastIronActions.sendTk(tk);
     }
 
+    withdraw = () => {
+        let tk = {
+            type: 'BMart',
+            contract: "PoSIMS" + this.state.address,
+            call: 'withdraw',
+            args: [],
+            txObj: { value: null, gas: 250000 },
+            tkObj: {}
+        }
+        CastIronActions.sendTk(tk);
+    }
+
     restock = () => {
-        CastIronActions.send(this.state.shopAddr, this.state.selected_token_name, this.state.amount, 150000)
+        CastIronActions.send(this.state.address, this.shopAddr, this.state.selected_token_name, this.state.amount, 150000)
     }
 
     useOtherStore = (event) => {
@@ -240,22 +289,22 @@ class Sell extends AlertModalUser {
             <div style={{ width: '100%', overflow: 'scroll', margin: '0', maxHeight: "593px", height: '593px' }} >
                 <table className="balance-sheet">
                     <tbody>
-
                         <tr className="bucket-table-init">
-                            <td className="bucket-table-init"><SellShop createStore={this.createStore} disableCreateStore={this.state.shopAddr != "0x"}
-                                estimateDeposit={this.state.estimateDeposit} shopAddrs={this.state.shopAddrs}
-                                shopAddr={this.state.shopAddr} shopDeposit={this.state.shopDeposit}
-                                address={this.state.address} useOtherStore={this.useOtherStore} /></td>
+                            <td className="bucket-table-init"><SellShop createStore={this.createStore} disableCreateStore={this.shopAddr != "0x"}
+                                estimateDeposit={this.state.estimateDeposit} shopAddrs={this.state.shopAddrs} sellOrder={this.state.sellOrder}
+                                shopAddr={this.shopAddr} shopDeposit={this.state.shopDeposit} shopBalance={this.state.shopBalance}
+                                address={this.state.address} useOtherStore={this.useOtherStore} paidback={this.state.paidback} 
+				canTakeSD={this.state.canTakeSD} totalTake={this.state.totalTake} withdraw={this.withdraw} /></td>
                         </tr>
 
                         <tr className="bucket-table-init">
                             <td className="bucket-table-init"><SellOrder sellOrder={this.state.sellOrder} createOrder={this.createOrder}
-                                disableCreateOrder={this.state.shopAddr == "0x" || 
+                                disableCreateOrder={this.shopAddr == "0x" || 
                                 this.state.sellOrder === null ||
                                  (this.state.sellOrder["amount"]) !=0 }
-                                disableChangePrice={this.state.shopAddr == "0x"}
-                                disableRestock={this.state.shopAddr == "0x"}
-                                disableCancelOrder={this.state.shopAddr == "0x"}
+                                disableChangePrice={this.shopAddr == "0x"}
+                                disableRestock={this.shopAddr == "0x"}
+                                disableCancelOrder={this.shopAddr == "0x"}
                                 handleChangeAmount={this.handleChangeAmount}
                                 handleChangePrice={this.handleChangePrice}
                                 changePrice={this.changePrice}
