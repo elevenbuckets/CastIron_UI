@@ -59,6 +59,8 @@ class SchedulerView extends Reflux.Component {
                 })
             }
         })
+
+        this.goTo("List");
     }
 
     cancelChangeScheduleTX = () => {
