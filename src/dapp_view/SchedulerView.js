@@ -19,46 +19,65 @@ class SchedulerView extends Reflux.Component {
             dappLocal: {
                 recipient: '',
                 schedulerViewType: "List", // Options are List, New, Edit
-                selectedQs: []
+                selectedQs: [],
+                filteredQs: [],
+                filter: {},
+                showSearch : false
             }
 
         };
         this.wallet = CastIronService.wallet;
     }
 
-    saveScheduleTX = (Q) =>{
+    componentDidMount = () =>{
+        setDappLocalState(this, {filteredQs: this.state.scheduledQs});
+    }
+
+    componnentDidUpdate = (prevProps, prevState) =>{
+        if(prevState.scheduledQs != this.state.scheduledQs){
+            let filteredQs = this.state.scheduledQs;
+            let filter = this.state.dappLocal.filter;
+            // filteredQs = filteredQs.filter(q => {
+            //     return JSON.stringify(q) == JSON.stringify({ ...q, ...this.state.dappLocal.filter });
+            // })
+            filteredQs = filteredQs.filter(q => {
+                return Object.keys(filter).reduce((match, key) =>{
+                    return match && q[key].includes(filter[key]);
+                }, true)
+                // return JSON.stringify(q) == JSON.stringify({ ...q, ...filter });
+            })
+            setDappLocalState(this, {filteredQs : filteredQs })
+        }
+    }
+
+    saveScheduleTX = (Q) => {
         // Use Schedule now, need to figure out how to change from state
-        Scheduler.state.Qs.map( q => {
-            if(q.Qid == Q.Qid){
-                Object.keys(q).map(key=>{
-                    q[key] = Q[key]; 
+        Scheduler.state.Qs.map(q => {
+            if (q.Qid == Q.Qid) {
+                Object.keys(q).map(key => {
+                    q[key] = Q[key];
                 })
             }
         })
     }
 
-    cancelChangeScheduleTX = () =>{
+    cancelChangeScheduleTX = () => {
         this.goTo("List");
     }
 
     goTo = (view) => {
         setDappLocalState(this, { schedulerViewType: view });
-        // if (view == "Edit") {
-        //     if(this.state.dappLocal.selectedQs[0].args[0]){
-        //         this.state.dappLocal.selectedQs[0].args[0].map(tx =>{
-        //             CastIronActions.enqueueSchedule(tx);
-        //         })
-        //     }
-            
-        // }
     }
 
-    cleanEdit(){
+    cleanEdit() {
         CastIronActions.clearQueueSchedule();
-        setDappLocalState(this, { selectedQs: []});
+        setDappLocalState(this, { selectedQs: [] });
     }
 
-    
+    getActiveTaskNumber = () => {
+        return this.state.dappLocal.filteredQs.length;
+    }
+
 
     checked = (Q, event) => {
         if (event.target.checked) {
@@ -72,9 +91,28 @@ class SchedulerView extends Reflux.Component {
         }
     }
 
+    changeFilter = (field, event) =>{
+        let filter =  {...this.state.dappLocal.filter, [field] : event.target.value}
+        if(event.target.value == ""){
+            delete filter[field];
+        }
+        let filteredQs = this.state.scheduledQs;
+        filteredQs = filteredQs.filter(q => {
+            return Object.keys(filter).reduce((match, key) =>{
+               return match && q[key].includes(filter[key]);
+            }, true)
+            // return JSON.stringify(q) == JSON.stringify({ ...q, ...filter });
+        })
+        setDappLocalState(this, {filter: filter, filteredQs : filteredQs })
+    }
+
+    toggleSearch = () =>{
+        setDappLocalState(this, {showSearch : !this.state.dappLocal.showSearch});
+    }
+
     getQsComponent = () => {
-        if (this.state.scheduledQs) {
-            return this.state.scheduledQs.map((q) => {
+        if (this.state.dappLocal.filteredQs) {
+            return this.state.dappLocal.filteredQs.map((q) => {
                 return (
                     <tr className="balance-sheet">
                         <td className="balance-sheet"
@@ -117,10 +155,10 @@ class SchedulerView extends Reflux.Component {
                             <input type="button" className="bbutton" value='New' onClick={this.goTo.bind(this, "New")} />
                             <input type="button" className="bbutton" value='Edit' onClick={this.goTo.bind(this, "Edit")}
                                 disabled={this.state.dappLocal.selectedQs.length != 1} />
-                            <input type="button" className="bbutton" value='Search' onClick={null} />
+                            <input type="button" className="bbutton" value='Search' onClick={this.toggleSearch} />
                         </td>
                         <td className="txform" style={{ border: '0', textAlign: "center" }}>
-                            <p>Active Tasks: {1}</p>
+                            <p>Active Tasks: {this.getActiveTaskNumber()}</p>
                         </td>
                     </tr>
 
@@ -141,6 +179,36 @@ class SchedulerView extends Reflux.Component {
 
 
                         </tr>
+                        <tr className="balance-sheet" hidden={!this.state.dappLocal.showSearch}>
+                            <td className="balance-sheet"
+                                width='5%'></td>
+                            <td className="balance-sheet"
+                                width='30%'><input type='text' size='36'
+                                    onChange={this.changeFilter.bind(this, "Qid")}
+                                    /></td>
+                            <td className="balance-sheet"
+                                width='20%'><input type='text' size='20'
+                                    onChange={this.changeFilter.bind(this, "name")}
+                                   /></td>
+                            <td className="balance-sheet"
+                                width='20%'><input type='text' size='20'
+                                    onChange={this.changeFilter.bind(this, "trigger")}
+                                    /></td>
+                            <td className="balance-sheet"
+                                width='10%'><input type='text' size='10'
+                                    onChange={this.changeFilter.bind(this, "target")}
+                                   /></td>
+                            <td className="balance-sheet"
+                                width='5%'><input type='text' size='5'
+                                    onChange={this.changeFilter.bind(this, "tolerance")}
+                                     /></td>
+                            <td className="balance-sheet"
+                                width='10%'><input type='text' size='10'
+                                    onChange={this.changeFilter.bind(this, "status")}
+                                   /></td>
+
+                        </tr>
+
                         {this.getQsComponent()}
                     </tbody>
                 </table>
@@ -161,16 +229,16 @@ class SchedulerView extends Reflux.Component {
                     <input type='text' style={{ paddingTop: '15px', fontFamily: 'monospace', border: 0, width: '85%', fontSize: '1.11em', textAlign: 'center' }} align='center' ref='infocache' value='' />
                 </div>
             </div>
-            {this.state.dappLocal.selectedQs.length == 0 ? '': <EditScheduleTXModal saveScheduleTX={this.saveScheduleTX} cancelChangeScheduleTX={this.cancelChangeScheduleTX} 
-            Q={ this.state.dappLocal.selectedQs[0]}
-            isEditScheduleModalOpen={this.state.dappLocal.schedulerViewType == "Edit"} gasPrice = {this.state.gasPrice}/>}
-            
+            {this.state.dappLocal.selectedQs.length == 0 ? '' : <EditScheduleTXModal saveScheduleTX={this.saveScheduleTX} cancelChangeScheduleTX={this.cancelChangeScheduleTX}
+                Q={this.state.dappLocal.selectedQs[0]}
+                isEditScheduleModalOpen={this.state.dappLocal.schedulerViewType == "Edit"} gasPrice={this.state.gasPrice} />}
+
         </div>) : this.state.dappLocal.schedulerViewType == "New" ? <SchedulerJob viewType={this.state.dappLocal.schedulerViewType}
             goTo={this.goTo} /> :
                 <SchedulerJob goTo={this.goTo} cleanEdit={this.cleanEdit} viewType={this.state.dappLocal.schedulerViewType} Q={this.state.dappLocal.selectedQs.length == 0 ?
                     null : this.state.dappLocal.selectedQs[0]} />
 
-                   
+
 
 
     }
