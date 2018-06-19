@@ -260,6 +260,7 @@ class Settings extends AlertModalUser {
 				<div style={{ display: 'block', margin: '40px' }}>
 				{ this.accountMgr() }
 				</div>
+                    {	/*				
 				<h2><a href="#">Applications</a></h2><hr color='#333' width='90%' />
 				  <table border="1" className="appList"><tbody style={{display: 'block', height: '340px', overflow: "hidden"}}>
 					  <tr>
@@ -273,7 +274,8 @@ class Settings extends AlertModalUser {
 					  { this.dappTable() }
 					  </tbody></table>
 				    </tbody></table>
-				<div style={{ margin: '20px', textAlign: "center" }}>
+		     */   }
+				<div style={{ margin: '150px', textAlign: "center" }}>
 					<input type="button" className="button" onClick={this.handleClickBack} value="Back" />
 				</div>
 

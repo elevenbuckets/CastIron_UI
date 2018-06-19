@@ -58,6 +58,16 @@
     overflow: hidden;
 }
 
+.label-soon {
+    position: absolute;
+    bottom: 8px;
+    left: 2px;
+    font-weight: bolder;
+    color: #fff815;
+    font-size: 1.64em;
+    transform: rotate(-25deg);
+}
+
 #settings {
     position: fixed;
     left: 0;
