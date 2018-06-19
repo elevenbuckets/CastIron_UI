@@ -6,7 +6,7 @@ class SellOrder extends React.Component {
 
     render() {
         return (
-            <div style={{ padding: "50px 300px 90px 300px"}}>
+            <div style={{ padding: "50px 300px 90px 300px" }}>
                 <table className="balance-sheet">
                     <tbody>
                         <tr className="balance-sheet">

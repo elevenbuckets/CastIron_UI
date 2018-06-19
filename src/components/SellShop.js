@@ -17,7 +17,13 @@ class SellShop extends React.Component {
 	 let barTwoPercent = String(Number((earnings / grandTotal) * 100).toFixed(2)) + '%';
 	 let barThreePercent = String(Number((outlooks / grandTotal) * 100).toFixed(2)) + '%';
 
-	 if (grandTotal === 0) { return (<div> Ready to create new order! </div>)};
+	 if (grandTotal === 0) { 
+		 if (this.props.totalOrders === 0) {
+		 	return (<div> Ready to create new order! </div>)
+		 } else {
+		 	return (<div> Sold Out! Please restock for more! </div>)
+		 }
+	 };
 
 	 return (<div>
 	    <div className="stacked-bar-graph">

@@ -28,8 +28,8 @@ class Sell extends AlertModalUser {
 	    shopBalance: 0,
 	    paidback: false,
 	    canTakeSD: false,
-	    totalTake: 0
-
+	    totalTake: 0,
+	    totalitems: 0
         }
 
         this.ETHMall = BMartService.ETHMall;
@@ -43,6 +43,7 @@ class Sell extends AlertModalUser {
     componentDidUpdate(prevProps, prevState) {
 	if (this.state.address !== prevState.address) {
 		this.shopAddr = this.ETHMall.getStoreInfo(this.state.address)[0];
+		if (this.shopAddr == '0x') BlockTimer.unRegister(this.watchShopInfo);
 		this.getShopAddr();
 		this.getSellOrder();
 	}
@@ -57,6 +58,7 @@ class Sell extends AlertModalUser {
         BlockTimer.register(this.getEstimateDeposit);
         BlockTimer.register(this.getShopAddrs);
         BlockTimer.register(this.getSellOrder);
+	if (this.shopAddr != '0x') BlockTimer.register(this.watchShopInfo);
     }
 
     componentWillUnmount() {
@@ -64,7 +66,7 @@ class Sell extends AlertModalUser {
         BlockTimer.unRegister(this.getEstimateDeposit);
         BlockTimer.unRegister(this.getSellOrder);
         BlockTimer.unRegister(this.getShopAddrs);
-	if (this.state.shopAddr != '0x') BlockTimer.unRegister(this.watchShopInfo);
+	if (this.shopAddr != '0x') BlockTimer.unRegister(this.watchShopInfo);
     }
 
 
@@ -83,6 +85,7 @@ class Sell extends AlertModalUser {
 	    let t = Number(this.wallet.toEth(this.wallet.web3.eth.getBalance(shopAddr), 18).toString());
 	    let c = this.ETHMall.isExpired(shopAddr);
 	    let e;
+	    let s = posims.totalitems();
 
 	    if (p === false) {
 		    c === true ? e = t : e = t - d;
@@ -95,17 +98,28 @@ class Sell extends AlertModalUser {
 	    	    shopBalance: t,
 		    canTakeSD: c,
 		    paidback: p,
-		    totalTake: e
+		    totalTake: e,
+		    totalitems: s
 	    });
     }
 
     getShopAddr = () => {
         this.shopAddr = this.ETHMall.getStoreInfo(this.state.address)[0];
-
     	if (this.shopAddr != '0x') {
-	        this.watchShopInfo();
-       	        BlockTimer.register(this.watchShopInfo);
-    	}
+		this.watchShopInfo();
+	} else {
+	    // reset
+	    this.setState({
+            	    estimateDeposit: null,
+		    sellOrder: null,
+		    shopDeposit: 0, 
+	    	    shopBalance: 0,
+		    canTakeSD: false,
+		    paidback: false,
+		    totalTake: 0,
+		    totalitems: 0
+	    });
+	}
 
         return this.shopAddr;
     }
@@ -293,15 +307,13 @@ class Sell extends AlertModalUser {
                             <td className="bucket-table-init"><SellShop createStore={this.createStore} disableCreateStore={this.shopAddr != "0x"}
                                 estimateDeposit={this.state.estimateDeposit} shopAddrs={this.state.shopAddrs} sellOrder={this.state.sellOrder}
                                 shopAddr={this.shopAddr} shopDeposit={this.state.shopDeposit} shopBalance={this.state.shopBalance}
-                                address={this.state.address} useOtherStore={this.useOtherStore} paidback={this.state.paidback} 
+                                address={this.state.address} useOtherStore={this.useOtherStore} paidback={this.state.paidback} totalOrders={this.state.totalitems}
 				canTakeSD={this.state.canTakeSD} totalTake={this.state.totalTake} withdraw={this.withdraw} /></td>
                         </tr>
-
                         <tr className="bucket-table-init">
                             <td className="bucket-table-init"><SellOrder sellOrder={this.state.sellOrder} createOrder={this.createOrder}
-                                disableCreateOrder={this.shopAddr == "0x" || 
-                                this.state.sellOrder === null ||
-                                 (this.state.sellOrder["amount"]) !=0 }
+			        totalOrders={this.state.totalitems}
+                                disableCreateOrder={this.shopAddr == "0x" || this.state.sellOrder === null || this.state.totalitems != 0 }
                                 disableChangePrice={this.shopAddr == "0x"}
                                 disableRestock={this.shopAddr == "0x"}
                                 disableCancelOrder={this.shopAddr == "0x"}
@@ -311,7 +323,6 @@ class Sell extends AlertModalUser {
                                 restock={this.restock}
                                 cancelOrder={this.cancelOrder}
                             /></td>
-
                         </tr>
                     </tbody>
                 </table>
