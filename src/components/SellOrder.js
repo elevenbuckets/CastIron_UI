@@ -14,12 +14,12 @@ class SellOrder extends React.Component {
                             <td className="balance-sheet" colSpan='2' >
                                 {this.props.sellOrder ? "Order Size : " + this.props.sellOrder["amount"] + ", Price : " + this.props.sellOrder["price"] : "--"}</td>
                         </tr>
-                        <tr className="balance-sheet" hidden={this.props.disableCreateOrder}>
+                        <tr className="balance-sheet" hidden={this.props.disableCreateOrder} style={{marginBottom: "80px"}}>
                             <td className="txform" width='73%'>
                                 Amount<br /><div style={{ textAlign: 'center', marginLeft: '30px', marginBottom: '20px' }}><input type='text' size='42' onChange={this.props.handleChangeAmount} /></div>
                             </td>
 
-                            <td className="balance-sheet" rowSpan="2"> <input type="button" className="button" value="Create"
+                            <td className="balance-sheet" rowSpan="2" style={{padding: "92px"}}> <input type="button" className="button" value="Create"
                                 disabled={this.props.disableCreateOrder} onClick={this.props.createOrder} /></td>
                         </tr>
                         <tr className="balance-sheet" hidden={this.props.disableCreateOrder}>

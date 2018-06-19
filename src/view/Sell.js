@@ -41,30 +41,28 @@ class Sell extends AlertModalUser {
     }
 
     componentDidUpdate(prevProps, prevState) {
+	this.shopAddr = this.ETHMall.getStoreInfo(this.state.address)[0];
 	if (this.state.address !== prevState.address) {
-		this.shopAddr = this.ETHMall.getStoreInfo(this.state.address)[0];
-		if (this.shopAddr == '0x') BlockTimer.unRegister(this.watchShopInfo);
+		if (this.shopAddr == '0x') BlockTimer.unRegister(this.watchShopInfo); // unregister previous
 		this.getShopAddr();
-		this.getSellOrder();
+        	this.getEstimateDeposit();
 	}
     }
 
     componentDidMount() {
         console.log("in componet did mount in Sell.js");
+	this.shopAddr = this.ETHMall.getStoreInfo(this.state.address)[0];
 	this.getShopAddr();
         this.getEstimateDeposit();
-        this.getSellOrder();
         this.getShopAddrs();
         BlockTimer.register(this.getEstimateDeposit);
         BlockTimer.register(this.getShopAddrs);
-        BlockTimer.register(this.getSellOrder);
 	if (this.shopAddr != '0x') BlockTimer.register(this.watchShopInfo);
     }
 
     componentWillUnmount() {
         super.componentWillUnmount();
         BlockTimer.unRegister(this.getEstimateDeposit);
-        BlockTimer.unRegister(this.getSellOrder);
         BlockTimer.unRegister(this.getShopAddrs);
 	if (this.shopAddr != '0x') BlockTimer.unRegister(this.watchShopInfo);
     }
@@ -75,6 +73,28 @@ class Sell extends AlertModalUser {
 	    // CastIron ABI + conditions loader
             BMartService.generateNewPoSIMSApp(this.state.address, shopAddr);
             this.PoSIMS = BMartService.getPoSIMS(this.state.address);
+
+	    if (this.PoSIMS.totalitems() > 0) {
+	    	let tokenAddr = this.wallet.TokenList[this.state.selected_token_name].addr;
+	    	let orderInfo = this.PoSIMS.getCatalog()
+	    	let orders = orderInfo.filter((c) => { return this.wallet.byte32ToAddress(c[1]) == tokenAddr; });
+	    	let orderID = this.wallet.byte32ToDecimal(orders[0][0]);
+            	let sellOrder = this.PoSIMS.getProductInfo(orderID);
+
+            	this.setState({
+                	sellOrder: {
+                    	    amount: this.wallet.toEth(sellOrder[1], this.wallet.TokenList[this.state.selected_token_name].decimals).toFixed(6),
+                    	    price: this.wallet.toEth(sellOrder[2], this.wallet.TokenList[Constants.ETH].decimals).toFixed(6)
+                        }
+                });
+	    } else {
+            	this.setState({
+                	sellOrder: {
+                    	    amount: Number(0).toFixed(6),
+                    	    price: Number(0).toFixed(6)
+                        }
+                });
+	    }
 
 	    this.getShopDeposit(shopAddr, this.PoSIMS);
     }
@@ -136,24 +156,6 @@ class Sell extends AlertModalUser {
 
         this.setState({ shopAddrs: shopAddrs });
         return shopAddrs;
-    }
-
-
-    getSellOrder = () => {
-        //TODO : udpate this
-        console.log("sell Order : " + this.state.sellOrder);
-        if (this.getShopAddr() != "0x") {
-            let sellOrder = this.PoSIMS.getProductInfo(1);
-
-            this.setState({
-                sellOrder: {
-                    amount: this.wallet.toEth(sellOrder[1], this.wallet.TokenList[this.state.selected_token_name].decimals).toFixed(6),
-                    price: this.wallet.toEth(sellOrder[2], this.wallet.TokenList[Constants.ETH].decimals).toFixed(6)
-                }
-            });
-
-
-        }
     }
 
     getEstimateDeposit = () => {
@@ -288,7 +290,6 @@ class Sell extends AlertModalUser {
         let stage = Promise.resolve(CastIronActions.addressUpdate(event.value, this.props.canvas))
         stage.then(() => {
             this.getShopAddr();
-            this.getSellOrder();
         }
 
         );
