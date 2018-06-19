@@ -5,7 +5,7 @@ import React from 'react';
 import Dropdown from 'react-dropdown';
 import CastIronActions from '../action/CastIronActions';
 import TxObjects from '../view/TxObjects';
-import TxQList from '../view/TxQList';
+import ScheduleTxQList from './ScheduleTxQList';
 import { createCanvasWithAddress, setDappLocalState } from "../util/Utils";
 
 class SchedulerJob extends Reflux.Component {
@@ -21,16 +21,16 @@ class SchedulerJob extends Reflux.Component {
         this.timeout;
     }
 
-    handleEnqueue(tx) {
-        CastIronActions.enqueue(tx);
+    handleEnqueueSchedule(tx) {
+        CastIronActions.enqueueSchedule(tx);
     }
 
-    handleDequeue(tx) {
-        CastIronActions.dequeue(tx);
+    handleDequeueSchedule(tx) {
+        CastIronActions.dequeueScheudle(tx);
     }
 
-    handleClearQueue() {
-        CastIronActions.clearQueue();
+    handleClearQueueSchedule() {
+        CastIronActions.clearQueueschedule();
     }
 
 
@@ -39,7 +39,7 @@ class SchedulerJob extends Reflux.Component {
     }
 
     handleBatchSchedule() {
-        // CastIronActions.batchSend();
+        CastIronActions.batchSchedule();
     }
 
 
@@ -60,6 +60,13 @@ class SchedulerJob extends Reflux.Component {
         }
 
         setDappLocalState(this, { recipient: addr });
+    }
+
+    back = () =>{
+        this.props.goTo("List");
+        if(this.props.viewType == "Edit"){
+            this.props.cleanEdit();
+        }
     }
 
     render = () => {
@@ -96,13 +103,13 @@ class SchedulerJob extends Reflux.Component {
                         <tr className="balance-sheet">
                             <td className="balance-sheet">
                                 <TxObjects selected_token_name={this.state.selected_token_name}
-                                    handleEnqueue={this.handleEnqueue} handleSend={this.handleSchedule}
+                                    handleEnqueue={this.handleEnqueueSchedule} handleSend={this.handleSchedule}
                                     recipient={this.state.dappLocal.recipient} send_button_value="Schedule" />
                             </td>
                         </tr>
                     </tbody>
                 </table>
-                <TxQList style={{ marginTop: '0', marginBottom: '0', paddingTop: '0', paddingBottom: '0' }} />
+                <ScheduleTxQList style={{ marginTop: '0', marginBottom: '0', paddingTop: '0', paddingBottom: '0' }} />
                 <div style=
                     {
                         {
@@ -119,6 +126,7 @@ class SchedulerJob extends Reflux.Component {
                     }>
                     <input type="button" className="button" value='BatchSchedule' onClick={this.handleBatchSchedule} style={{ width: '160px', marginTop: '19px', marginLeft: '5%', marginRight: '5%' }} />
                     <input type="button" className="button" value='ClearAll' onClick={this.handleClearQueue} style={{ backgroundColor: 'rgb(250,0,0)', width: '160px', marginTop: '19px', marginLeft: '5%', marginRight: '5%' }} />
+                    <input type="button" className="button" value='Back' onClick={this.back} style={{  width: '160px', marginTop: '19px', marginLeft: '5%', marginRight: '5%' }} />
                 </div>
             </div>
         );

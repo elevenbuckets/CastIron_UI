@@ -19,7 +19,7 @@ class Scheduler {
         this.state.Qs.map(queue =>{
             if(this.isReadyToRun(BlockTimer.state.blockHeight, BlockTimer.state.blockTime, queue)){
                 queue.func(...queue.args);
-                queue.status = "Finished";
+                queue.status = "Complete";
             }
         })
     }
@@ -29,8 +29,20 @@ class Scheduler {
         this.state.Qs.push(queue);
     }
 
+    deleteQ = (Q) =>{
+        if(this.state.Qs.indexOf(Q) != -1){
+            this.state.Qs.splice(this.state.Qs.indexOf(Q), 1);
+        }
+    }
+
+    deleteQs = (Qs) =>{
+        Qs.map(Q => {
+            this.deleteQ(Q);
+        })
+    }
+
     isReadyToRun = (blockHeight, blockTime, queue) =>{
-        if(queue.status == "Finished"){
+        if(queue.status == "Complete"){
             return false;
         }else if(queue.trigger == "BlockHeight"){
             return blockHeight >= parseInt(queue.target) && blockHeight <= (parseInt(queue.target) + parseInt(queue.tolerance));
