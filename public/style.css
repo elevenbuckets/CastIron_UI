@@ -60,12 +60,14 @@
 
 .label-soon {
     position: absolute;
-    bottom: 8px;
-    left: 2px;
+    bottom: 16px;
+    left: 4px;
     font-weight: bolder;
     color: #fff815;
-    font-size: 1.64em;
-    transform: rotate(-25deg);
+    font-size: 1.1em;
+    padding: 2px 10px;
+    transform: rotate(-30deg);
+    border: 1px solid #fff815;
 }
 
 #settings {
