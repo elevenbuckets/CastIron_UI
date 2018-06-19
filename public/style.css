@@ -9,6 +9,13 @@
     overflow: hidden;
 }
 
+.stacked-bar-graph {
+  width: 100%;
+  height: 16px;
+  color: #414042;
+}
+
+
 .appList {
     overflow: hidden;
     width: 73.5%;
@@ -49,6 +56,16 @@
     transform: translate3d(0, 15vh, 0);
     transition-duration: 6s;
     overflow: hidden;
+}
+
+.label-soon {
+    position: absolute;
+    bottom: 8px;
+    left: 2px;
+    font-weight: bolder;
+    color: #fff815;
+    font-size: 1.64em;
+    transform: rotate(-25deg);
 }
 
 #settings {

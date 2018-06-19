@@ -74,73 +74,38 @@ class SchedulerView extends Reflux.Component {
 
     render = () => {
         return this.state.dappLocal.schedulerViewType == "List" ? (<div>
-            <table className="balance-sheet">
-                <tbody>
-                    <tr className="avatar" style={{ textAlign: "center" }}>
-                        <th colSpan="2" className="avatar" style={{ textAlign: "center" }}>Schedular</th>
-                    </tr>
-                    <tr className="balance-sheet">
-                        <td className="txform" style={{ border: '0', textAlign: "left" }}>
-                            <input type="button" className="bbutton" value='New' onClick={this.goTo.bind(this, "New")} />
-                            <input type="button" className="bbutton" value='Edit' onClick={this.goTo.bind(this, "New")} disabled="true" />
-                            <input type="button" className="bbutton" value='Search' onClick={null} />
-                        </td>
-                        <td className="txform" style={{ border: '0', textAlign: "center" }}>
-                            <p>Active Tasks: {1}</p>
-                        </td>
-                    </tr>
-
-                </tbody>
-            </table>
-
-            <div style={{ overflow: 'scroll', margin: '0', maxHeight: "490px", height: '490px' }} >
                 <table className="balance-sheet">
                     <tbody>
+                        <tr className="avatar" style={{ textAlign: "center" }}>
+                            <th colSpan="2" className="avatar" style={{ textAlign: "center" }}>Schedular</th>
+                        </tr>
                         <tr className="balance-sheet">
                             <td className="txform" style={{border: '0', padding: '2px', textAlign: "left"}}>
-			      <input type="button" className="bbutton" value='New' onClick={null} />
-                              <input type="button" className="bbutton" value='Edit' onClick={null} disabled="true"/>
+                              <input type="button" className="bbutton" value='New' onClick={this.goTo.bind(this, "New")} />
+                              <input type="button" className="bbutton" value='Edit' onClick={this.goTo.bind(this, "New")} disabled="true" />
                               <input type="button" className="bbutton" value='Search' onClick={null} />
 			    </td>
                             <td className="txform" style={{border: '0', textAlign: "center", padding: '0px'}}>
 			      <p style={{fontSize: '1.2em', padding: '0px', margin: '0px'}}>Active Tasks: {1}</p>
 			    </td>
                         </tr>
-                        {this.getQsComponent()}
                     </tbody>
                 </table>
-
-                <div style={{ overflow: 'scroll', margin: '0', maxHeight: "495px", height: '495px' }} >
+            <div style={{ overflow: 'scroll', margin: '0', maxHeight: "490px", height: '490px' }} >
                     <table className="balance-sheet">
                         <tbody>
                             <tr className="balance-sheet">
                                 <th className="balance-sheet" style={{ color: '#111111' }} width='5%'>Select</th>
-                                <th className="balance-sheet" style={{ color: '#111111' }} width='35%'>Qid</th>
+                                <th className="balance-sheet" style={{ color: '#111111' }} width='25%'>Qid</th>
                                 <th className="balance-sheet" style={{ color: '#111111' }} width='20%'>Name</th>
                                 <th className="balance-sheet" style={{ color: '#111111' }} width='20%'>Trigger</th>
                                 <th className="balance-sheet" style={{ color: '#111111' }} width='20%'>Target</th>
+                                <th className="balance-sheet" style={{ color: '#111111' }} width='10%'>Tolerance</th>
                             </tr>
                             {this.getQsComponent()}
                         </tbody>
                     </table>
-                    <div style=
-                        {
-                            {
-                                textAlign: 'center',
-                                backgroundColor: '#ffffff',
-                                width: '99.5%',
-                                maxHeight: '46',
-                                minHeight: '46',
-                                zIndex: '2',
-                                position: "fixed",
-                                bottom: '20%',
-                                boxShadow: '0 -5px 6px -5px rgba(200,200,200,0.5)'
-                            }
-                        }>
-                        <input type='text' style={{ paddingTop: '5px', fontFamily: 'monospace', border: 0, width: '85%', fontSize: '1.11em', textAlign: 'center' }} align='center' ref='infocache' value='' />
-                    </div>
-                </div>
-            </div>
+		   </div>
         </div>) : <SchedulerJob goTo={this.goTo} Qid={this.state.dappLocal.selectedQids.length == 0 ?
             null : this.state.dappLocal.selectedQids[0]} />
 
