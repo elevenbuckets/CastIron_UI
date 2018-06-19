@@ -19,9 +19,9 @@ class SellShop extends React.Component {
 
 	 if (grandTotal === 0) { 
 		 if (this.props.totalOrders.equals(0)) {
-		 	return (<div> Ready to create new order! </div>)
+		 	return (<div> Ready for new order? Create one below! </div>)
 		 } else {
-		 	return (<div> Sold Out! Please restock for more! </div>)
+		 	return (<div> Sold out and cashed out! Please restock! </div>)
 		 }
 	 };
 
