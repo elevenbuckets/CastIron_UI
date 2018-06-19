@@ -512,6 +512,23 @@ class CastIronStore extends Reflux.Store {
         this.argsAfterConfirmSchedule = afterConfirmArgs;
     }
 
+    onDeleteScheduledQ(Q) {
+        if(this.state.scheduledQs.indexOf(Q) != -1){
+            this.state.scheduledQs.splice(this.state.scheduledQs.indexOf(Q), 1);
+        }
+        this.setState({ scheduledQs: this.state.scheduledQs })
+    }
+
+    onDeleteScheduledQs(Qs) {
+        Qs.map(Q =>{
+            if(this.state.scheduledQs.indexOf(Q) != -1){
+                this.state.scheduledQs.splice(this.state.scheduledQs.indexOf(Q), 1);
+            }
+        })
+        
+        this.setState({ scheduledQs: this.state.scheduledQs })
+    }
+
 
 
 

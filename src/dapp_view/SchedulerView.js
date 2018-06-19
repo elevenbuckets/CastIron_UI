@@ -93,6 +93,21 @@ class SchedulerView extends Reflux.Component {
         }
     }
 
+    delete = () =>{
+        // 
+        // this.state.dappLocal.selectedQs.map(Q => {
+        //     if(Scheduler.state.Qs.indexOf(Q) != -1){
+        //         Scheduler.state.Qs.splice(Scheduler.state.Qs.indexOf(Q), 1);
+        //         CastIronActions.deleteScheduledQ(Q);
+        //     }
+           
+        // })
+        Scheduler.deleteQs(this.state.dappLocal.selectedQs)
+        CastIronActions.deleteScheduledQs(this.state.dappLocal.selectedQs);
+        setDappLocalState(this, {selectedQs : []});
+
+    }
+
     changeFilter = (field, event) =>{
         let filter =  {...this.state.dappLocal.filter, [field] : event.target.value}
         if(event.target.value == ""){
@@ -121,6 +136,7 @@ class SchedulerView extends Reflux.Component {
                             width='5%'><input
                                 name="check"
                                 type="checkbox"
+                                checked = {this.state.dappLocal.selectedQs.includes(q)}
                                 onChange={this.checked.bind(this, q)}
                                 style={{ width: "25px", height: "25px" }} /></td>
                         <td className="balance-sheet"
@@ -158,6 +174,8 @@ class SchedulerView extends Reflux.Component {
                             <input type="button" className="bbutton" value='Edit' onClick={this.goTo.bind(this, "Edit")}
                                 disabled={this.state.dappLocal.selectedQs.length != 1} />
                             <input type="button" className="bbutton" value='Search' onClick={this.toggleSearch} />
+                            <input type="button" className="bbutton" value='Delete' onClick={this.delete}
+                            disabled={this.state.dappLocal.selectedQs.length == 0 }  />
                         </td>
                         <td className="txform" style={{ border: '0', textAlign: "center" }}>
                             <p>Active Tasks: {this.getActiveTaskNumber()}</p>
