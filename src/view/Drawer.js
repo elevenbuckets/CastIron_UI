@@ -28,6 +28,16 @@ class Drawer extends Reflux.Component {
   				<img src="assets/clock-icon.png" style={{width: "64px", height: "64px", marginTop: "16px", marginBotton: "9px"}}/>
 				<p style={{textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontWeight: "bold"}}>Schedular</p>
 			</div>
+			<div className="card">
+  				<img src="assets/forum-icon.png" style={{width: "64px", height: "64px", marginTop: "16px", marginBotton: "9px"}}/>
+				<p style={{textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontWeight: "bold"}}>Forum</p>
+				<div className="label-soon">Comming Soon!</div>
+			</div>
+			<div className="card">
+  				<img src="assets/delegate-icon.png" style={{width: "64px", height: "64px", marginTop: "16px", marginBotton: "9px"}}/>
+				<p style={{textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontWeight: "bold"}}>Delegates</p>
+				<div className="label-soon">Comming Soon!</div>
+			</div>
 		</div>
 	)
     }

@@ -96,7 +96,7 @@ class QueryForm extends Reflux.Component {
                     <p style={{fontWeight: 'bold', fontSize: "1.2em", display: "inline-block", margin: "0px", padding: "0px", width: "80px"}}>Address:</p></td>
 		  <td rowSpan='2' style={{ border: '0px', padding: '0px'}}>
 	            <Dropdown ref='addrlist' id="mainaddr" options={Object.keys(this.state.accounts)} onChange={this.handleChange} 
-		            value={this.state.address} placeholder="Select an option" />
+		            value={this.state.address} placeholder={"You Have " + Object.keys(this.state.accounts).length + " Accounts"} />
                   </td></tr>
 		  <tr style={{ border: '0px' }} align="center">
 		  <td style={{ border: '0px', padding: '0px', width: '110px'}}>

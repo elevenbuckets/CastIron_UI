@@ -132,15 +132,15 @@ class Receipts extends Reflux.Component {
                             textAlign: 'center',
                             backgroundColor: '#ffffff',
                             width: '99.5%',
-                            maxHeight: '58',
-                            minHeight: '58',
+                            maxHeight: '40',
+                            minHeight: '40',
                             zIndex: '2',
                             position: "fixed",
                             bottom: '20%',
                             boxShadow: '0 -5px 6px -5px rgba(200,200,200,0.5)'
                         }
                     }>
-                    <input type='text' style={{ paddingTop: '15px', fontFamily: 'monospace', border: 0, width: '85%', fontSize: '1.11em', textAlign: 'center' }} align='center' ref='infocache' value='' />
+                    <input type='text' style={{ paddingTop: '5px', fontFamily: 'monospace', border: 0, width: '85%', fontSize: '1.11em', textAlign: 'center' }} align='center' ref='infocache' value='' />
                 </div>
             </div>
         )

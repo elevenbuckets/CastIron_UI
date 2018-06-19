@@ -188,6 +188,9 @@ class SchedulerView extends Reflux.Component {
             <div style={{ overflow: 'scroll', margin: '0', maxHeight: "490px", height: '490px' }} >
                 <table className="balance-sheet">
                     <tbody>
+                        <tr className="avatar" style={{ textAlign: "center" }}>
+                            <th colSpan="2" className="avatar" style={{ textAlign: "center" }}>Schedular</th>
+                        </tr>
                         <tr className="balance-sheet">
                             <th className="balance-sheet" style={{ color: '#111111' }} width='5%'>Select</th>
                             <th className="balance-sheet" style={{ color: '#111111' }} width='30%'>Qid</th>

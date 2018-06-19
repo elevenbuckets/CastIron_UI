@@ -13,5 +13,10 @@ module.exports =
 	BMart_changePrice_sanity(addr, jobObj) 
 	{
 		return true;
+	},
+
+	BMart_withdraw_sanity(addr, jobObj) 
+	{
+		return true;
 	}
 }

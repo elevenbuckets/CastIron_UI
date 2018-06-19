@@ -219,7 +219,8 @@ class CastIronStore extends Reflux.Store {
         this._target = this.state.tokenList.length + 1;
 
         this.wallet.setAccount(address);
-        this.setState({ address: address, selected_token_name: '' });
+        //this.setState({ address: address, selected_token_name: '' });
+        this.setState({ address: address });
 
 
 
@@ -230,7 +231,7 @@ class CastIronStore extends Reflux.Store {
         CastIronActions.statusUpdate({ 'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) });
 
         createCanvasWithAddress(canvas, this.state.address);
-        CastIronActions.changeView('Transfer');
+        //CastIronActions.changeView('Transfer');
     }
 
     onAddressUpdate(address, canvas) {
