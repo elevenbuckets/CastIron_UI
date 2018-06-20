@@ -18,7 +18,7 @@ class SellShop extends React.Component {
 	 let barThreePercent = String(Number((outlooks / grandTotal) * 100).toFixed(2)) + '%';
 
 	 if (grandTotal === 0) { 
-		 if (this.props.totalOrders == 0) {
+		 if (this.props.totalOrders.equals(0)) {
 		 	return (<div> Ready for new order? Create one below! </div>)
 		 } else {
 		 	return (<div> Sold out and cashed out! Please restock! </div>)
@@ -66,8 +66,8 @@ class SellShop extends React.Component {
 	     </div>
 		   <table style={{width: '100%', height: "35px", textAlign: 'center'}}><tbody>
 		   <tr className="txfrom" style={{textAlign: 'center'}}>
-		   <td className="txform" style={{textAlign: 'center', fontWeight: 'bold'}}>Balance:</td>
-		   <td className="txform" style={{textAlign: 'center' }}>
+		   <td className="txform" style={{textAlign: 'center', fontWeight: 'bold', border: '0px'}}>Balance:</td>
+		   <td className="txform" style={{textAlign: 'center', border: '0px'}}>
 		    <label style={{marginRight: "20px"}}>
 		      <div style={{display: 'inline-block', backgroundColor: "#F7B334", width: '10px', height: '10px', marginTop: '10px', marginRight: '15px'}}></div>
 		        {"Deposit: " + barOnePercent}
@@ -76,8 +76,8 @@ class SellShop extends React.Component {
 		      <div style={{display: 'inline-block', backgroundColor: "#D57E00", width: '10px', height: '10px', marginTop: '10px', marginRight: '15px'}}></div>
 		        {"Earned: " + barTwoPercent}
 		    </label>
-		    </td><td className="txform" style={{textAlign: 'center', fontWeight: 'bold' }}>Projected:</td>
-		    <td className="txform" style={{textAlign: 'center' }}>
+		    </td><td className="txform" style={{textAlign: 'center', fontWeight: 'bold', border: '0px'}}>Projected:</td>
+		    <td className="txform" style={{textAlign: 'center', border: '0px'}}>
 		    <label style={{marginRight: "20px"}}>
 		      <div style={{display: 'inline-block', backgroundColor: "#A7A9AC", width: '10px', height: '10px', marginTop: '10px', marginRight: '15px'}}></div>
 		        {"Active Order: " + barThreePercent}
