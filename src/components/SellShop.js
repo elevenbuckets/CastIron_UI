@@ -104,7 +104,7 @@ class SellShop extends React.Component {
                                     value={''}
                                     placeholder={this.props.disableCreateStore ? this.props.shopAddr : 'Use other shops'} /></td>
 			    { (this.props.disableCreateStore && this.props.totalTake > 0) 
-				    ? <td className="balance-sheet" style={{minWidth: '146px', whiteSpace: 'nowrap'}}>{"Balance: " + this.props.totalTake + " ETH"}</td>
+				    ? <td className="balance-sheet" style={{minWidth: '146px', whiteSpace: 'nowrap'}}>Available: <br/>{this.props.totalTake + " ETH"}</td>
 				    : null
 			    }
                         </tr>
