@@ -102,8 +102,9 @@ class SchedulerView extends Reflux.Component {
         //     }
            
         // })
-        Scheduler.deleteQs(this.state.dappLocal.selectedQs)
-        CastIronActions.deleteScheduledQs(this.state.dappLocal.selectedQs);
+	let cloneQs = [ ...this.state.dappLocal.selectedQs ];
+        Scheduler.deleteQs(cloneQs);
+        CastIronActions.deleteScheduledQs(cloneQs);
         setDappLocalState(this, {selectedQs : []});
 
     }
@@ -188,9 +189,6 @@ class SchedulerView extends Reflux.Component {
             <div style={{ overflow: 'scroll', margin: '0', maxHeight: "490px", height: '490px' }} >
                 <table className="balance-sheet">
                     <tbody>
-                        <tr className="avatar" style={{ textAlign: "center" }}>
-                            <th colSpan="2" className="avatar" style={{ textAlign: "center" }}>Schedular</th>
-                        </tr>
                         <tr className="balance-sheet">
                             <th className="balance-sheet" style={{ color: '#111111' }} width='5%'>Select</th>
                             <th className="balance-sheet" style={{ color: '#111111' }} width='30%'>Qid</th>
@@ -199,8 +197,9 @@ class SchedulerView extends Reflux.Component {
                             <th className="balance-sheet" style={{ color: '#111111' }} width='10%'>Target</th>
                             <th className="balance-sheet" style={{ color: '#111111' }} width='5%'>Tolerance</th>
                             <th className="balance-sheet" style={{ color: '#111111' }} width='10%'>Status</th>
-
-
+                        </tr>
+                        <tr className="balance-sheet" style={{ textAlign: "center" }}>
+                            <th colSpan="7" className="balance-sheet" style={{ textAlign: "center" }} hidden="true">Color Swap</th>
                         </tr>
                         <tr className="balance-sheet" hidden={!this.state.dappLocal.showSearch}>
                             <td className="balance-sheet"

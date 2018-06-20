@@ -64,6 +64,10 @@ class SellShop extends React.Component {
 			    }
 		    }></span>
 	     </div>
+		   <table style={{width: '100%', height: "35px", textAlign: 'center'}}><tbody>
+		   <tr className="txfrom" style={{textAlign: 'center'}}>
+		   <td className="txform" style={{textAlign: 'center', fontWeight: 'bold', border: '0px'}}>Balance:</td>
+		   <td className="txform" style={{textAlign: 'center', border: '0px'}}>
 		    <label style={{marginRight: "20px"}}>
 		      <div style={{display: 'inline-block', backgroundColor: "#F7B334", width: '10px', height: '10px', marginTop: '10px', marginRight: '15px'}}></div>
 		        {"Deposit: " + barOnePercent}
@@ -72,10 +76,13 @@ class SellShop extends React.Component {
 		      <div style={{display: 'inline-block', backgroundColor: "#D57E00", width: '10px', height: '10px', marginTop: '10px', marginRight: '15px'}}></div>
 		        {"Earned: " + barTwoPercent}
 		    </label>
+		    </td><td className="txform" style={{textAlign: 'center', fontWeight: 'bold', border: '0px'}}>Projected:</td>
+		    <td className="txform" style={{textAlign: 'center', border: '0px'}}>
 		    <label style={{marginRight: "20px"}}>
 		      <div style={{display: 'inline-block', backgroundColor: "#A7A9AC", width: '10px', height: '10px', marginTop: '10px', marginRight: '15px'}}></div>
-		        {"Projected: " + barThreePercent}
+		        {"Active Order: " + barThreePercent}
 		    </label>
+		   </td></tr></tbody></table>
 	    </div>)
     }
 
@@ -93,7 +100,7 @@ class SellShop extends React.Component {
                                     value={''}
                                     placeholder={this.props.disableCreateStore ? this.props.shopAddr : 'Use other shops'} /></td>
 			    { (this.props.disableCreateStore && this.props.totalTake > 0) 
-				    ? <td className="balance-sheet" style={{minWidth: '146px', whiteSpace: 'nowrap'}}>{"Total: " + this.props.totalTake + " ETH"}</td>
+				    ? <td className="balance-sheet" style={{minWidth: '146px', whiteSpace: 'nowrap'}}>{"Balance: " + this.props.totalTake + " ETH"}</td>
 				    : null
 			    }
                         </tr>
