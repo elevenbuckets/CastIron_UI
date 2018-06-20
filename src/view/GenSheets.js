@@ -18,11 +18,7 @@ class GenSheets extends AlertModalUser {
   handleChange = (event) => {
     console.log("event.value in GenSheets handleChange is " + event.value);
     let symbol = event.value.substring(0, event.value.indexOf(':'));
-    if (this.state.currentView == 'Trade' && !BMartService.Registry.isListed(CastIronService.wallet.TokenList[symbol].addr)) {
-	this.openModal(`Token ${symbol} is not currently listed on 11BE.`);
-    } else { 
-        CastIronActions.selectedTokenUpdate(symbol);
-    }
+    CastIronActions.selectedTokenUpdate(symbol);
   }
 
   handleClickTransactETH = () => {
