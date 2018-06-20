@@ -309,7 +309,9 @@ class Sell extends AlertModalUser {
                         </tr>
                         <tr className="bucket-table-init">
                             <td className="bucket-table-init"><SellOrder sellOrder={this.state.sellOrder} createOrder={this.createOrder}
-			        totalOrders={this.state.totalitems}
+			        totalOrders={this.state.totalitems} symbol={this.state.selected_token_name} 
+				decimals={this.wallet.TokenList[this.state.selected_token_name].decimals}
+				tokenName={this.wallet.TokenList[this.state.selected_token_name].name}
                                 disableCreateOrder={this.shopAddr == "0x" || this.state.sellOrder === null || this.state.totalitems != 0 }
                                 disableChangePrice={this.shopAddr == "0x"}
                                 disableRestock={this.shopAddr == "0x"}
