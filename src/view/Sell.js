@@ -20,8 +20,10 @@ class Sell extends AlertModalUser {
 	this.shopAddr = '0x';
 
         this.state = {
+	    shopAddr: '0x',
             estimateDeposit: null,
-            sellOrder: null,
+	    sellAmount: 0,
+	    sellPrice: 0,
             price: 0,
             amount: 0,
 	    shopDeposit: 0,
@@ -34,17 +36,18 @@ class Sell extends AlertModalUser {
 
 	this.storeKeys = [ 'address', 'selected_token_name', 'accounts' ];
         this.ETHMall = BMartService.ETHMall;
+
+	this.watchShopInfo = this.watchShopInfo.bind(this);
     }
 
     componentWillMount() {
         super.componentWillMount();
-
     }
 
     componentDidUpdate(prevProps, prevState) {
 	this.shopAddr = this.ETHMall.getStoreInfo(this.state.address)[0];
-	if (this.state.address !== prevState.address) {
-		if (this.shopAddr == '0x') BlockTimer.unRegister(this.watchShopInfo); // unregister previous
+	if (this.state.address !== prevState.address || prevState.shopAddr != this.state.shopAddr) {
+		this.setState({shopAddr: this.shopAddr});
 		this.getShopAddr();
         	this.getEstimateDeposit();
 	}
@@ -58,24 +61,23 @@ class Sell extends AlertModalUser {
         this.getShopAddrs();
         BlockTimer.register(this.getEstimateDeposit);
         BlockTimer.register(this.getShopAddrs);
-	if (this.shopAddr != '0x') BlockTimer.register(this.watchShopInfo);
+ 	BlockTimer.register(this.watchShopInfo);
     }
 
     componentWillUnmount() {
         super.componentWillUnmount();
         BlockTimer.unRegister(this.getEstimateDeposit);
         BlockTimer.unRegister(this.getShopAddrs);
-	if (this.shopAddr != '0x') BlockTimer.unRegister(this.watchShopInfo);
+	BlockTimer.unRegister(this.watchShopInfo);
     }
 
 
     watchShopInfo = () => {
-	    let shopAddr = this.shopAddr;
 	    // CastIron ABI + conditions loader
-            BMartService.generateNewPoSIMSApp(this.state.address, shopAddr);
+            BMartService.generateNewPoSIMSApp(this.state.address, this.state.shopAddr);
             this.PoSIMS = BMartService.getPoSIMS(this.state.address);
 
-	    if (this.PoSIMS.totalitems() > 0) {
+	    if (this.PoSIMS && this.PoSIMS.totalitems() > 0) {
 	    	let tokenAddr = this.wallet.TokenList[this.state.selected_token_name].addr;
 	    	let orderInfo = this.PoSIMS.getCatalog()
 	    	let orders = orderInfo.filter((c) => { return this.wallet.byte32ToAddress(c[1]) == tokenAddr; });
@@ -83,21 +85,19 @@ class Sell extends AlertModalUser {
             	let sellOrder = this.PoSIMS.getProductInfo(orderID);
 
             	this.setState({
-                	sellOrder: {
-                    	    amount: this.wallet.toEth(sellOrder[1], this.wallet.TokenList[this.state.selected_token_name].decimals).toFixed(6),
-                    	    price: this.wallet.toEth(sellOrder[2], this.wallet.TokenList[Constants.ETH].decimals).toFixed(6)
-                        }
+                    	    sellAmount: this.wallet.toEth(sellOrder[1], this.wallet.TokenList[this.state.selected_token_name].decimals).toFixed(6),
+                    	    sellPrice: this.wallet.toEth(sellOrder[2], this.wallet.TokenList[Constants.ETH].decimals).toFixed(6)
                 });
 	    } else {
             	this.setState({
-                	sellOrder: {
-                    	    amount: Number(0).toFixed(6),
-                    	    price: Number(0).toFixed(6)
-                        }
+                    	    sellAmount: Number(0).toFixed(6),
+                    	    sellPrice: Number(0).toFixed(6)
                 });
 	    }
 
-	    this.getShopDeposit(shopAddr, this.PoSIMS);
+	    if (this.PoSIMS && this.state.shopAddr != '0x') {
+		    this.getShopDeposit(this.state.shopAddr, this.PoSIMS);
+	    }
     }
 
     getShopDeposit = (shopAddr, posims) => {
@@ -120,7 +120,7 @@ class Sell extends AlertModalUser {
 		    canTakeSD: c,
 		    paidback: p,
 		    totalTake: e,
-		    totalitems: s
+		    totalitems: Number(s.toString())
 	    });
     }
 
@@ -132,7 +132,6 @@ class Sell extends AlertModalUser {
 	    // reset
 	    this.setState({
             	    estimateDeposit: null,
-		    sellOrder: null,
 		    shopDeposit: 0, 
 	    	    shopBalance: 0,
 		    canTakeSD: false,
@@ -307,15 +306,17 @@ class Sell extends AlertModalUser {
                     <tbody>
                         <tr className="bucket-table-init">
                             <td className="bucket-table-init"><SellShop createStore={this.createStore} disableCreateStore={this.shopAddr != "0x"}
-                                estimateDeposit={this.state.estimateDeposit} shopAddrs={this.state.shopAddrs} sellOrder={this.state.sellOrder}
+                                estimateDeposit={this.state.estimateDeposit} shopAddrs={this.state.shopAddrs} 
+				sellOrder={{amount: this.state.sellAmount, price: this.state.sellPrice}}
                                 shopAddr={this.shopAddr} shopDeposit={this.state.shopDeposit} shopBalance={this.state.shopBalance}
                                 address={this.state.address} useOtherStore={this.useOtherStore} paidback={this.state.paidback} totalOrders={this.state.totalitems}
-				canTakeSD={this.state.canTakeSD} totalTake={this.state.totalTake} withdraw={this.withdraw} /></td>
+				canTakeSD={this.state.canTakeSD} totalTake={this.state.totalTake} withdraw={this.withdraw} refeshInfo={this.watchShopInfo}/></td>
                         </tr>
                         <tr className="bucket-table-init">
-                            <td className="bucket-table-init"><SellOrder sellOrder={this.state.sellOrder} createOrder={this.createOrder}
+                            <td className="bucket-table-init"><SellOrder sellOrder={{amount: this.state.sellAmount, price: this.state.sellPrice}} 
+			        createOrder={this.createOrder}
 			        totalOrders={this.state.totalitems}
-                                disableCreateOrder={this.shopAddr == "0x" || this.state.sellOrder === null || this.state.totalitems != 0 }
+                                disableCreateOrder={this.shopAddr == "0x" || this.state.sellPrice > 0 || this.state.totalitems != 0 }
                                 disableChangePrice={this.shopAddr == "0x"}
                                 disableRestock={this.shopAddr == "0x"}
                                 disableCancelOrder={this.shopAddr == "0x"}
