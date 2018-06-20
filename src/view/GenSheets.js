@@ -15,39 +15,39 @@ class GenSheets extends AlertModalUser {
     this.store = CastIronStore;
 
     this.state = {
-	    tokenBalances: [],
-	    tokenkinds: 0
+      tokenBalances: [],
+      tokenkinds: 0
     }
   }
 
 
   componentDidUpdate(prevProps, prevState) {
-	let tokenBalances = [];
-    	let tokenkinds = 0;
+    let tokenBalances = [];
+    let tokenkinds = 0;
 
-  	if (this.state.address != prevState.address && this.state.address != '') {
-	    this.state.tokenList.map((t) => {
-      		tokenBalances.push(t + ': ' + this.state.balances[t]);
-      		if (this.state.balances[t] > 0) tokenkinds++;
-    	    });
-	}
+    if (this.state.address != prevState.address && this.state.address != '') {
+      this.state.tokenList.map((t) => {
+        tokenBalances.push(t + ': ' + this.state.balances[t]);
+        if (this.state.balances[t] > 0) tokenkinds++;
+      });
+    }
 
-    	if (this.state.currentView != prevState.currentView && this.state.currentView == 'Trade') {
-		if (tokenBalances.length == 0) {
-	    		this.state.tokenList.map((t) => {
-      				tokenBalances.push(t + ': ' + this.state.balances[t]);
-      				if (this.state.balances[t] > 0) tokenkinds++;
-    	    		});
-		}
+    if (this.state.currentView != prevState.currentView && this.state.currentView == 'Trade') {
+      if (tokenBalances.length == 0) {
+        this.state.tokenList.map((t) => {
+          tokenBalances.push(t + ': ' + this.state.balances[t]);
+          if (this.state.balances[t] > 0) tokenkinds++;
+        });
+      }
 
-            	tokenBalances = tokenBalances.filter((line) => {
-                    	let symbol = line.substring(0, line.indexOf(':'));
-                    	return BMartService.Registry.isListed(CastIronService.wallet.TokenList[symbol].addr);
-            	})
-        	this.setState({tokenBalances: tokenBalances, tokenkinds: tokenkinds});
-    	} else if (tokenBalances.length > 0) {
-        	this.setState({tokenBalances: tokenBalances, tokenkinds: tokenkinds});
-	}
+      tokenBalances = tokenBalances.filter((line) => {
+        let symbol = line.substring(0, line.indexOf(':'));
+        return BMartService.Registry.isListed(CastIronService.wallet.TokenList[symbol].addr);
+      })
+      this.setState({ tokenBalances: tokenBalances, tokenkinds: tokenkinds });
+    } else if (tokenBalances.length > 0) {
+      this.setState({ tokenBalances: tokenBalances, tokenkinds: tokenkinds });
+    }
   }
 
   handleChange = (event) => {
@@ -58,16 +58,38 @@ class GenSheets extends AlertModalUser {
 
   handleClickTransactETH = () => {
     CastIronActions.changeView("Transfer");
-    CastIronActions.selectedTokenUpdate("")
+    CastIronActions.selectedTokenUpdate("");
+    let tokenBalances = [];
+    let tokenkinds = 0;
+    this.state.tokenList.map((t) => {
+      tokenBalances.push(t + ': ' + this.state.balances[t]);
+      if (this.state.balances[t] > 0) tokenkinds++;
+    });
+    this.setState({ tokenBalances: tokenBalances, tokenkinds: tokenkinds });
   }
 
   handleClickTransact = () => {
-    CastIronActions.changeView("Transfer");
+    if (this.state.selected_token_name === "") {
+      this.openModal("Please select a token first!")
+    } else {
+      CastIronActions.changeView("Transfer");
+    }
+
   }
 
   handleClickTrade = () => {
     if (this.state.selected_token_name === "") {
       this.openModal("Please select a token first!")
+      let tokenBalances = [];
+      let tokenkinds = 0;
+      this.state.tokenList.map((t) => {
+        if (BMartService.Registry.isListed(CastIronService.wallet.TokenList[t].addr)) {
+          tokenBalances.push(t + ': ' + this.state.balances[t]);
+          tokenkinds++;
+        }
+      });
+      this.setState({ tokenBalances: tokenBalances, tokenkinds: tokenkinds });
+
     } else {
       CastIronActions.changeView("Trade");
     }
@@ -99,7 +121,7 @@ class GenSheets extends AlertModalUser {
             <td className="balance-sheet"><input type="button" className="button" onClick={this.handleClickTrade}
               value={this.state.selected_token_name !== '' ? "Trade " + this.state.selected_token_name : 'Trade ...'}
               disabled={this.state.selected_token_name !== '' &&
-              !BMartService.Registry.isListed(CastIronService.wallet.TokenList[this.state.selected_token_name].addr)} /></td>
+                !BMartService.Registry.isListed(CastIronService.wallet.TokenList[this.state.selected_token_name].addr)} /></td>
           </tr>
         </tbody>
         <AlertModal content={this.state.alertContent} isAlertModalOpen={this.state.isAlertModalOpen} close={this.closeModal} />

@@ -11,14 +11,18 @@ class SellShop extends React.Component {
     balanceBar = () => {
 	 let secureDeposit = this.props.paidback ? 0 : this.props.shopDeposit;
 	 let earnings = this.props.shopBalance - secureDeposit;
-	 let outlooks = Number(this.props.sellOrder["amount"]) * Number(this.props.sellOrder["price"]);
+	 
+	 let outlooks = 0;
+	 if(this.props.sellOrder){
+		 outlooks = Number(this.props.sellOrder["amount"]) * Number(this.props.sellOrder["price"]);
+	 }
 	 let grandTotal = Number(this.props.shopBalance) + Number(outlooks);
 	 let barOnePercent = String(Number((secureDeposit / grandTotal) * 100).toFixed(2)) + '%';
 	 let barTwoPercent = String(Number((earnings / grandTotal) * 100).toFixed(2)) + '%';
 	 let barThreePercent = String(Number((outlooks / grandTotal) * 100).toFixed(2)) + '%';
 
 	 if (grandTotal === 0) { 
-		 if (this.props.totalOrders.equals(0)) {
+		 if (this.props.totalOrders== 0) {
 		 	return (<div> Ready for new order? Create one below! </div>)
 		 } else {
 		 	return (<div> Sold out and cashed out! Please restock! </div>)

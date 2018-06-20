@@ -120,7 +120,7 @@ class Sell extends AlertModalUser {
 		    canTakeSD: c,
 		    paidback: p,
 		    totalTake: e,
-		    totalitems: s
+		    totalitems: Number(s.toString())
 	    });
     }
 

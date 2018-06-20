@@ -17,7 +17,7 @@ class ReceiptsView extends Reflux.Component {
         this.state = {
             selectedQ: ""
         };
-
+        this.storeKeys=["receipts", "Qs"]
 
         this.getReceipts = this.getReceipts.bind(this);
 
