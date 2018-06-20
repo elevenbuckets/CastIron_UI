@@ -18,10 +18,18 @@ class SellShop extends React.Component {
 	 }
 	 let grandTotal = Number(this.props.shopBalance) + Number(outlooks);
 
-	 const __round2 = (num) => {
+	 const __round2 = (num) => { // num must <= 1
 		 let bigint = String(num * 10000);
 		 if (bigint.indexOf('.') == '-1') bigint = bigint + '.';
-		 return String(bigint.substring(0, bigint.indexOf('.')) / 100);
+		 bigint = bigint.substring(0, bigint.indexOf('.'));
+		 if (Number(bigint) == 0) {
+			 return '0.00';
+		 } else {
+			let front = bigint.substring(0, bigint.length-2)  == '' ? '0' : bigint.substring(0, bigint.length-2);
+			let back = bigint.substring(bigint.length-2, bigint.length) == '' ? '00' : bigint.substring(bigint.length-2, bigint.length);
+			if (back.length < 2) return front + '.0' + back; 
+		 	return front + '.' + back;
+		 }
 	 }
 
 	 let barOne = __round2(secureDeposit / grandTotal);

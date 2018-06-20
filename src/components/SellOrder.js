@@ -12,7 +12,7 @@ class SellOrder extends React.Component {
                         <tr className="balance-sheet">
                          
                             <td className="balance-sheet" colSpan='2' >
-                                {this.props.sellOrder ? "Order Size : " + this.props.sellOrder["amount"] + ", Price : " + this.props.sellOrder["price"] : "--"}</td>
+                                {this.props.sellOrder ? "Order Size : " + this.props.sellOrder["amount"] + ", Price : " + this.props.sellOrder["price"] + ", Total: " + (this.props.sellOrder["amount"] * this.props.sellOrder["price"]).toFixed(6) : "--"}</td>
                         </tr>
                         <tr className="balance-sheet" hidden={this.props.disableCreateOrder} style={{marginBottom: "80px"}}>
                             <td className="txform" width='73%'>

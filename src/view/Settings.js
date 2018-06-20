@@ -67,7 +67,11 @@ class Settings extends AlertModalUser {
 	handleNewAcct = (event) => {
 		let stage = Promise.resolve();
 		stage
-		  .then( () => { return this.setState({waiting: true}) })
+		  .then( () => { 
+			  this.refs.fi.disabled = true;
+			  this.refs.fa.disabled = true;
+			  return this.setState({waiting: true}) 
+		  })
 		  .then( () => { this.updateNew(); } );
 	}
 
@@ -114,6 +118,8 @@ class Settings extends AlertModalUser {
 	handleImport = (event) => {
 		console.log("Importing " + this.keypath);
 		this.setState({waiting: true});
+		this.refs.fi.disabled = true;
+		this.refs.fa.disabled = true;
 		this.accMgr.importFromJSON(this.keypath, this.variable).then( (r) => {
 			this.accMgr.update(r.keyObj, r.password).then( (address) => {
 				r = {};
