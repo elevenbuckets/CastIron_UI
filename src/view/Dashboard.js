@@ -24,7 +24,7 @@ class DashBoard extends Reflux.Component {
         this.state = {
             drawerOut: false
         }
-	this.storeKeys = [ "unlocked", "currentView", "modalIsOpen", "scheduleModalIsOpen", "accounts", 'balances' ];
+	this.storeKeys = [ "unlocked", "currentView", "modalIsOpen", "scheduleModalIsOpen", "accounts" ];
 
     }
 

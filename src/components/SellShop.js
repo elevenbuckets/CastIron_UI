@@ -17,9 +17,18 @@ class SellShop extends React.Component {
 		 outlooks = Number(this.props.sellOrder["amount"]) * Number(this.props.sellOrder["price"]);
 	 }
 	 let grandTotal = Number(this.props.shopBalance) + Number(outlooks);
-	 let barOnePercent = String(Number((secureDeposit / grandTotal) * 100).toFixed(2)) + '%';
-	 let barTwoPercent = String(Number((earnings / grandTotal) * 100).toFixed(2)) + '%';
-	 let barThreePercent = String(Number((outlooks / grandTotal) * 100).toFixed(2)) + '%';
+
+	 const __round2 = (num) => {
+		 let bigint = String(num * 10000);
+		 if (bigint.indexOf('.') == '-1') bigint = bigint + '.';
+		 return String(bigint.substring(0, bigint.indexOf('.')) / 100);
+	 }
+
+	 let barOne = __round2(secureDeposit / grandTotal);
+	 let barTwo = __round2(earnings / grandTotal);
+	 let barOnePercent = barOne + '%';
+	 let barTwoPercent = barTwo + '%';
+	 let barThreePercent = outlooks == 0 ? '0.00%' : __round2((100 - barOne - barTwo) / 100) + '%';
 
 	 if (grandTotal === 0) { 
 		 if (this.props.totalOrders== 0) {
