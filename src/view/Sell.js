@@ -32,6 +32,7 @@ class Sell extends AlertModalUser {
 	    totalitems: 0
         }
 
+	this.storeKeys = [ 'address', 'selected_token_name', 'accounts' ];
         this.ETHMall = BMartService.ETHMall;
     }
 

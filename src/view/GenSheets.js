@@ -13,6 +13,41 @@ class GenSheets extends AlertModalUser {
   constructor(props) {
     super(props);
     this.store = CastIronStore;
+
+    this.state = {
+	    tokenBalances: [],
+	    tokenkinds: 0
+    }
+  }
+
+
+  componentDidUpdate(prevProps, prevState) {
+	let tokenBalances = [];
+    	let tokenkinds = 0;
+
+  	if (this.state.address != prevState.address && this.state.address != '') {
+	    this.state.tokenList.map((t) => {
+      		tokenBalances.push(t + ': ' + this.state.balances[t]);
+      		if (this.state.balances[t] > 0) tokenkinds++;
+    	    });
+	}
+
+    	if (this.state.currentView != prevState.currentView && this.state.currentView == 'Trade') {
+		if (tokenBalances.length == 0) {
+	    		this.state.tokenList.map((t) => {
+      				tokenBalances.push(t + ': ' + this.state.balances[t]);
+      				if (this.state.balances[t] > 0) tokenkinds++;
+    	    		});
+		}
+
+            	tokenBalances = tokenBalances.filter((line) => {
+                    	let symbol = line.substring(0, line.indexOf(':'));
+                    	return BMartService.Registry.isListed(CastIronService.wallet.TokenList[symbol].addr);
+            	})
+        	this.setState({tokenBalances: tokenBalances, tokenkinds: tokenkinds});
+    	} else if (tokenBalances.length > 0) {
+        	this.setState({tokenBalances: tokenBalances, tokenkinds: tokenkinds});
+	}
   }
 
   handleChange = (event) => {
@@ -41,13 +76,6 @@ class GenSheets extends AlertModalUser {
   render = () => {
     if (this.state.address == '') return (<p />);
 
-    let tokenBalances = [];
-    let tokenkinds = 0;
-    this.state.tokenList.map((t) => {
-      tokenBalances.push(t + ': ' + this.state.balances[t]);
-      if (this.state.balances[t] > 0) tokenkinds++;
-    });
-
     return (
       <table className="balance-sheet">
         <tbody>
@@ -65,7 +93,7 @@ class GenSheets extends AlertModalUser {
           <tr className="balance-sheet">
             <td className="balance-sheet" width='185'>ERC20:</td>
             <td className="balance-sheet" width='35%'>
-              <Dropdown options={tokenBalances} onChange={this.handleChange} value={this.state.selected_token_name !== '' ? this.state.selected_token_name + ': ' + this.state.balances[this.state.selected_token_name] : ''} placeholder={'Found ' + tokenkinds + ' tokens'} />
+              <Dropdown options={this.state.tokenBalances} onChange={this.handleChange} value={this.state.selected_token_name !== '' ? this.state.selected_token_name + ': ' + this.state.balances[this.state.selected_token_name] : ''} placeholder={'Found ' + this.state.tokenkinds + ' tokens'} />
             </td>
             <td className="balance-sheet"><input type="button" className="button" onClick={this.handleClickTransact} value={this.state.selected_token_name !== '' ? "Transact " + this.state.selected_token_name : 'Transact ...'} /></td>
             <td className="balance-sheet"><input type="button" className="button" onClick={this.handleClickTrade}

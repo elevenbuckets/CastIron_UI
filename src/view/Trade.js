@@ -22,7 +22,7 @@ class Trade extends AlertModalUser {
             isSell: false
         }
 
-
+	this.storeKeys = [ "selected_token_name", 'address', 'alertContent', 'isAlertModalOpen'];
      
         this.ETHMall = BMartService.ETHMall;
         this.Registry = BMartService.Registry;
