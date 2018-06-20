@@ -48,13 +48,6 @@ class GenSheets extends AlertModalUser {
       if (this.state.balances[t] > 0) tokenkinds++;
     });
 
-    if (this.state.currentView == 'Trade') {
-	    tokenBalances = tokenBalances.filter((line) => { 
-		    let symbol = line.substring(0, line.indexOf(':'));
-		    return BMartService.Registry.isListed(CastIronService.wallet.TokenList[symbol].addr);
-	    })
-    }
-
     return (
       <table className="balance-sheet">
         <tbody>
