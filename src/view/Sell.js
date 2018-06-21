@@ -42,9 +42,7 @@ class Sell extends AlertModalUser {
     }
 
     componentDidUpdate(prevProps, prevState) {
-	this.shopAddr = this.ETHMall.getStoreInfo(this.state.address)[0];
 	if (this.state.address !== prevState.address) {
-		if (this.shopAddr == '0x') BlockTimer.unRegister(this.watchShopInfo); // unregister previous
 		this.watchShopInfo();
         	this.getEstimateDeposit();
         	this.getShopAddrs();
@@ -72,9 +70,9 @@ class Sell extends AlertModalUser {
 
 
     watchShopInfo = () => {
-	    let shopAddr = this.ETHMall.getStoreInfo(this.state.address)[0];
+	    this.shopAddr = this.ETHMall.getStoreInfo(this.state.address)[0];
 	    // CastIron ABI + conditions loader
-            BMartService.generateNewPoSIMSApp(this.state.address, shopAddr);
+            BMartService.generateNewPoSIMSApp(this.state.address, this.shopAddr);
             let PoSIMS = BMartService.getPoSIMS(this.state.address);
 
 	    // has store
@@ -94,7 +92,7 @@ class Sell extends AlertModalUser {
                     		    price: this.wallet.toEth(sellOrder[2], this.wallet.TokenList[Constants.ETH].decimals).toFixed(6)
                         	}
                 	});
-	    		this.getShopDeposit(shopAddr, PoSIMS);
+	    		this.getShopDeposit(this.shopAddr, PoSIMS);
 	    	} else if (totalitems == 0) { // has store; no order.
             		this.setState({
                 		sellOrder: {
@@ -102,7 +100,7 @@ class Sell extends AlertModalUser {
                     		    price: Number(0).toFixed(6)
                         	}
                 	});
-	        	this.getShopDeposit(shopAddr, PoSIMS);
+	        	this.getShopDeposit(this.shopAddr, PoSIMS);
 		}
 	    } else { // closed store.
 	    	// reset
