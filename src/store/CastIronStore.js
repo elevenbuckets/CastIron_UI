@@ -337,7 +337,7 @@ class CastIronStore extends Reflux.Store {
                 console.log("Sending batch txs:");
                 console.log(this.state.queuedTxs);
                 console.log(batchTxHash);
-                return this.wallet.getReceipt(batchTxHash, 30000).then((data) => { return { data, Q } })
+                return this.wallet.getReceipt(batchTxHash, 11000).then((data) => { return { data, Q } })
             } catch (err) {
                 console.log("ERROR in processQPromise: " + err);
                 console.log("rcdQ: " + Q + ">>");
