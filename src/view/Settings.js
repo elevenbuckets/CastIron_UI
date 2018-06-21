@@ -5,6 +5,7 @@ import AlertModal from '../components/AlertModal';
 import AlertModalUser from '../common/AlertModalUser'
 import fs from 'fs';
 import CastIronService from '../service/CastIronService';
+import CastIronActions from  '../action/CastIronActions';
 import AcctMgrService from '../service/AcctMgrService';
 import CastIronStore from '../store/CastIronStore';
 
@@ -52,6 +53,7 @@ class Settings extends AlertModalUser {
 			this.openModal("Please enter custom gas price!")
 		  }else{
 			this.props.handleClickBack();
+			CastIronActions.infoUpdate();
 		  }
 	}
 
