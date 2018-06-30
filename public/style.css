@@ -381,6 +381,8 @@ tr:nth-child(odd) {
   margin-right: 10%;
   width: 80%;
   display: inline-block;
+  font-family: fixed;
+  font-size: 1.1em;
 }
 
 .Dropdown-control {

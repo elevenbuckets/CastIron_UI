@@ -18,6 +18,8 @@ class GenSheets extends AlertModalUser {
       tokenBalances: [],
       tokenkinds: 0
     }
+
+    this.rootViews = {'Transfer': true, 'Scheduler': true};
   }
 
 
@@ -30,6 +32,13 @@ class GenSheets extends AlertModalUser {
         tokenBalances.push(t + ': ' + this.state.balances[t]);
         if (this.state.balances[t] > 0) tokenkinds++;
       });
+
+      if (this.state.currentView == 'Trade') {
+      tokenBalances = tokenBalances.filter((line) => {
+        let symbol = line.substring(0, line.indexOf(':'));
+        return BMartService.Registry.isListed(CastIronService.wallet.TokenList[symbol].addr);
+      })
+      }
     }
 
     if (this.state.currentView != prevState.currentView && this.state.currentView == 'Trade') {
@@ -57,7 +66,7 @@ class GenSheets extends AlertModalUser {
   }
 
   handleClickTransactETH = () => {
-    CastIronActions.changeView("Transfer");
+    if (typeof(this.rootViews[this.state.currentView]) === 'undefined') CastIronActions.changeView("Transfer");
     CastIronActions.selectedTokenUpdate("");
     let tokenBalances = [];
     let tokenkinds = 0;
