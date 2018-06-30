@@ -18,6 +18,8 @@ class GenSheets extends AlertModalUser {
       tokenBalances: [],
       tokenkinds: 0
     }
+
+    this.rootViews = {'Transfer': true, 'Scheduler': true};
   }
 
 
@@ -64,7 +66,7 @@ class GenSheets extends AlertModalUser {
   }
 
   handleClickTransactETH = () => {
-    CastIronActions.changeView("Transfer");
+    if (typeof(this.rootViews[this.state.currentView]) === 'undefined') CastIronActions.changeView("Transfer");
     CastIronActions.selectedTokenUpdate("");
     let tokenBalances = [];
     let tokenkinds = 0;
