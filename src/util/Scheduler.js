@@ -19,7 +19,7 @@ class Scheduler {
         this.state.Qs.map(queue =>{
             if(this.isReadyToRun(BlockTimer.state.blockHeight, BlockTimer.state.blockTime, queue)){
                 queue.func(...queue.args);
-                queue.status = "Complete";
+                queue.status = "Executed";
             }
         })
     }
@@ -42,7 +42,7 @@ class Scheduler {
     }
 
     isReadyToRun = (blockHeight, blockTime, queue) =>{
-        if(queue.status == "Complete"){
+        if(queue.status == "Executed"){
             return false;
         }else if(queue.trigger == "BlockHeight"){
             return blockHeight >= parseInt(queue.target) && blockHeight <= (parseInt(queue.target) + parseInt(queue.tolerance));

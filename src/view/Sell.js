@@ -32,7 +32,7 @@ class Sell extends AlertModalUser {
 	    totalitems: 0
         }
 
-	this.storeKeys = [ 'address', 'selected_token_name', 'accounts' ];
+	this.storeKeys = [ 'address', 'selected_token_name', 'accounts', 'alertContent', 'isAlertModalOpen' ];
         this.ETHMall = BMartService.ETHMall;
     }
 
@@ -42,62 +42,78 @@ class Sell extends AlertModalUser {
     }
 
     componentDidUpdate(prevProps, prevState) {
-	this.shopAddr = this.ETHMall.getStoreInfo(this.state.address)[0];
 	if (this.state.address !== prevState.address) {
-		if (this.shopAddr == '0x') BlockTimer.unRegister(this.watchShopInfo); // unregister previous
-		this.getShopAddr();
+		this.watchShopInfo();
         	this.getEstimateDeposit();
+        	this.getShopAddrs();
 	}
     }
 
     componentDidMount() {
         console.log("in componet did mount in Sell.js");
 	this.shopAddr = this.ETHMall.getStoreInfo(this.state.address)[0];
-	this.getShopAddr();
+	//this.getShopAddr();
+	this.watchShopInfo();
         this.getEstimateDeposit();
         this.getShopAddrs();
         BlockTimer.register(this.getEstimateDeposit);
         BlockTimer.register(this.getShopAddrs);
-	if (this.shopAddr != '0x') BlockTimer.register(this.watchShopInfo);
+	BlockTimer.register(this.watchShopInfo);
     }
 
     componentWillUnmount() {
         super.componentWillUnmount();
         BlockTimer.unRegister(this.getEstimateDeposit);
         BlockTimer.unRegister(this.getShopAddrs);
-	if (this.shopAddr != '0x') BlockTimer.unRegister(this.watchShopInfo);
+	BlockTimer.unRegister(this.watchShopInfo);
     }
 
 
     watchShopInfo = () => {
-	    let shopAddr = this.shopAddr;
+	    this.shopAddr = this.ETHMall.getStoreInfo(this.state.address)[0];
 	    // CastIron ABI + conditions loader
-            BMartService.generateNewPoSIMSApp(this.state.address, shopAddr);
-            this.PoSIMS = BMartService.getPoSIMS(this.state.address);
+            BMartService.generateNewPoSIMSApp(this.state.address, this.shopAddr);
+            let PoSIMS = BMartService.getPoSIMS(this.state.address);
 
-	    if (this.PoSIMS.totalitems() > 0) {
-	    	let tokenAddr = this.wallet.TokenList[this.state.selected_token_name].addr;
-	    	let orderInfo = this.PoSIMS.getCatalog()
-	    	let orders = orderInfo.filter((c) => { return this.wallet.byte32ToAddress(c[1]) == tokenAddr; });
-	    	let orderID = this.wallet.byte32ToDecimal(orders[0][0]);
-            	let sellOrder = this.PoSIMS.getProductInfo(orderID);
+	    // has store
+	    if (typeof(PoSIMS) != 'undefined') {
+	        let totalitems = Number(PoSIMS.totalitems().toString());
 
-            	this.setState({
-                	sellOrder: {
-                    	    amount: this.wallet.toEth(sellOrder[1], this.wallet.TokenList[this.state.selected_token_name].decimals).toFixed(6),
-                    	    price: this.wallet.toEth(sellOrder[2], this.wallet.TokenList[Constants.ETH].decimals).toFixed(6)
-                        }
-                });
-	    } else {
-            	this.setState({
-                	sellOrder: {
-                    	    amount: Number(0).toFixed(6),
-                    	    price: Number(0).toFixed(6)
-                        }
-                });
+		if (totalitems > 0) { // has store; has order.
+	    		let tokenAddr = this.wallet.TokenList[this.state.selected_token_name].addr;
+	    		let orderInfo = PoSIMS.getCatalog()
+	    		let orders = orderInfo.filter((c) => { return this.wallet.byte32ToAddress(c[1]) == tokenAddr; });
+	    		let orderID = this.wallet.byte32ToDecimal(orders[0][0]);
+            		let sellOrder = PoSIMS.getProductInfo(orderID);
+
+            		this.setState({
+                		sellOrder: {
+                    		    amount: this.wallet.toEth(sellOrder[1], this.wallet.TokenList[this.state.selected_token_name].decimals).toFixed(6),
+                    		    price: this.wallet.toEth(sellOrder[2], this.wallet.TokenList[Constants.ETH].decimals).toFixed(6)
+                        	}
+                	});
+	    		this.getShopDeposit(this.shopAddr, PoSIMS);
+	    	} else if (totalitems == 0) { // has store; no order.
+            		this.setState({
+                		sellOrder: {
+                    		    amount: Number(0).toFixed(6),
+                    		    price: Number(0).toFixed(6)
+                        	}
+                	});
+	        	this.getShopDeposit(this.shopAddr, PoSIMS);
+		}
+	    } else { // closed store.
+	    	// reset
+	    	this.setState({
+		    	sellOrder: null,
+		    	shopDeposit: 0, 
+	    	    	shopBalance: 0,
+		    	canTakeSD: false,
+		    	paidback: false,
+		    	totalTake: 0,
+		    	totalitems: 0
+	    	});
 	    }
-
-	    this.getShopDeposit(shopAddr, this.PoSIMS);
     }
 
     getShopDeposit = (shopAddr, posims) => {
@@ -124,33 +140,10 @@ class Sell extends AlertModalUser {
 	    });
     }
 
-    getShopAddr = () => {
-        this.shopAddr = this.ETHMall.getStoreInfo(this.state.address)[0];
-    	if (this.shopAddr != '0x') {
-		this.watchShopInfo();
-	} else {
-	    // reset
-	    this.setState({
-            	    estimateDeposit: null,
-		    sellOrder: null,
-		    shopDeposit: 0, 
-	    	    shopBalance: 0,
-		    canTakeSD: false,
-		    paidback: false,
-		    totalTake: 0,
-		    totalitems: 0
-	    });
-	}
-
-        return this.shopAddr;
-    }
-
     getShopAddrs = () => {
 
         let shopAddrs = Object.keys(this.state.accounts).map((addr) => {
             return this.ETHMall.getStoreInfo(addr)[0] == '0x' ? null : addr
-
-
         }).filter((value) => {
             return value !== null;
         })
@@ -290,7 +283,7 @@ class Sell extends AlertModalUser {
     useOtherStore = (event) => {
         let stage = Promise.resolve(CastIronActions.addressUpdate(event.value, this.props.canvas))
         stage.then(() => {
-            this.getShopAddr();
+            this.watchShopInfo();
         }
 
         );
@@ -314,7 +307,9 @@ class Sell extends AlertModalUser {
                         </tr>
                         <tr className="bucket-table-init">
                             <td className="bucket-table-init"><SellOrder sellOrder={this.state.sellOrder} createOrder={this.createOrder}
-			        totalOrders={this.state.totalitems}
+			        totalOrders={this.state.totalitems} symbol={this.state.selected_token_name} 
+				decimals={this.wallet.TokenList[this.state.selected_token_name].decimals}
+				tokenName={this.wallet.TokenList[this.state.selected_token_name].name}
                                 disableCreateOrder={this.shopAddr == "0x" || this.state.sellOrder === null || this.state.totalitems != 0 }
                                 disableChangePrice={this.shopAddr == "0x"}
                                 disableRestock={this.shopAddr == "0x"}

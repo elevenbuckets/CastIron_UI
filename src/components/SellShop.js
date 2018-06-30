@@ -17,9 +17,26 @@ class SellShop extends React.Component {
 		 outlooks = Number(this.props.sellOrder["amount"]) * Number(this.props.sellOrder["price"]);
 	 }
 	 let grandTotal = Number(this.props.shopBalance) + Number(outlooks);
-	 let barOnePercent = String(Number((secureDeposit / grandTotal) * 100).toFixed(2)) + '%';
-	 let barTwoPercent = String(Number((earnings / grandTotal) * 100).toFixed(2)) + '%';
-	 let barThreePercent = String(Number((outlooks / grandTotal) * 100).toFixed(2)) + '%';
+
+	 const __round2 = (num) => { // num must <= 1
+		 let bigint = String(num * 10000);
+		 if (bigint.indexOf('.') == '-1') bigint = bigint + '.';
+		 bigint = bigint.substring(0, bigint.indexOf('.'));
+		 if (Number(bigint) == 0) {
+			 return '0.00';
+		 } else {
+			let front = bigint.substring(0, bigint.length-2)  == '' ? '0' : bigint.substring(0, bigint.length-2);
+			let back = bigint.substring(bigint.length-2, bigint.length) == '' ? '00' : bigint.substring(bigint.length-2, bigint.length);
+			if (back.length < 2) return front + '.0' + back; 
+		 	return front + '.' + back;
+		 }
+	 }
+
+	 let barOne = __round2(secureDeposit / grandTotal);
+	 let barTwo = __round2(earnings / grandTotal);
+	 let barOnePercent = barOne + '%';
+	 let barTwoPercent = barTwo + '%';
+	 let barThreePercent = outlooks == 0 ? '0.00%' : __round2((100 - barOne - barTwo) / 100) + '%';
 
 	 if (grandTotal === 0) { 
 		 if (this.props.totalOrders== 0) {
@@ -104,7 +121,7 @@ class SellShop extends React.Component {
                                     value={''}
                                     placeholder={this.props.disableCreateStore ? this.props.shopAddr : 'Use other shops'} /></td>
 			    { (this.props.disableCreateStore && this.props.totalTake > 0) 
-				    ? <td className="balance-sheet" style={{minWidth: '146px', whiteSpace: 'nowrap'}}>{"Balance: " + this.props.totalTake + " ETH"}</td>
+				    ? <td className="balance-sheet" style={{minWidth: '146px', whiteSpace: 'nowrap'}}>Available: <br/>{this.props.totalTake + " ETH"}</td>
 				    : null
 			    }
                         </tr>
