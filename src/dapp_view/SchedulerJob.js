@@ -81,7 +81,7 @@ class SchedulerJob extends Reflux.Component {
                             <td className="balance-sheet">
                                 <label>
                                     Recipient:
-       <input size={62} style={{ marginLeft: '30', fontFamily: 'monospace', fontSize: '1.09em' }} type='text'
+       <input size={62} style={{ marginLeft: '30', fontFamily: 'fixed', fontSize: '1.09em' }} type='text'
                                         onChange={this.handleChange} value={this.state.dappLocal.recipient} placeholder="Ethereum Address" />
                                 </label>
                             </td>
