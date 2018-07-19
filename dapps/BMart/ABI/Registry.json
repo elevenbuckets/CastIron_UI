@@ -229,10 +229,10 @@
     "1100": {
       "events": {},
       "links": {},
-      "address": "0x5df543c46ec167c2adba071afdccb2c33ad0bfdf",
-      "updated_at": 1529360548233
+      "address": "0x1f31dda4fd450d525c59a0d7f6cfcb95c5ef994a",
+      "updated_at": 1532033947950
     }
   },
   "schema_version": "0.0.5",
-  "updated_at": 1529360548233
+  "updated_at": 1532033947950
 }
