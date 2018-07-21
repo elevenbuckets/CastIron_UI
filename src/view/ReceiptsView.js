@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Reflux from 'reflux';
-import SendTX from '../components/SendTX';
 import CastIronStore from '../store/CastIronStore';
 import CastIronService from '../service/CastIronService';
 import Receipts from '../components/Receipts';

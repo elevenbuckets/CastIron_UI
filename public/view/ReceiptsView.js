@@ -14,10 +14,6 @@ var _reflux = require('reflux');
 
 var _reflux2 = _interopRequireDefault(_reflux);
 
-var _SendTX = require('../components/SendTX');
-
-var _SendTX2 = _interopRequireDefault(_SendTX);
-
 var _CastIronStore = require('../store/CastIronStore');
 
 var _CastIronStore2 = _interopRequireDefault(_CastIronStore);

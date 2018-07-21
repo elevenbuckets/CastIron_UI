@@ -10,10 +10,6 @@ var _reactDom2 = _interopRequireDefault(_reactDom);
 
 var _reactRouterDom = require('react-router-dom');
 
-var _WalletView = require('./view/WalletView');
-
-var _WalletView2 = _interopRequireDefault(_WalletView);
-
 var _ReceiptsView = require('./view/ReceiptsView');
 
 var _ReceiptsView2 = _interopRequireDefault(_ReceiptsView);
