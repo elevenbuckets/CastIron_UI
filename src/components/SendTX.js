@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Toggle from 'react-toggle';
-import "react-toggle/style.css";
 import SingleTX from './SingleTX'
 import BatchTXS from './BatchTXS';
 class SendTX extends React.Component {
@@ -39,7 +38,7 @@ class SendTX extends React.Component {
                     <Toggle
                         checked={isBatched}
                         onChange ={this.handleChangePayments} />
-                    <span className='label-text'>Batched Payments</span>
+                    <span >Batched Payments</span>
                 </label>
             
                 {isBatched ? <BatchTXS queuedTxs={this.props.queuedTxs}
