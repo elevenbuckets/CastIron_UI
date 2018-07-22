@@ -1,7 +1,7 @@
-import CastIronStore from "../store/CastIronStore";
+import CastIronStore from "../../store/CastIronStore";
 import Reflux from 'reflux';
 import React from 'react';
-import CastIronActions from "../action/CastIronActions";
+import CastIronActions from "../../action/CastIronActions";
 
 // Reflux components
 

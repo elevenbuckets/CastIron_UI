@@ -1,10 +1,14 @@
-import SchedulerView from '../dapp_view/schedule/SchedulerView'
 import React from 'react';
 class DappViewService {
     constructor() {
         this.viewMap = {
             Scheduler: <SchedulerView />
         }
+        this.viewMap.map((key) =>{
+            let ppath = ""
+            import key from ppath;
+        } )
+      
     }
 
     import(dapp){
