@@ -1,15 +1,15 @@
-import CastIronStore from "../../store/CastIronStore";
-import CastIronService from "../../service/CastIronService";
+import CastIronStore from "../../../../public/store/CastIronStore";
+import CastIronService from "../../../../public/service/CastIronService";
 import Reflux from 'reflux';
 import React from 'react';
 import Dropdown from 'react-dropdown';
-import CastIronActions from '../../action/CastIronActions';
-import TxObjects from '../../view/TxObjects';
-import TxQList from '../../view/TxQList';
-import { createCanvasWithAddress, setDappLocalState } from "../../util/Utils";
-import SchedulerJob from './SchedulerJob';
-import EditScheduleTXModal from '../../components/EditScheduleTXModal';
-import Scheduler from '../../util/Scheduler'
+import CastIronActions from '../../../../public/action/CastIronActions';
+import TxObjects from '../../../../public/view/TxObjects';
+import TxQList from '../../../../public/view/TxQList';
+import { createCanvasWithAddress, setDappLocalState } from "../../../../public/util/Utils";
+import SchedulerJob from '../components/SchedulerJob';
+import EditScheduleTXModal from '../../../../public/components/EditScheduleTXModal';
+import Scheduler from '../../../../public/util/Scheduler'
 
 class SchedulerView extends Reflux.Component {
     constructor(props) {

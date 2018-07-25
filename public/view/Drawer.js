@@ -65,7 +65,7 @@ var Drawer = function (_Reflux$Component) {
 				),
 				_react2.default.createElement(
 					'div',
-					{ className: 'card', onClick: _this.handleIconClick.bind(_this, 'Scheduler') },
+					{ className: 'card', onClick: _this.handleIconClick.bind(_this, 'Schedular') },
 					_react2.default.createElement('img', { src: 'assets/clock-icon.png', style: { width: "64px", height: "64px", marginTop: "16px", marginBotton: "9px" } }),
 					_react2.default.createElement(
 						'p',

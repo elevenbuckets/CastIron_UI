@@ -2,11 +2,18 @@ import React from 'react';
 class DappViewService {
     constructor() {
         this.viewMap = {
-            Scheduler: <SchedulerView />
         }
-        this.viewMap.map((key) =>{
-            let ppath = ""
-            import key from ppath;
+
+        let dapps = {"Schedular": "SchedulerView"}
+
+        Object.keys(dapps).map((key) =>{
+            let ppath = "../../dapps/" + key + "/public/view/" + dapps[key];
+            import(ppath).then(
+                view =>{
+                    this.viewMap[key] = <view />;  
+                }
+            );
+             
         } )
       
     }

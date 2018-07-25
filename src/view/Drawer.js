@@ -28,7 +28,7 @@ class Drawer extends Reflux.Component {
   				<img src="assets/transfer-icon.png" style={{width: "64px", height: "64px", marginTop: "16px", marginBotton: "9px"}}/>
 				<p style={{textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontWeight: "bold"}}>Wallet</p>
 			</div>
-			<div className="card" onClick={this.handleIconClick.bind(this, 'Scheduler')}>
+			<div className="card" onClick={this.handleIconClick.bind(this, 'Schedular')}>
   				<img src="assets/clock-icon.png" style={{width: "64px", height: "64px", marginTop: "16px", marginBotton: "9px"}}/>
 				<p style={{textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontWeight: "bold"}}>Schedular</p>
 			</div>
