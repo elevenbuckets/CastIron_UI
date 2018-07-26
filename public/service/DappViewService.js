@@ -34,8 +34,10 @@ var DappViewService = function () {
             var ppath = "../../dapps/" + key + "/public/view/" + dapps[key];
             Promise.resolve().then(function () {
                 return _interopRequireWildcard(require("" + ppath));
-            }).then(function (view) {
-                _this.viewMap[key] = _react2.default.createElement(view, null);
+            }).then(function (View) {
+                console.log("view is : ");
+                console.log(View);
+                _this.viewMap[key] = _react2.default.createElement(View.default, null);
             });
         });
     }

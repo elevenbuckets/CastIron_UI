@@ -9,8 +9,10 @@ class DappViewService {
         Object.keys(dapps).map((key) =>{
             let ppath = "../../dapps/" + key + "/public/view/" + dapps[key];
             import(ppath).then(
-                view =>{
-                    this.viewMap[key] = <view />;  
+                View =>{
+                    console.log("view is : ");
+                    console.log(View);
+                    this.viewMap[key] = <View.default />;  
                 }
             );
              
