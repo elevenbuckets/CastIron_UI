@@ -28,10 +28,10 @@ var DappViewService = function () {
 
         this.viewMap = {};
 
-        var dapps = { "Schedular": "SchedulerView" };
+        var dapps = this.getInstalledDappsInfo();
 
         Object.keys(dapps).map(function (key) {
-            var ppath = "../../dapps/" + key + "/public/view/" + dapps[key];
+            var ppath = "../../dapps/" + key + "/public/view/" + dapps[key].view;
             Promise.resolve().then(function () {
                 return _interopRequireWildcard(require("" + ppath));
             }).then(function (View) {
@@ -43,8 +43,11 @@ var DappViewService = function () {
     }
 
     _createClass(DappViewService, [{
-        key: "import",
-        value: function _import(dapp) {}
+        key: "getInstalledDappsInfo",
+        value: function getInstalledDappsInfo() {
+            var path = "../../dapps/installed.json";
+            return require(path);
+        }
     }]);
 
     return DappViewService;

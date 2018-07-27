@@ -4,10 +4,12 @@ class DappViewService {
         this.viewMap = {
         }
 
-        let dapps = {"Schedular": "SchedulerView"}
+
+
+        let dapps = this.getInstalledDappsInfo();
 
         Object.keys(dapps).map((key) =>{
-            let ppath = "../../dapps/" + key + "/public/view/" + dapps[key];
+            let ppath = "../../dapps/" + key + "/public/view/" + dapps[key].view;
             import(ppath).then(
                 View =>{
                     console.log("view is : ");
@@ -20,8 +22,10 @@ class DappViewService {
       
     }
 
-    import(dapp){
-       
+    getInstalledDappsInfo(){
+        let path = "../../dapps/installed.json";
+        return require(path);
+        
     }
 
     getView = key =>{

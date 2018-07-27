@@ -1,7 +1,6 @@
 {
-    "schedule" : {
-        "name" : "Scheduler",
-        "view" : "ScheduleView"
+    "Schedular" : {
+        "view" : "SchedulerView"
     }
 
 }
