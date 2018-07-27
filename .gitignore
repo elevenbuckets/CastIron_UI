@@ -41,7 +41,6 @@ public/bundle.js
 public/
 
 # Do not ignore these files
-!public/app.js
 !public/index.html
 !public/style.css
 
