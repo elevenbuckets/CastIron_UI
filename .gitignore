@@ -38,7 +38,12 @@ jspm_packages/
 src/playground/
 public/bundle.js
 .local/
-public/playground
+public/
+
+# Do not ignore these files
+!public/app.js
+!public/index.html
+!public/style.css
 
 # Typescript v1 declaration files
 typings/
