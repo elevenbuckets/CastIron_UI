@@ -43,6 +43,7 @@ public/
 # Do not ignore these files
 !public/index.html
 !public/style.css
+!public/asset/
 
 # Typescript v1 declaration files
 typings/
