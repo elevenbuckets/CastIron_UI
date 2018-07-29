@@ -38,7 +38,15 @@ jspm_packages/
 src/playground/
 public/bundle.js
 .local/
-public/**.js
+public/playground/
+public/action/
+public/common/
+public/components/
+public/service/
+public/store/
+public/view/
+public/util/
+public/app.js
 
 # Do not ignore these files
 !public/index.html
