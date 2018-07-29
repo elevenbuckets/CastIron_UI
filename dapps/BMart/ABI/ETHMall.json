@@ -235,10 +235,10 @@
     "1100": {
       "events": {},
       "links": {},
-      "address": "0xf41ac92d5b85851446b99bbb61efcc6504f8d941",
-      "updated_at": 1529360548232
+      "address": "0x4ce49671e55bdf011a476943a3a9fc6595490106",
+      "updated_at": 1532727910379
     }
   },
   "schema_version": "0.0.5",
-  "updated_at": 1529360548232
+  "updated_at": 1532727910379
 }
