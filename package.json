@@ -23,6 +23,7 @@
     "babel-preset-env": "1.5.2",
     "babel-preset-react": "6.24.1",
     "css-loader": "0.28.4",
+    "ipfs_base": "git+ssh://git@github.com/elevenbuckets/ipfs_go.git",
     "json-loader": "^0.5.7",
     "live-server": "^1.2.0",
     "node-loader": "^0.6.0",
