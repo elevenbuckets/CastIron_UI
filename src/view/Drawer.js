@@ -24,7 +24,7 @@ class Drawer extends Reflux.Component {
 
 	getDappIcons = () => {
 		return Object.keys(DappViewService.viewMap).map((key) => {
-			let src = "../../dapps/assets/clock-icon.pgn";
+			let src = "../dapps/" + key + "/assets/clock-icon.png";
 
 
 			return (<div className="card" onClick={this.handleIconClick.bind(this, key)}>
@@ -41,7 +41,7 @@ class Drawer extends Reflux.Component {
 					<img src="assets/transfer-icon.png" style={{ width: "64px", height: "64px", marginTop: "16px", marginBotton: "9px" }} />
 					<p style={{ textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontWeight: "bold" }}>Wallet</p>
 				</div>
-
+				{this.getDappIcons()}
 				<div className="card">
 					<img src="assets/forum-icon.png" style={{ width: "64px", height: "64px", marginTop: "16px", marginBotton: "9px" }} />
 					<p style={{ textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontWeight: "bold" }}>Forum</p>
