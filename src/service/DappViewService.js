@@ -3,9 +3,10 @@ class DappViewService {
     constructor() {
         this.viewMap = {
         }
+        this.initialize();
+    }
 
-
-
+    initialize = () =>{
         let dapps = this.getInstalledDappsInfo();
 
         Object.keys(dapps).map((key) =>{
@@ -19,7 +20,6 @@ class DappViewService {
             );
              
         } )
-      
     }
 
     getInstalledDappsInfo(){
