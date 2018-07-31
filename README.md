@@ -13,7 +13,7 @@ Need nodejs, npm and electron installed
 run `npm install`
 
 ## Build
-run `npm run build`
+run `npm run compile`
 
 ## Run
 run `electron .`

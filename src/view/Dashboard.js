@@ -3,7 +3,6 @@ import Reflux from 'reflux';
 import { Link } from 'react-router-dom';
 import CastIronService from '../service/CastIronService';
 import CastIronStore from '../store/CastIronStore';
-import WalletView from './WalletView';
 import ReceiptsView from './ReceiptsView';
 import QueryForm from './QueryForm'
 import Footer from './Footer';
