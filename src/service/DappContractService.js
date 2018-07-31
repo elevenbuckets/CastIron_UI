@@ -50,6 +50,6 @@ class DappContractService {
     }
 }
 
-const DappContractService = new DappContractService();
+const dappContractService = new DappContractService();
 
-export default DappContractService;
+export default dappContractService;
