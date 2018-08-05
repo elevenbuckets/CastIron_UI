@@ -6,6 +6,12 @@ class IPFSService {
         this.IPFSBase = new IPFS_Base('.local/config.json');
     }
 
+    pullFile = (ipfshash, outpath) => {
+        return this.IPFSBase.read(ipfshash).then((r) => {
+                fs.writeFileSync(outpath, r);
+                return true;
+        })
+}
     // Orbit-db related services will be integrated from here.
 }
 

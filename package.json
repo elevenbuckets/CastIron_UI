@@ -5,8 +5,22 @@
   "author": "Jason and Leon",
   "license": "GPL-3.0",
   "babel": {
-    "plugins": ["transform-class-properties", "transform-object-rest-spread", "dynamic-import-node"],
-    "presets": [ "react", [ "env", { "targets": { "node": "8.6" } } ] ]
+    "plugins": [
+      "transform-class-properties",
+      "transform-object-rest-spread",
+      "dynamic-import-node"
+    ],
+    "presets": [
+      "react",
+      [
+        "env",
+        {
+          "targets": {
+            "node": "8.6"
+          }
+        }
+      ]
+    ]
   },
   "scripts": {
     "serve": "live-server public/",
@@ -17,6 +31,7 @@
   "dependencies": {
     "CastIron": "git+ssh://git@github.com/elevenbuckets/CastIron.git",
     "accMgr": "git+ssh://git@github.com/elevenbuckets/accmgr.git",
+    "ipfs_base": "git+ssh://git@github.com/elevenbuckets/ipfs_go.git",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.1",
@@ -26,7 +41,6 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
     "css-loader": "0.28.4",
-    "ipfs_base": "git+ssh://git@github.com/elevenbuckets/ipfs_go.git",
     "json-loader": "^0.5.7",
     "live-server": "^1.2.0",
     "node-loader": "^0.6.0",
