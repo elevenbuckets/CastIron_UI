@@ -24,7 +24,11 @@ class Drawer extends React.Component {
 	handleAddIconClick = () =>{
 		let stage = Promise.resolve();
 		stage.then(() =>{
-			return Installer.install("Schedular")
+			return Installer.fetchPackage("Schedular").then(()=>{
+				return Installer.install("Schedular");
+			});
+			// return Installer.install("Schedular");
+			
 		}).then(() =>{
 				console.log("Drawer: before forceUpdate!")
 				this.forceUpdate();

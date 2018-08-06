@@ -23,8 +23,8 @@ class Installer {
 
     // fetch package from IPFS 
     fetchPackage = (appName) => {
-        let outputPath = "./dapp/" + appName + ".tar.gz";
-        IPFSService.pullFile()   
+        let outputPath = "/home/liang/Liang_Learn/git_hub/CastIron_UI/dapps/" + appName + ".tar.gz";
+        return IPFSService.pullFile("QmWMWDQ8WSwufkPpR9FC31nnmwh2CvxEszgsaFa3KVbzWR",outputPath);   
     }
 
 

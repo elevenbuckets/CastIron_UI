@@ -7,6 +7,7 @@ class IPFSService {
     }
 
     pullFile = (ipfshash, outpath) => {
+        const fs = require('fs');
         return this.IPFSBase.read(ipfshash).then((r) => {
                 fs.writeFileSync(outpath, r);
                 return true;
