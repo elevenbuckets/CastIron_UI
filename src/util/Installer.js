@@ -1,48 +1,67 @@
 import tar from 'tar';
 import DappViewService from '../service/DappViewService';
+import IPFSService from '../service/IPFSService'
 class Installer {
 
-    constructor(){
+    constructor() {
     }
 
-  
 
-    install =  (appName) =>{
-        this.fetchPackage(appName);
 
-        let file = "../dapps/" + appName + ".tar.gz";
+    install = (appName) => {
+        let file = "./dapps/" + appName + ".tar.gz";
         console.log("untar the " + file);
-        tar.x({
-            file : file,
-            C: "../dapps"
-        }).then(
-            this.postInstall()
+        return tar.x({
+            file: file,
+            C: "./dapps"
+        }).then(_ => {
+            return this.postInstall(appName)
+        }
+
         )
     }
 
-    // fetch package
-    fetchPackage = (appName) =>{
-
+    // fetch package from IPFS 
+    fetchPackage = (appName) => {
+        let outputPath = "/home/liang/Liang_Learn/git_hub/CastIron_UI/dapps/" + appName + ".tar.gz";
+        return IPFSService.pullFile("QmWMWDQ8WSwufkPpR9FC31nnmwh2CvxEszgsaFa3KVbzWR",outputPath);   
     }
 
 
 
-    postInstall = () => {
-      
-        let json = require("../../dapps/installed_back_up.json");
-        let fs = require('fs');
-        fs.writeFile("../dapps/installed.json", JSON.stringify(json), 'utf8', DappViewService.initialize);
+    postInstall = (appName) => {
+        const fs = require('fs');
+        let json = require("../../dapps/installed.json");
+        let manifestPath = "../../dapps/" + appName + "/manifest.json";
+        let packageJson = require(manifestPath);
+        let newPackage = {};
+        newPackage[appName] = packageJson;
+        json = { ...json, ...newPackage };
+        console.log("Writing json to ./dapps/installed.json");
+        console.log(json);
+        console.log(process.cwd())
+        const util = require('util');
+        // const writeFile = util.promisify(fs.writeFile);
+        // return writeFile("./dapps/installed.json", JSON.stringify(json), 'utf8').then(()=>{
+        //     DappViewService.initialize();
+        //     return true;
+        // })
 
+        fs.writeFileSync("./dapps/installed.json", JSON.stringify(json), 'utf8');
+        return DappViewService.initialize();
     }
 }
 
 const installer = new Installer()
 
-const runInstall = () =>{
-    console.log()
-    installer.install("Schedular")
-}
+// const runInstall = () =>{
 
-runInstall();
+//     console.log()
+
+//     installer.fetchPackage("Schedular")
+//     installer.install("Schedular")
+// }
+
+// runInstall();
 
 export default installer;

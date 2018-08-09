@@ -9,8 +9,11 @@ class DappViewService {
     initialize = () =>{
         let dapps = this.getInstalledDappsInfo();
 
+        console.log("dapps in DappViewService is： " + dapps);
+        console.log(dapps);
+
         Object.keys(dapps).map((key) =>{
-            let ppath = "../../dapps/" + key + "/public/view/" + dapps[key].view;
+            let ppath = "../../dapps/" + key + "/public/view/" + dapps[key].mainView;
             import(ppath).then(
                 View =>{
                     console.log("view is : ");
@@ -23,8 +26,9 @@ class DappViewService {
     }
 
     getInstalledDappsInfo(){
-        let path = "../../dapps/installed.json";
-        return require(path);
+        let path = "./dapps/installed.json";
+        let fs = require('fs');
+        return JSON.parse(fs.readFileSync(path, 'utf8'));
         
     }
 
