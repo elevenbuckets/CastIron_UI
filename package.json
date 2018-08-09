@@ -5,8 +5,22 @@
   "author": "Jason and Leon",
   "license": "GPL-3.0",
   "babel": {
-    "plugins": ["transform-class-properties", "transform-object-rest-spread", "dynamic-import-node"],
-    "presets": [ "react", [ "env", { "targets": { "node": "8.6" } } ] ]
+    "plugins": [
+      "transform-class-properties",
+      "transform-object-rest-spread",
+      "dynamic-import-node"
+    ],
+    "presets": [
+      "react",
+      [
+        "env",
+        {
+          "targets": {
+            "node": "8.6"
+          }
+        }
+      ]
+    ]
   },
   "scripts": {
     "serve": "live-server public/",
