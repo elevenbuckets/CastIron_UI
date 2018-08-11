@@ -1,15 +1,17 @@
 'use strict'
-import Reflux from 'reflux';
 import CastIronActions from '../action/CastIronActions'
 import React from 'react';
 import DappViewService from '../service/DappViewService';
-import Installer from '../util/Installer'
-
+import Installer from '../util/Installer';
+import AppInstallationModal from '../components/AppInstallationModal';
 // Reflux components
 
 class Drawer extends React.Component {
 	constructor(props) {
 		super(props);
+		this.state = {
+			isAppInstallationModalOpen : false
+		}
 	}
 
 	changeView(view) {
@@ -21,32 +23,56 @@ class Drawer extends React.Component {
 		this.props.handleClick(event);
 	}
 
-	handleAddIconClick = () =>{
-		let stage = Promise.resolve();
-		stage.then(() =>{
-			return Installer.fetchPackage("Schedular").then(()=>{
-				return Installer.install("Schedular");
-			});
-			// return Installer.install("Schedular");
-			
-		}).then(() =>{
-				console.log("Drawer: before forceUpdate!")
-				this.forceUpdate();
-			
-		});
+	handleGoBackFromApps = () =>{
+		this.setState({isAppInstallationModalOpen : false})
+	}
+
+	handleAddIconClick = () => {
+		this.setState({isAppInstallationModalOpen:true})
+
+		// let stage = Promise.resolve();
+		// stage.then(() => {
+		// 	// return Installer.fetchPackage("Schedular").then(()=>{
+		// 	// 	return Installer.install("Schedular");
+		// 	// });
+		// 	return Installer.install("Schedular");
+
+		// }).then(() => {
+		// 	console.log("Drawer: before forceUpdate!")
+		// 	this.forceUpdate();
+
+		// });
 
 		// console.log()
-    
+
 		// Installer.fetchPackage("Schedular")
 		// Installer.install("Schedular")
 	}
-	
+
+	install = () => {
+
+		let stage = Promise.resolve();
+		stage.then(() => {
+			// return Installer.fetchPackage("Schedular").then(()=>{
+			// 	return Installer.install("Schedular");
+			// });
+			return Installer.install("Schedular");
+
+		}).then(() => {
+			console.log("Drawer: before forceUpdate!")
+			this.forceUpdate();
+
+		});
+
+		return stage;
+	}
+
 
 
 	getDappIcons = () => {
 		console.log("getting Dapp Icons from Dapp view service:");
 		console.log(Object.keys(DappViewService.viewMap));
-		
+
 		return Object.keys(DappViewService.viewMap).map((key) => {
 			let src = "../dapps/" + key + "/assets/clock-icon.png";
 
@@ -82,7 +108,10 @@ class Drawer extends React.Component {
 					<img src="assets/plus-icon.png" style={{ width: "64px", height: "64px", marginTop: "16px", marginBotton: "9px" }} />
 					<p style={{ textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontWeight: "bold" }}>Add</p>
 				</div>
+				<AppInstallationModal isAppInstallationModalOpen={this.state.isAppInstallationModalOpen}
+				 goBack={this.handleGoBackFromApps} install={this.install}/>
 			</div>
+
 		)
 	}
 }
