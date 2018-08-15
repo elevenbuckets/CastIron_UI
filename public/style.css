@@ -1,388 +1,232 @@
-#dashboard {
-    position: fixed;
-    left: 0px;
-    top: 1px;
-    transform: translate3d(0, 0vh, 0);
-    width: 100vw;
-    height: 115vh;
-    z-index: 2;
-    overflow: hidden;
+/* Base styles */
+:root {
+  --yellow: #ffc600;
+  --black: #272727;
 }
 
-.stacked-bar-graph {
-  width: 100%;
-  height: 16px;
-  color: #414042;
-}
-
-
-.appList {
-    overflow: hidden;
-    width: 73.5%;
-    height: 300px;
-    margin: 40px 0px 10px 168px;
-}
-
-#dashboard.raise {
-    transform: translate3d(0, -15vh, 0);
-    transition-duration: 0.4s;
-    overflow: hidden;
-}
-
-#dashboard.close {
-    transform: translate3d(0, 0vh, 0);
-    transition-duration: 0.4s;
-}
-
-#drawer {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    height: 15vh;
-    width: 100vw;
-    z-index: 300;
-    transform: translate3d(0, 15vh, 0);
-    overflow: hidden;
-    background-image: url('./assets/drawerBack.jpg');
-}
-
-#drawer.raise {
-    transform: translate3d(0, 0vh, 0);
-    transition-duration: 0.1s;
-    z-index: 1;
-}
-
-#drawer.close {
-    transform: translate3d(0, 15vh, 0);
-    transition-duration: 6s;
-    overflow: hidden;
-}
-
-.label-soon {
-    position: absolute;
-    bottom: 16px;
-    left: 4px;
-    font-weight: bolder;
-    color: #fff815;
-    font-size: 1.1em;
-    padding: 2px 10px;
-    transform: rotate(-30deg);
-    border: 1px solid #fff815;
-}
-
-#settings {
-    position: fixed;
-    left: 0;
-    top: 0;
-    transform: translate3d(-100vw, 0, 0);
-    width: 100vw;
-    height: 100vh;
-
-    background-color: #EDEDE0;
-    transition: transform .3s
-                cubic-bezier(0, .52, 0, 1);
-    overflow: scroll;
-    z-index: 1000;
-}
-
-#settings.hide {
-    transform: translate3d(-100vw, 0, 0);
-}
-   
-#settings.show {
-    transform: translate3d(0vw, 0, 0);
-    overflow: hidden;
-}
-
-#settings h2 a {
-  color: #333;
-  margin-left: 55px;
-  text-decoration: none;
-}
- 
 ::-webkit-scrollbar {
-    width: 6px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar:horizontal {
-	display: none;
+      display: none;
 }
 
 ::-webkit-scrollbar-thumb {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.33); 
-    border-radius: 2px;
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.33);
+  border-radius: 2px;
 }
 
 ::-webkit-scrollbar-track:horizontal {
-	display: none;
+      display: none;
 }
 
 ::-webkit-scrollbar-button {
-    display: none;
+  display: none;
 }
 
 ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
-    border-radius: 2px;
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.03);
+  border-radius: 2px;
 }
 
-.button {
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    padding: 8px 16px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 2px 1px;
-    cursor: pointer;
+html {
+  /* border-box box model allows us to add padding and border to our elements without increasing their size */
+  box-sizing: border-box;
+  /* A system font stack so things load nice and quick! */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-weight: 900;
+  font-size: 10px;
+  color: var(--black);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.07);
 }
 
-.button:disabled {
-	border: 1px solid #ffffff;
+/*
+  WAT IS THIS?!
+  We inherit box-sizing: border-box; from our <html> selector
+  Apparently this is a bit better than applying box-sizing: border-box; directly to the * selector
+*/
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
 }
 
-.tbutton {
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    padding: 8px 16px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 2px 1px;
-    cursor: pointer;
+body {
+  background-image: url("./images/topography.svg"),
+    linear-gradient(110deg, #f93d66, #6d47d9);
+  background-size: 340px, auto;
+  min-height: calc(100vh - 20px);
+  margin: 10px;
+  /* background: white; */
+  background-attachment: fixed;
+  letter-spacing: -1px;
 }
 
-.button:disabled {
-	background-color: #eeeeee;
-	color: #aaaaaa;
-        cursor: default;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0 0 5px 0;
 }
 
-.dbutton {
-  background-color: rgba(255,255,255,0);
-  border: 0px;
+/* Each item in our grid will contain numbers */
+.item {
+  /* We center the contents of these items. You can also do this with flexbox too! */
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  border: 5px solid rgba(0, 0, 0, 0.03);
+  border-radius: 6px;
+  font-size: 35px;
   color: white;
-  padding: 2px 10px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 8px 7px;
-  cursor: pointer;
-  -webkit-transition-duration: 0.4s;
-  transition-duration: 0.4s;
-  font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.03)
 }
 
-.bbutton {
-  background-color: rgba(255,255,255,0);
-  border: 1px solid black;
-  color: black;
-  padding: 2px 10px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 8px 7px;
-  cursor: pointer;
-  -webkit-transition-duration: 0.4s;
-  transition-duration: 0.4s;
+.item p {
+  font-size: 13px;
+  margin: 0 0 5px 0;
+  color: rgb(153, 205, 218);
 }
 
-.bbutton:disabled {
-  color: grey;
-  border: 1px solid grey;
-  cursor: not-allowed;
+.item #cbh,#cbs,#clt,#cgp {
+  font-size: 18px;
+  margin: 0 0 5px 0;
 }
 
-.bbutton:enabled:hover {
-  background-color: #4CAF50;
-  color: white;
-  font-weight: bold;
+/* top-level app layout */
+.container {
+  display: grid;
+  grid-template-columns: 1fr; 
+  grid-gap: 7px;
+  grid-template-columns: 150px 4fr 6fr;
+  grid-template-rows: 100px 1fr;
+  grid-template-areas: 
+  "state state address"
+  "action list list";
 }
 
-.bbutton:enabled:not(:hover) {
-  background-color: rgba(255,255,255,0);
-  font-weight: normal;
+.state {
+  grid-area: state;
+  display: grid;
+  grid-template-columns: 2fr 2fr 3fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas: 
+  "tblockheight tblockstamp tlocaltime tgasprice"
+  "blockheight  blockstamp localtime  gasprice";
 }
 
-.xbutton {
-  background-color: #ffffff;
-  border: none;
-  color: black;
-  padding: 8px 16px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 2px 1px;
-  cursor: pointer;
-  -webkit-transition-duration: 0.4s;
-  transition-duration: 0.4s;
+.tblockheight {
+  grid-area: tblockheight;
+  height: 100%;
 }
 
-.xbutton:hover {
-  background-color: rgb(250,0,0);
-  color: white;
-  font-weight: bold;
+.tblockstamp {
+  grid-area: tblockstamp;
+  height: 100%;
 }
 
-table.bucket-table-init {
-	width: 100%;
-	color: #000000;
+.tlocaltime {
+  grid-area: tlocaltime;
+  height: 100%;
 }
 
-tr.bucket-table-init {
-    background-color: #ffffff;
-    border: 1px solid #cccccc;
-    color: #111111;
-    padding: 3px;
+.tgasprice {
+  grid-area: tgasprice;
+  height: 100%;
 }
 
-td.bucket-table-init {
-    background-color: #ffffff;
-    border: 1px solid #cccccc;
-    color: #111111;
-    padding: 3px;
+.blockheight {
+  grid-area: blockheight;
+  height: 100%;
 }
 
-th.bucket-table-init {
-    background-color: #ffffff;
-    border: 1px solid #cccccc;
-    color: #111111;
-    padding: 3px;
+.blockstamp {
+  grid-area: blockstamp;
+  height: 100%;
 }
 
-table.bucket-table {
-	width: 100%;
-	color: #111111;
+.localtime {
+  grid-area: localtime;
+  height: 100%;
 }
 
-tr.bucket-table {
-    background-color: #cccccc;
-    border: 1px solid #ffffff;
-    color: #111111;
-    padding: 3px;
+.gasprice {
+  grid-area: gasprice;
+  height: 100%;
 }
 
-td.bucket-table {
-    background-color: #cccccc;
-    border: 1px solid #ffffff;
-    color: #111111;
-    padding: 3px;
+.list {
+  display: grid;
+  overflow-y: scroll;
+  grid-area: list;
 }
 
-th.bucket-table {
-    background-color: #cccccc;
-    border: 1px solid #ffffff;
-    color: #111111;
-    padding: 3px;
+.address {
+  height: 100%;
+  grid-area: address;
+  display: grid;
+  grid-template-columns: 9fr 100px;
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas:
+    "dropdown icon"
+    "qbalance icon";
+    grid-gap: 5px;
 }
 
-table.txform {
-	width: 100%;
-	color: #000000;
+.avatar {
+  grid-area: icon;
+  border: 4px solid rgba(0,0,0,0.13);
+  border-radius: 25em; 
+  width: 100%; 
+  height: 100%;
+  display: grid;
+  justify-content: center;
+  align-items: center;
 }
 
-tr.txform {
-    background-color: #ffffff;
-    color: #000000;
-    padding: 8px;
+.quickbalance {
+  display: grid;
+  grid-area: qbalance;
+  grid-template-columns: 1fr 2fr 1fr 2fr;
+  grid-template-areas: 
+    "titleEth balanceEth titleERC20 balanceERC20";
+  height: 100%;
 }
 
-td.txform {
-    background-color: #ffffff;
-    color: #000000;
-    padding: 8px;
+.tEth {
+  grid-area: titleEth;
 }
 
-th.txform {
-    background-color: #ffffff;
-    color: #000000;
-    padding: 8px;
+.dropdown {
+  grid-area: dropdown;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  border: 5px solid rgba(0,0,0,0.03);
+  height: 100%;
+  width: 100%;
 }
 
-table.balance-sheet {
-	width: 100%;
-	text-align: center;
-	color: #000000;
+.berc20 {
+  grid-area: balanceERC20;
+  width: "100%";
+  border: 5px solid rgba(0,0,0,0.03);
 }
 
-tr.balance-sheet:nth-child(odd) {
-    background-color: #eeeeee;
-	color: #000000;
-}
-
-td.balance-sheet {
-	text-align: center;
-	color: #000000;
-}
-
-th.balance-sheet {
-	text-align: center;
-	color: #ffffff;
-}
-
-td.avatar {
-    text-align: center;
-}
-
-table.settings-sheet {
-    color: #333;
-    border-collapse: collapse;
-    border: 0px;
-    background-color: rgba(0,0,0,0);
-}
-
-tr.settings-sheet {
-    color: #333;
-    background-color: rgba(0,0,0,0);
-    padding-right: 25px;
-    border: 0px;
-}
-
-td.settings-sheet {
-    color: #333;
-    border: 0px;
-    padding-right: 25px;
-    background-color: rgba(0,0,0,0);
-}
-
-th.settings-sheet {
-    color: #333;
-    border: 0px;
-    background-color: rgba(0,0,0,0);
-}
-
-table {
-    font-family: arial, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-}
-
-td, th {
-    border: 1px solid #dddddd;
-    text-align: left;
-    color: #ffffff;
-    padding: 8px;
-}
-
-tr:nth-child(odd) {
-    background-color: #343434;
+.action {
+  grid-area: action;
 }
 
 .Dropdown-root {
   position: relative;
-  margin-left: 10%;
-  margin-right: 10%;
-  width: 80%;
+  width: 100%;
   display: inline-block;
   font-family: fixed;
-  font-size: 1.1em;
+  font-size: 16px;
 }
 
 .Dropdown-control {
@@ -473,144 +317,4 @@ tr:nth-child(odd) {
   cursor: default;
   display: block;
   padding: 8px 10px;
-}
-
-WalletView{
-  display: flex;
-  margin: 70px;
-  flex-direction: column;
-}
-
-.Footer{
-  position: fixed;
-   display: block;
-    margin-left: 5px;
-    margin-right: 0px;
-    margin-bottom: 5px;
-    left: 0;
-    bottom: 13.5%;
-    width: 99%;
-    height: 6.1%;
-    //background-color: #343434;
-    color: white;
-    text-align: center;
-    z-index: 2;
-}
-
-/* normal button style */
-.card {
-    width: 96px;
-    height: 96px;
-    padding: 2px;
-    margin: 12px 12px;
-    background-color: rgba(200,200,200,0.5);
-    text-align: center;
-    color: #FFF;
-    position: relative;
-    display: inline-block;
-    border-radius: 8px;
-}
-/* button hover style if required */
-.card:hover {
-    transition-duration: 0.4s;
-    box-shadow: rgba(20,20,20,0.5) 15px 18px 6px;
-}
-/* generated element for shine effect.
- * normal state is semi-transparent
- * white but with zero width. Set no
- * transition here for no mouse-leave
- * animations. Otherwise the effect
- * will play in reverse when your mouse
- * leaves the element
- */
-.card:after {
-    content: "";
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 0%;
-    height: 100%;
-    background-color: rgba(255,255,255,0.4);
-    -webkit-transition: none;
-    -moz-transition: none;
-    -ms-transition: none;
-    -o-transition: none;
-    transition: none;
-   
-}
-/* on hover we animate the width to
- * 100% and opacity to 0 so the element
- * grows and fades out
- */
-.card:hover:after {
-    width: 120%;
-    background-color: rgba(255,255,255,0);
-    -webkit-transition: all 0.3s ease-out;
-    -moz-transition: all 0.3s ease-out;
-    -ms-transition: all 0.3s ease-out;
-    -o-transition: all 0.3s ease-out;
-    transition: all 0.3s ease-out;
-}
-
-.card:not(:hover){
-    transition-duration: 0.4s;
-}
-
-Toggle {
-  touch-action: pan-x;
-
-  display: inline-block;
-  position: relative;
-  cursor: pointer;
-  background-color: transparent;
-  border: 0;
-  padding: 10px;
-  margin: 10px;
-  height: 8pt;
-
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-
-  -webkit-tap-highlight-color: rgba(0,0,0,0);
-  -webkit-tap-highlight-color: transparent;
-}
-
-.loader {
-    border: 6px solid #f3f3f3; /* Light grey */
-    border-top: 6px solid #3498db; /* Blue */
-    border-radius: 50%;
-    width: 20px;
-    max-width: 20px;
-    height: 20px;
-    margin: 0px;
-    padding: 0px;
-    animation: spin 2s linear infinite;
-    display: inline-block;
-}
-
-#fa:hover {
-    color: #111100;
-    background-color: rgba(100,200,200,0.8);
-    box-shadow: rgba(20,20,20,0.5) 15px 18px 6px;
-}
-
-#fi:hover {
-    color: #111100;
-    background-color: rgba(100,200,200,0.8);
-    box-shadow: rgba(20,20,20,0.5) 15px 18px 6px;
-}
-
-@-webkit-keyframes spin {
-    0% { -webkit-transform: rotate(0deg); }
-    100% { -webkit-transform: rotate(360deg); }
-}
-
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
 }
