@@ -54,8 +54,7 @@ html {
 }
 
 body {
-  background-image: url("./images/topography.svg"),
-    linear-gradient(110deg, #f93d66, #6d47d9);
+  background-image: url("./assets/blockwall.png");
   background-size: 340px, auto;
   min-height: calc(100vh - 20px);
   margin: 10px;
