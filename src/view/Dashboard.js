@@ -18,6 +18,7 @@ import CastIronActions from '../action/CastIronActions';
 // Views
 import States from './States';
 import Accounts from './Accounts';
+import Login from './Login';
 import Drawer from './Drawer';
 //import ReceiptsView from './ReceiptsView';
 
@@ -44,36 +45,23 @@ class DashBoard extends Reflux.Component {
 
     render() {
         console.log("in Dashboard render()")
-        return (
-            <div className="container">
-                <States />
-                <Accounts />
-                
-                <AlertModal 
-                    content={"Please unlock with your master passward!"}
-                    isAlertModalOpen={this.state.modalIsOpen && (!this.state.unlocked)} close={this.cancelTX} />
-                <Modal isOpen={this.state.modalIsOpen && this.state.unlocked} 
-                        style= {
-                            {
-                                overlay: {
-                                    width: '100%',
-                                    maxHeight: '100%',
-                                    zIndex: '5'
-                                },
-                                content: {
-                                    top: '400px',
-                                    left: '400px',
-                                    right: '400px',
-                                    bottom: '400px'
-                                }
-                            }
-                        }> Please confirm!
-                    <ConfirmTXModal confirmTX={this.confirmTX} cancelTX={this.cancelTX} />
-                </Modal>
-                <ScheduleTXModal confirmScheduleTX={this.confirmScheduleTX} cancelScheduleTX={this.cancelScheduleTX} 
-                    isScheduleModalOpen={this.state.scheduleModalIsOpen}/>
-            </div>
-        )
+
+        if (this.state.unlocked === false) {
+            return (
+                <div className="container locked">
+                    <States />
+                    <Login />
+                </div>
+            );
+        } else {
+            return (
+                <div className="container unlocked">
+                    <States />
+                    <Accounts />
+                    <Drawer />
+                </div>
+            )
+        }
     }
 }
 

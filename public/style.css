@@ -87,20 +87,24 @@ h6 {
 
 .item p {
   font-size: 13px;
-  margin: 0 0 5px 0;
-  color: rgb(153, 205, 218);
+  margin: 0;
+  color: white;
 }
 
 .item #cbh,#cbs,#clt,#cgp {
   font-size: 18px;
-  margin: 0 0 5px 0;
+  margin: 2px 0 2px 0;
+  border: 0px solid rgba(0, 0, 0, 0.03);
+  border-radius: 0px;
 }
 
 /* top-level app layout */
 .container {
   display: grid;
-  grid-template-columns: 1fr; 
   grid-gap: 7px;
+}
+
+.unlocked {
   grid-template-columns: 6fr 4fr 150px;
   grid-template-rows: 100px 1fr;
   grid-template-areas: 
@@ -108,9 +112,22 @@ h6 {
   "list list action";
 }
 
+.locked {
+  grid-template-columns: 1fr;
+  grid-template-rows: 20px 1fr;
+  grid-template-areas: 
+  "state"
+  "list";
+}
+
 .state {
+  position: relative;
+  width: 100%;
   grid-area: state;
   display: grid;
+}
+
+.sunlocked {
   grid-template-columns: 2fr 2fr 3fr 1fr;
   grid-template-rows: 1fr 1fr;
   grid-template-areas: 
@@ -118,50 +135,116 @@ h6 {
   "blockheight  blockstamp localtime  gasprice";
 }
 
+.slocked {
+  grid-template-columns: 120px 1fr 120px 1fr 120px 3fr 120px 1fr;
+  grid-template-rows: 1fr;
+  grid-template-areas: 
+  "tblockheight blockheight tblockstamp blockstamp tlocaltime localtime tgasprice gasprice";
+}
+
 .tblockheight {
+  border: 2px solid white;
+  border-right: 0px;
+  border-radius: 0px;
   grid-area: tblockheight;
+  background-color: rgb(34, 169, 202);
   height: 100%;
+  width: 100%;
 }
 
 .tblockstamp {
+  width: 100%;
+  border: 2px solid white;
+  border-right: 0px;
+  border-left: 1px solid white;
+  border-radius: 0px;
   grid-area: tblockstamp;
+  background-color: rgb(34, 169, 202);
   height: 100%;
 }
 
 .tlocaltime {
+  width: 100%;
+  border: 2px solid white;
+  border-right: 0px;
+  border-left: 1px solid white;
+  border-radius: 0px;
   grid-area: tlocaltime;
+  background-color: rgb(34, 169, 202);
   height: 100%;
 }
 
 .tgasprice {
+  width: 100%;
+  border: 2px solid white;
+  border-right: 0px;
+  border-left: 1px solid white;
+  border-radius: 0px;
   grid-area: tgasprice;
+  background-color: rgb(34, 169, 202);
   height: 100%;
 }
 
 .blockheight {
+  width: 100%;
+  border: 2px solid white;
+  border-left: 0px;
+  border-right: 1px solid white;
+  border-radius: 0px;
   grid-area: blockheight;
   height: 100%;
 }
 
 .blockstamp {
+  width: 100%;
+  border: 2px solid white;
+  border-left: 0px;
+  border-right: 1px solid white;
+  border-radius: 0px;
   grid-area: blockstamp;
   height: 100%;
 }
 
 .localtime {
+  width: 100%;
+  border: 2px solid white;
+  border-left: 0px;
+  border-right: 1px solid white;
+  border-radius: 0px;
   grid-area: localtime;
   height: 100%;
 }
 
 .gasprice {
+  width: 100%;
+  border: 2px solid white;
+  border-left: 0px;
+  border-right: 2px solid white;
+  border-radius: 0px;
   grid-area: gasprice;
   height: 100%;
 }
 
 .list {
+  width: 100%;
   display: grid;
+  grid-area: list;
+  height: 100%;
+  border: 2px solid white;
+  border-radius: 0px;
+  min-height: calc(100vh - 50px);
+}
+
+.mainView {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   overflow-y: scroll;
   grid-area: list;
+  border: 2px solid white;
+  border-radius: 0px;
+  height: 100%;
+  min-height: calc(100vh - 130px); 
 }
 
 .address {
@@ -178,7 +261,8 @@ h6 {
 
 .avatar {
   grid-area: icon;
-  border: 4px solid rgba(0,0,0,0.13);
+  border: 4px solid rgba(255,255,255,0.73);
+  background-color: rgba(155,155,155,0.33);
   border-radius: 25em; 
   width: 100%; 
   height: 100%;
@@ -218,6 +302,8 @@ h6 {
 
 .action {
   grid-area: action;
+  border: 5px solid rgba(0, 0, 0, 0.73);
+  min-height: calc(100vh - 130px);
 }
 
 .Dropdown-root {
@@ -316,4 +402,76 @@ h6 {
   cursor: default;
   display: block;
   padding: 8px 10px;
+}
+
+/* normal button style */
+.card {
+  width: 96px;
+  height: 96px;
+  padding: 2px;
+  margin: 12px 12px;
+  background-color: rgba(200,200,200,0.5);
+  text-align: center;
+  color: #FFF;
+  position: relative;
+  display: inline-block;
+  border-radius: 8px;
+  font-size: 18px;
+}
+/* button hover style if required */
+.card:hover {
+  transition-duration: 0.4s;
+  box-shadow: rgba(20,20,20,0.5) 15px 18px 6px;
+}
+/* generated element for shine effect.
+* normal state is semi-transparent
+* white but with zero width. Set no
+* transition here for no mouse-leave
+* animations. Otherwise the effect
+* will play in reverse when your mouse
+* leaves the element
+*/
+.card:after {
+  content: "";
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 0%;
+  height: 100%;
+  background-color: rgba(255,255,255,0.4);
+  -webkit-transition: none;
+  -moz-transition: none;
+  -ms-transition: none;
+  -o-transition: none;
+  transition: none;
+ 
+}
+/* on hover we animate the width to
+* 100% and opacity to 0 so the element
+* grows and fades out
+*/
+.card:hover:after {
+  width: 120%;
+  background-color: rgba(255,255,255,0);
+  -webkit-transition: all 0.3s ease-out;
+  -moz-transition: all 0.3s ease-out;
+  -ms-transition: all 0.3s ease-out;
+  -o-transition: all 0.3s ease-out;
+  transition: all 0.3s ease-out;
+}
+
+.card:not(:hover){
+  transition-duration: 0.4s;
+}
+
+.label-soon {
+  position: absolute;
+  bottom: 16px;
+  left: 4px;
+  font-weight: bolder;
+  color: #fff815;
+  font-size: 1.1em;
+  padding: 2px 10px;
+  transform: rotate(-30deg);
+  border: 1px solid #fff815;
 }
