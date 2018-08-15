@@ -48,7 +48,7 @@ class DashBoard extends Reflux.Component {
             <div className="container">
                 <States />
                 <Accounts />
-                <Drawer />
+                
                 <AlertModal 
                     content={"Please unlock with your master passward!"}
                     isAlertModalOpen={this.state.modalIsOpen && (!this.state.unlocked)} close={this.cancelTX} />

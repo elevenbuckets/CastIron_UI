@@ -101,11 +101,11 @@ h6 {
   display: grid;
   grid-template-columns: 1fr; 
   grid-gap: 7px;
-  grid-template-columns: 150px 4fr 6fr;
+  grid-template-columns: 6fr 4fr 150px;
   grid-template-rows: 100px 1fr;
   grid-template-areas: 
-  "state state address"
-  "action list list";
+  "address state state"
+  "list list action";
 }
 
 .state {
@@ -168,11 +168,11 @@ h6 {
   height: 100%;
   grid-area: address;
   display: grid;
-  grid-template-columns: 9fr 100px;
+  grid-template-columns: 100px 9fr;
   grid-template-rows: 1fr 1fr;
   grid-template-areas:
-    "dropdown icon"
-    "qbalance icon";
+    "icon dropdown"
+    "icon qbalance";
     grid-gap: 5px;
 }
 
