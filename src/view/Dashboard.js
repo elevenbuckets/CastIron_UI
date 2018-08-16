@@ -20,6 +20,7 @@ import States from './States';
 import Accounts from './Accounts';
 import Login from './Login';
 import MainView from './MainView';
+import Sidebar from './Sidebar';
 //import ReceiptsView from './ReceiptsView';
 
 // Modals
@@ -59,6 +60,7 @@ class DashBoard extends Reflux.Component {
                     <States />
                     <Accounts />
                     <MainView />
+                    <Sidebar />
                 </div>
             )
         }

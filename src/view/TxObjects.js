@@ -84,7 +84,7 @@ class TxObjects extends AlertModalUser {
           <tbody>
             <tr>
               <td width='14%' style={{ whiteSpace: 'nowrap' }}>
-                Types<br /><div style={{ textAlign: 'right' }}>{sendkind}</div>
+                Types<br /><div style={{ textAlign: 'center', width: "3.5em", margin: "10px 0 0 15px", padding: "0px", border: "1px solid white"}}>{sendkind}</div>
               </td>
               <td width='43%'>
                 Amount<br /><div style={{ textAlign: 'center' }}><input type='text' size='32' onChange={this.handleChangeAmount} /></div>

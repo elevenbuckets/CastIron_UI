@@ -363,8 +363,32 @@ h6 {
 
 .action {
   grid-area: action;
-  border: 5px solid rgba(0, 0, 0, 0.73);
   min-height: calc(100vh - 130px);
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 50px 50px 50px 50px;
+  grid-template-areas:
+    "."
+    "receipts"
+    "drawer"
+    "settings"
+    "logout";
+}
+
+.logout {
+  grid-area: logout;
+}
+
+.settings {
+  grid-area: settings;
+}
+
+.drawer {
+  grid-area: drawer;
+}
+
+.receipts {
+  grid-area: receipts;
 }
 
 .Dropdown-root {
@@ -563,4 +587,14 @@ h6 {
 
 .xbutton:hover {
   background-color: red;
+}
+
+.sbutton {
+  max-width: 100%;
+  max-height: 50px;
+}
+
+.sbutton:hover {
+  background-color: var(--yellow);
+  color: black;
 }
