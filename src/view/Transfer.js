@@ -63,7 +63,16 @@ class Transfer extends Reflux.Component {
       <div className="item TransferLayout">
         <label className="item TransferTo">
           Recipient:
-          <input size={62} type='text' style={{marginLeft: "40px"}} onChange={this.handleChange} 
+          <input size={62} type='text' style=
+          {{
+            marginLeft: "40px",
+            backgroundColor: "rgba(255,255,255,0)",
+            border: "1px solid white",
+            color: "white",
+            fontWeight: "bold",
+            fontSize: "24px",
+            fontFamily: "monospace"
+          }} onChange={this.handleChange} 
                 value={this.state.recipient} placeholder="Ethereum Address" />
         </label>
 

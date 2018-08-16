@@ -87,10 +87,30 @@ class TxObjects extends AlertModalUser {
                 Types<br /><div style={{ textAlign: 'center', width: "3.5em", margin: "10px 0 0 15px", padding: "0px", border: "1px solid white"}}>{sendkind}</div>
               </td>
               <td width='43%'>
-                Amount<br /><div style={{ textAlign: 'center' }}><input type='text' size='32' onChange={this.handleChangeAmount} /></div>
+                Amount<br /><div style={{ textAlign: 'center', marginTop: "10px" }}><input type='text' size='32' style=
+                {{
+                  backgroundColor: "rgba(255,255,255,0)",
+                  border: "1px solid white",
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: "24px",
+                  width: "200px",
+                  textAlign: "right",
+                  paddingRight: "12px"
+                }} onChange={this.handleChangeAmount} /></div>
               </td>
               <td width='43%'>
-                Gas<br /><div style={{ textAlign: 'center' }}><input type='text' size='32' onChange={this.handleChangeGas} /></div>
+                Gas<br /><div style={{ textAlign: 'center', marginTop: "10px" }}><input type='text' size='32' style=
+                {{
+                  backgroundColor: "rgba(255,255,255,0)",
+                  border: "1px solid white",
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: "24px",
+                  width: "200px",
+                  textAlign: "right",
+                  paddingRight: "12px"
+                }} onChange={this.handleChangeGas} /></div>
               </td>
               <td><input type="button" className="button" value={this.props.send_button_value} onClick={this.handleSend} /></td>
               <td><input type="button" className="button" value='Enqueue' onClick={this.handleEnqueue} /></td>
