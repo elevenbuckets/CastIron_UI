@@ -1,12 +1,18 @@
-import CastIronStore from "../store/CastIronStore";
+"use strict";
+
+// Third-parties
 import Reflux from 'reflux';
 import React from 'react';
 import Dropdown from 'react-dropdown';
+
+// Reflux store
+import CastIronStore from "../store/CastIronStore";
+
+// Modals
 import AlertModalUser from '../common/AlertModalUser'
 import AlertModal from '../components/AlertModal';
 
 // Reflux components
-
 class TxObjects extends AlertModalUser {
   constructor(props) {
     super(props);
@@ -73,21 +79,21 @@ class TxObjects extends AlertModalUser {
     let sendkind = this.props.selected_token_name !== '' ? this.props.selected_token_name : 'ETH';
 
     return (
-      <form>
-        <table className="txform">
+      <form className="item TxObj">
+        <table>
           <tbody>
-            <tr className="txform">
-              <td className="txform" width='14%' style={{ whiteSpace: 'nowrap' }}>
+            <tr>
+              <td width='14%' style={{ whiteSpace: 'nowrap' }}>
                 Types<br /><div style={{ textAlign: 'right' }}>{sendkind}</div>
               </td>
-              <td className="txform" width='43%'>
+              <td width='43%'>
                 Amount<br /><div style={{ textAlign: 'center' }}><input type='text' size='32' onChange={this.handleChangeAmount} /></div>
               </td>
-              <td className="txform" width='43%'>
+              <td width='43%'>
                 Gas<br /><div style={{ textAlign: 'center' }}><input type='text' size='32' onChange={this.handleChangeGas} /></div>
               </td>
-              <td className="txform" ><input type="button" className="button" value={this.props.send_button_value} onClick={this.handleSend} /></td>
-              <td className="txform"><input type="button" className="button" value='Enqueue' onClick={this.handleEnqueue} /></td>
+              <td><input type="button" className="button" value={this.props.send_button_value} onClick={this.handleSend} /></td>
+              <td><input type="button" className="button" value='Enqueue' onClick={this.handleEnqueue} /></td>
             </tr>
           </tbody>
         </table>

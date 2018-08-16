@@ -19,7 +19,7 @@ import CastIronActions from '../action/CastIronActions';
 import States from './States';
 import Accounts from './Accounts';
 import Login from './Login';
-import Drawer from './Drawer';
+import MainView from './MainView';
 //import ReceiptsView from './ReceiptsView';
 
 // Modals
@@ -58,7 +58,7 @@ class DashBoard extends Reflux.Component {
                 <div className="container unlocked">
                     <States />
                     <Accounts />
-                    <Drawer />
+                    <MainView />
                 </div>
             )
         }

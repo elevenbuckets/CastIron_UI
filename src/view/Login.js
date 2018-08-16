@@ -73,14 +73,14 @@ class Login extends Reflux.Component {
   render = () => {
     return (
       <div className="item list">
-        <table border="0">
+        <table style={{border: "2px solid white", backgroundColor: "rgba(255,255,255,0.11)"}}>
         <tbody>
-          <tr style={{ border: '0px' }} align="center">
-            <td style={{ border: '0px', color: this.state.unlocked ? '#4CAF50' : 'red' }}>
+          <tr>
+            <td style={{ padding: "25px", color: 'red' }}>
               <label style={{ fontWeight: 'bold' }}>Master Password</label>
             </td></tr>
-          <tr style={{ border: '0px' }} align="center"><td style={{textAlign: "center"}}>
-              <input ref='mp' type='password' style={{width: "95%", marginTop: '7px' }} onKeyUp={this.handleEnter} />
+          <tr><td style={{textAlign: "center", margin: "25px"}}>
+              <input ref='mp' type='password' style={{width: "65%", marginBottom: '35px' }} onKeyUp={this.handleEnter} />
             </td></tr>
         </tbody></table>
       </div>

@@ -1,11 +1,24 @@
-import CastIronStore from "../store/CastIronStore";
-import CastIronService from "../service/CastIronService";
+"use strict";
+
+// Third-parties
 import Reflux from 'reflux';
 import React from 'react';
 import Dropdown from 'react-dropdown';
+
+// Reflux store
+import CastIronStore from "../store/CastIronStore";
+
+// Reflux action
 import CastIronActions from '../action/CastIronActions';
+
+// Singleton service
+import CastIronService from "../service/CastIronService";
+
+// Views
 import TxObjects from './TxObjects';
 import TxQList from './TxQList';
+
+// Utils
 import { createCanvasWithAddress } from "../util/Utils";
 
 class Transfer extends Reflux.Component {
@@ -17,36 +30,23 @@ class Transfer extends Reflux.Component {
     this.timeout;
   }
 
-  handleEnqueue(tx) {
-    CastIronActions.enqueue(tx);
-  }
-
-  handleDequeue(tx) {
-    CastIronActions.dequeue(tx);
-  }
-
-  handleClearQueue() {
-    CastIronActions.clearQueue();
-  }
-
-
+  handleEnqueue = (tx) => { CastIronActions.enqueue(tx); }
+  handleDequeue = (tx) => { CastIronActions.dequeue(tx); }
+  handleClearQueue = () => { CastIronActions.clearQueue(); }
+  handleBatchSend() { CastIronActions.batchSend(); }
   handleSend = (addr, type, amount, gasNumber) => {
     CastIronActions.send(this.state.address, addr, type, amount, gasNumber);
   }
-
-  handleBatchSend() {
-    CastIronActions.batchSend();
-  }
-
 
   handleChange = (event) => {
     let addr = event.target.value;
     console.log('got addr: ' + addr);
     try {
-      if ( CastIronService.wallet.web3.isAddress(addr) === true
-	   && (CastIronService.wallet.web3.toAddress(addr) == addr || CastIronService.wallet.web3.toChecksumAddress(addr) == addr)
+      if ( 
+        CastIronService.wallet.web3.isAddress(addr) === true
+	  && (CastIronService.wallet.web3.toAddress(addr) == addr || CastIronService.wallet.web3.toChecksumAddress(addr) == addr)
       ) {
-	addr = CastIronService.wallet.web3.toAddress(addr);
+	      addr = CastIronService.wallet.web3.toAddress(addr);
         createCanvasWithAddress(this.refs.canvas, addr);
       } else {
         this.refs.canvas.getContext('2d').clearRect(0, 0, this.refs.canvas.width, this.refs.canvas.height);
@@ -60,65 +60,31 @@ class Transfer extends Reflux.Component {
 
   render = () => {
     return (
-      <div>
-        <table className="balance-sheet">
-          <tbody>
-            <tr className="avatar" style={{ textAlign: "center" }}>
-              <th colSpan="2" className="avatar" style={{ textAlign: "center" }}>Transfer</th>
-            </tr>
-            <tr className="balance-sheet">
-              <td className="balance-sheet">
-                <label>
-                  Recipient:
-       <input size={62} style={{ marginLeft: '30', fontFamily: 'fixed', fontSize: '1.09em' }} type='text'
-                    onChange={this.handleChange} value={this.state.recipient} placeholder="Ethereum Address" />
-                </label>
-              </td>
-              <td className="balance-sheet" width={211} rowSpan='2' style={{ backgroundColor: '#eeeeee' }}>
-                <table className="txform"><tbody><tr className="txform"><td className="txform" style={{ textAlign: 'center' }}>
-                  <canvas ref='canvas' width={66} height={66} style=
-                    {
-                      {
-                        border: "3px solid #ccc",
-                        borderBottomLeftRadius: "2.8em",
-                        borderBottomRightRadius: "2.8em",
-                        borderTopRightRadius: "2.8em",
-                        borderTopLeftRadius: "2.8em"
-                      }
-                    }
-                  /></td></tr></tbody></table>
-              </td>
-            </tr>
-            <tr className="balance-sheet">
-              <td className="balance-sheet">
-                <TxObjects selected_token_name={this.state.selected_token_name}
-                  handleEnqueue={this.handleEnqueue} handleSend={this.handleSend}
-                  recipient={this.state.recipient} send_button_value="Send"/>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <TxQList style={{ marginTop: '0', marginBottom: '0', paddingTop: '0', paddingBottom: '0' }} />
-        <div style=
-          {
+      <div className="item TransferLayout">
+        <label className="item TransferTo">
+          Recipient:
+          <input size={62} type='text' style={{marginLeft: "40px"}} onChange={this.handleChange} 
+                value={this.state.recipient} placeholder="Ethereum Address" />
+        </label>
+
+        <canvas className="item ToAvatar" ref='canvas' width="100%" height="100%" style=
             {
-              textAlign: 'center',
-              backgroundColor: '#ffffff',
-              width: '100%',
-              maxHeight: '46',
-              minHeight: '46',
-              zIndex: '1',
-              position: "fixed",
-              bottom: '20%',
-              boxShadow: '0 -5px 6px -5px rgba(200,200,200,0.5)'
+              {
+                border: "3px solid #ccc",
+                borderRadius: "25em"
+              }
             }
-          }>
-          <input type="button" className="button" value='BatchSend' onClick={this.handleBatchSend} style={{ width: '160px', marginTop: '5px', marginLeft: '5%', marginRight: '5%' }} />
-          <input type="button" className="button" value='ClearAll' onClick={this.handleClearQueue} style={{ backgroundColor: 'rgb(250,0,0)', width: '160px', marginTop: '5px', marginLeft: '5%', marginRight: '5%' }} />
+        />
+        <TxObjects selected_token_name={this.state.selected_token_name} send_button_value="Send"
+          handleEnqueue={this.handleEnqueue} handleSend={this.handleSend} recipient={this.state.recipient}/>
+        <TxQList />
+        <div className="item TransferClicks">
+          <input type="button" className="button" value='BatchSend' onClick={this.handleBatchSend} />
+          <input type="button" className="button xbutton" value='ClearAll' onClick={this.handleClearQueue} />
         </div>
       </div>
     );
   }
 }
 
-export default Transfer
+export default Transfer;
