@@ -298,14 +298,15 @@ h6 {
   font-family: fixed;
   grid-area: TxList;
   text-align: center;
+  background-color: rgba(0, 0, 0, 0.11);
 }
 
 .TQList tr:nth-child(odd) {
-  background-color:  rgb(9, 126, 155);
+  background-color: rgb(34, 169, 202);
 }
 
 .TQList tr:nth-child(even) {
-  background-color: rgb(24, 75, 17);
+  background-color: rgb(12, 96, 117);
 }
 
 .address {
