@@ -47,7 +47,7 @@ class TxQList extends Reflux.Component {
             {this.state.queuedTxs.map((tx) => {
               return (
                 <tr>
-                  <td width='5%'><input type="button" className="button xbutton" value='X'
+                  <td style={{maxWidth: '12px'}}><input type="button" className="button xbutton" value='X'
                     onClick={this.handleDequeue.bind(this, tx)} /></td>
                   <td width='32%'>{tx.from}</td>
                   <td width='32%'>{tx.to}</td>

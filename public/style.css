@@ -105,7 +105,7 @@ h6 {
 }
 
 .unlocked {
-  grid-template-columns: 6fr 4fr 150px;
+  grid-template-columns: 6fr 4fr 120px;
   grid-template-rows: 100px 1fr;
   grid-template-areas: 
   "address state state"
