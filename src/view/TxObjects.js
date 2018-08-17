@@ -22,6 +22,7 @@ class TxObjects extends AlertModalUser {
     this.handleChangeGas = this.handleChangeGas.bind(this);
     this.handleEnqueue = this.handleEnqueue.bind(this);
     this.handleSend = this.handleSend.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
   handleChangeAmount(event) {
@@ -62,6 +63,11 @@ class TxObjects extends AlertModalUser {
     this.props.handleSend(this.props.recipient, type, this.state.amount, this.state.gas);
   }
 
+  handleClick() {
+    console.log("in handle click change token name function ....");
+    this.setState({selected_token_name: ''});
+  }
+
   handleEnqueue() {
     let tx = {};
     tx.from = this.state.address;
@@ -76,7 +82,7 @@ class TxObjects extends AlertModalUser {
   render = () => {
     if (this.state.address == '') return (<p />);
 
-    let sendkind = this.props.selected_token_name !== '' ? this.props.selected_token_name : 'ETH';
+    let sendkind = this.state.selected_token_name !== '' ? this.state.selected_token_name : 'ETH';
 
     return (
       <form className="item TxObj">
@@ -84,7 +90,15 @@ class TxObjects extends AlertModalUser {
           <tbody>
             <tr>
               <td width='14%' style={{ whiteSpace: 'nowrap' }}>
-                Types<br /><div style={{ textAlign: 'center', width: "3.5em", margin: "10px 0 0 15px", padding: "0px", border: "1px solid white"}}>{sendkind}</div>
+                Types<br /><div style=
+                {{ 
+                  textAlign: 'center', 
+                  width: "3.5em", 
+                  margin: "10px 0 0 15px", 
+                  padding: "0px", 
+                  border: "1px solid white",
+                  cursor: "pointer"
+                }} onClick={this.handleClick}>{sendkind}</div>
               </td>
               <td width='43%'>
                 Amount<br /><div style={{ textAlign: 'center', marginTop: "10px" }}><input type='text' size='32' style=

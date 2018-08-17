@@ -301,23 +301,29 @@ h6 {
 }
 
 .TQList tr:nth-child(odd) {
-  background-color:  rgb(34, 169, 202);
+  background-color:  rgb(9, 126, 155);
 }
 
 .TQList tr:nth-child(even) {
-  border-bottom: 1px solid white;
+  background-color: rgb(24, 75, 17);
 }
 
 .address {
   height: 100%;
   grid-area: address;
   display: grid;
-  grid-template-columns: 100px 9fr;
+  grid-template-columns: 100px 1fr 50px;
   grid-template-rows: 1fr 1fr;
   grid-template-areas:
-    "icon dropdown"
-    "icon qbalance";
+    "icon dropdown copyAddr"
+    "icon qbalance qbalance";
     grid-gap: 5px;
+}
+
+.copyAddr {
+  grid-area: copyAddr;
+  width: 100%;
+  background: url("./assets/copy.png");
 }
 
 .avatar {
@@ -588,6 +594,9 @@ h6 {
 
 .xbutton:hover {
   background-color: red;
+  color: black;
+  font-weight: bold;
+  border: 2px solid pink;
 }
 
 .sbutton {
@@ -597,5 +606,10 @@ h6 {
 
 .sbutton:hover {
   background-color: var(--yellow);
+  color: black;
+}
+
+.sendbutton:hover {
+  background-color: white;
   color: black;
 }

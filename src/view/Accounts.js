@@ -77,6 +77,10 @@ class Accounts extends Reflux.Component {
            <Dropdown className="dropdown" options={Object.keys(this.state.accounts)} style={{fontSize:"16px", width: "100%"}} 
                 onChange={this.handleChange} value={this.state.address} 
                 placeholder={"You Have " + Object.keys(this.state.accounts).length + " Accounts"} />
+           <input type="image" src="./assets/copy.png" className="button copyAddr" style=
+           {{
+              border: "0px"
+           }} value="" onClick={this.copyAddress} />
          <GenSheets />
       </div>
     );

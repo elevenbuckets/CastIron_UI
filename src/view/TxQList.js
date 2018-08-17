@@ -54,7 +54,7 @@ class TxQList extends Reflux.Component {
                   <td width='4%' >{tx.type}</td>
                   <td width='10%'>{tx.amount}</td>
                   <td width='10%'>{tx.gas * this.state.gasPrice}</td>
-                  <td><input type="button" className="button" value='Send'
+                  <td><input type="button" className="button sendbutton" value='Send'
                     onClick={this.handSendTxInQueue.bind(this, tx)} /></td>
                 </tr>
               );
