@@ -61,12 +61,32 @@ class DashBoard extends Reflux.Component {
                     <Accounts />
                     <MainView />
                     <Sidebar />
+                    <Modal isOpen={this.state.modalIsOpen && this.state.unlocked} style=
+                        {{
+                            overlay: { width: '100%', maxHeight: '100%', zIndex: '5' },
+                            content: { 
+                                top: '40%', left: '40%', right: '40%', bottom: '40%',
+                                border: "2px solid yellow",
+                                backgroundColor: "black",
+                                borderRadius: "6px",
+                                color: "yellow",
+                                textAlign: "center",
+                                fontSize: "30px",
+                                display: "grid",
+                                padding: "0px",
+                                gridTemplateRows: "1fr 1fr",
+                                gridTemplateColumns: "1fr",
+                                alignItems: "center"},
+                        }}> Please confirm!
+                      <ConfirmTXModal confirmTX={this.confirmTX} cancelTX={this.cancelTX} />
+                    </Modal>
+                    <ScheduleTXModal confirmScheduleTX={this.confirmScheduleTX} cancelScheduleTX={this.cancelScheduleTX}
+                    isScheduleModalOpen={this.state.scheduleModalIsOpen}/>
                 </div>
             )
         }
     }
 }
 
-
-export default DashBoard
+export default DashBoard;
 

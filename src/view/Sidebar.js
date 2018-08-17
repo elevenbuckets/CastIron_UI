@@ -22,8 +22,10 @@ class Sidebar extends Reflux.Component {
       ptoggle: true,
       pfield: '28px',
       visible: false,
-      sbutton: 'none'
+      sbutton: 'none',
+      rtoggle: 'Receipts'
     };
+
   }
 
   handleClick = () => { this.toggleSettings(); }
@@ -74,13 +76,27 @@ class Sidebar extends Reflux.Component {
     document.body.removeChild(dummy);
   }
 
+  // Questionable design.. Need reviews
+  handleReceiptClick = () => {
+    console.log("in handleReceiptClick");
+    if (this.state.rtoggle === 'Receipts') {
+      console.log(`switch from ${this.state.currentView} to Receipts`);
+      this.setState({rtoggle: this.state.currentView});
+      CastIronActions.changeView("Receipts");
+    } else {
+      console.log(`switch from Receipts back to previous view`);
+      CastIronActions.changeView(this.state.rtoggle);
+      this.setState({rtoggle: 'Receipts'});
+    }
+}
+
   render = () => {
     return (
       <div className="item action">
         <input type="button" className="button sbutton logout" value="Log Out" onClick={this.handleLogout}/>
         <input type="button" className="button sbutton settings" value="Settings" onClick=""/>
         <input type="button" className="button sbutton drawer" value="Apps" onClick=""/>
-        <input type="button" className="button sbutton receipts" value="Receipts" onClick=""/>
+        <input type="button" className="button sbutton receipts" value={this.state.rtoggle} onClick={this.handleReceiptClick}/>
       </div>
     );
   }

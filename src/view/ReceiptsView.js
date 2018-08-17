@@ -1,11 +1,18 @@
+"use strict";
+
+// Third-parties
 import React, { Component } from 'react';
 import Reflux from 'reflux';
-import CastIronStore from '../store/CastIronStore';
-import CastIronService from '../service/CastIronService';
-import Receipts from '../components/Receipts';
 import Dropdown from 'react-dropdown';
-import TxQList from './TxQList';
 
+// Reflux store
+import CastIronStore from '../store/CastIronStore';
+
+// Singleton service
+import CastIronService from '../service/CastIronService';
+
+// Components
+import Receipts from '../components/Receipts';
 
 class ReceiptsView extends Reflux.Component {
     constructor(props) {
@@ -22,38 +29,18 @@ class ReceiptsView extends Reflux.Component {
 
     }
 
-
-    handleChange = (event) => {
-        this.setState({ selectedQ: event.value });
-    }
-
-    getReceipts = () => {
-        return this.state.receipts[this.state.selectedQ]
-    }
+    handleChange = (event) => { this.setState({ selectedQ: event.value }); }
+    getReceipts = () => { return this.state.receipts[this.state.selectedQ] }
 
     render() {
         console.log("in ReceiptsView render()");
         return (
-            <div>
-                <table className="balance-sheet">
-                    <tbody>
-                        <tr className="avatar" style={{ textAlign: "center" }}>
-                            <th colSpan="2" className="avatar" style={{ textAlign: "center" }}>Receipts</th>
-                        </tr>
-                        <tr className="balance-sheet">
-                            <td className="balance-sheet" width="17%">Queue IDs:</td>
-                            <td className="balance-sheet">
-                                <Dropdown options={this.state.Qs} onChange={this.handleChange}
-                                    value={this.state.selectedQ} placeholder={'Please select a Queue ID'} />
-                            </td>
-                        </tr>
-
-                    </tbody>
-                </table>
-                <Receipts receipts={this.getReceipts()}
-                    style={{ marginTop: '0', marginBottom: '0', paddingTop: '0', paddingBottom: '0' }} />
+            <div className="item ReceiptsLayout">
+                <label className="item RLabel">Queue IDs:</label>
+                <Dropdown className="item ReceiptsDrop" options={this.state.Qs} onChange={this.handleChange}
+                          value={this.state.selectedQ} placeholder={'Please select a Queue ID'} />
+                <Receipts receipts={this.getReceipts()} />
             </div>
-
         )
     }
 
