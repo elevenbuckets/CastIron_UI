@@ -63,7 +63,7 @@ class DashBoard extends Reflux.Component {
                     <Accounts />
                     <MainView />
                     <Sidebar />
-                    <Modal isOpen={this.state.modalIsOpen && this.state.unlocked} style=
+                    <Modal ariaHideApp={false} isOpen={this.state.modalIsOpen && this.state.unlocked} style=
                         {{
                             overlay: { width: '100%', maxHeight: '100%', zIndex: '5' },
                             content: { 

@@ -353,8 +353,21 @@ h6 {
   height: 100%;
 }
 
-.tEth {
+.teth {
   grid-area: titleEth;
+  background-color: none;
+  border: 0px solid white;
+  border-radius: 0px;
+  border-right: 0px;
+}
+
+.terc20 {
+  grid-area: titleERC20;
+  background-color: none;
+  border: 0px solid white;
+  border-right: 0px;
+  border-left: 0px solid white;
+  border-radius: 0px;
 }
 
 .dropdown {
@@ -369,8 +382,14 @@ h6 {
 
 .berc20 {
   grid-area: balanceERC20;
-  width: "100%";
-  border: 5px solid rgba(0,0,0,0.03);
+  width: 100%;
+  border: 5px solid rgba(0, 0, 0, 0);
+}
+
+.beth {
+  grid-area: balanceEth;
+  border: 2px solid rgba(0, 0, 0, 0);
+  border-radius: 0px;
 }
 
 .action {
@@ -452,6 +471,10 @@ h6 {
 .ReceiptMainTable tr:nth-child(odd) {
   background-color: #ffc600;
   color: black;
+}
+
+.ReceiptMainTable tr:nth-child(even) {
+  background-color: #a58307
 }
 
 .ReceiptToolTipArea {
