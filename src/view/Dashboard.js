@@ -48,6 +48,7 @@ class DashBoard extends Reflux.Component {
         console.log("in Dashboard render()")
 
         if (this.state.unlocked === false) {
+            document.body.style.background = "url(./assets/blockwall.png)";
             return (
                 <div className="container locked">
                     <States />
@@ -55,6 +56,7 @@ class DashBoard extends Reflux.Component {
                 </div>
             );
         } else {
+            document.body.style.background = "linear-gradient(10deg, rgb(21, 2, 32), rgb(18, 121, 161))";
             return (
                 <div className="container unlocked">
                     <States />
