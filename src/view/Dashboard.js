@@ -56,7 +56,7 @@ class DashBoard extends Reflux.Component {
                 </div>
             );
         } else {
-            document.body.style.background = "linear-gradient(10deg, rgb(21, 2, 32), rgb(18, 121, 161))";
+            document.body.style.background = "linear-gradient(170deg, rgb(21, 2, 32), rgb(18, 121, 161))";
             return (
                 <div className="container unlocked">
                     <States />
