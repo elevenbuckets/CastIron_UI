@@ -65,15 +65,15 @@ class DashBoard extends Reflux.Component {
                     <Sidebar />
                     <Modal ariaHideApp={false} isOpen={this.state.modalIsOpen && this.state.unlocked} style=
                         {{
-                            overlay: { width: '100%', maxHeight: '100%', zIndex: '5' },
+                            overlay: { width: '100%', maxHeight: '100%', zIndex: '5', backgroundColor: "rgba(0,12,20,0.75)" },
                             content: { 
-                                top: '40%', left: '40%', right: '40%', bottom: '40%',
+                                top: '40%', left: '31%', right: '31%', bottom: '40%',
                                 border: "2px solid yellow",
                                 backgroundColor: "black",
                                 borderRadius: "6px",
                                 color: "yellow",
                                 textAlign: "center",
-                                fontSize: "30px",
+                                fontSize: "26px",
                                 display: "grid",
                                 padding: "0px",
                                 gridTemplateRows: "1fr 1fr",
