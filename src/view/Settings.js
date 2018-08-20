@@ -1,12 +1,22 @@
+"use strict";
+
+// Third-parties
 import Reflux from 'reflux';
 import React from 'react';
+import fs from 'fs';
 
+// Modals
 import AlertModal from '../components/AlertModal';
 import AlertModalUser from '../common/AlertModalUser'
-import fs from 'fs';
+
+// Singleton services
 import CastIronService from '../service/CastIronService';
-import CastIronActions from '../action/CastIronActions';
 import AcctMgrService from '../service/AcctMgrService';
+
+// Reflux actions
+import CastIronActions from '../action/CastIronActions';
+
+// Reflux store
 import CastIronStore from '../store/CastIronStore';
 
 class Settings extends AlertModalUser {
@@ -17,7 +27,8 @@ class Settings extends AlertModalUser {
 		this.state = {
 			reveal: false,
 			reveal2: false,
-			waiting: false
+			waiting: false,
+			currentSettings: 'gas'
 		}
 
 		this.wallet = CastIronService.wallet;
@@ -26,18 +37,32 @@ class Settings extends AlertModalUser {
 		this.keypath = undefined;
 	}
 
+	// Gas related functions
 	handleCustomGasPriceUpdate = (event) => {
 		let value = event.target.value;
 		if (isNaN(value)) {
 			this.openModal("Please enter a number!")
 			event.target.value = value.slice(0, -1);
 		} else {
-			this.props.handleCustomGasPriceUpdate(parseInt(event.target.value))
+			CastIronActions.customGasPriceUpdate(parseInt(event.target.value));
 		}
 	}
 
+	isCustomGasPriceValid = () => {
+		return (this.state.gasPriceOption != "custom" || this.state.customGasPrice)
+	}
+
+	isCustomGasPrice = () => {
+		return this.state.gasPriceOption == 'custom';
+	}
+
+	handleGasPriceSelect = (event) => {
+		event.currentTarget.checked = 'checked';
+		CastIronActions.gasPriceOptionSelect(event.currentTarget.defaultValue);
+	}
+
 	handleClickBack = () => {
-		if (!this.props.isCustomGasPriceValid()) {
+		if (!this.isCustomGasPriceValid()) {
 			this.openModal("Please enter custom gas price!")
 		} else {
 			this.props.handleClickBack();
@@ -152,25 +177,88 @@ class Settings extends AlertModalUser {
 		)
 	}
 
+	gasSettings = () => {
+		return (
+			<form style={{ fontSize: "18px", textAlign: 'center' }} onSubmit={(e) => { e.preventDefault() }} >
+				<table style={{border: "0px"}}><tbody>
+						<tr>
+							<td>
+								<label><input type="radio"
+									onChange={this.handleGasPriceSelect} name="gasprice" value="low" 
+									checked={this.state.gasPriceOption === 'low' ? "checked" : false}/>Slow</label><br />
+							</td>
+							<td>
+								<label><input type="radio"
+									onChange={this.handleGasPriceSelect} name="gasprice" value="mid"
+									checked={this.state.gasPriceOption === 'mid' ? "checked" : false} />Mid</label><br />
+							</td>
+							<td>
+								<label><input type="radio"
+									onChange={this.handleGasPriceSelect} name="gasprice" value="high" 
+									checked={this.state.gasPriceOption === 'high' ? "checked" : false} />Normal</label><br />
+							</td>
+							<td>
+								<label><input type="radio"
+									onChange={this.handleGasPriceSelect} name="gasprice" value="fast" 
+									checked={this.state.gasPriceOption === 'fast' ? "checked" : false}/>Fast</label><br />
+							</td>
+							<td>
+								<label><input type="radio"
+									onChange={this.handleGasPriceSelect} name="gasprice" value="custom"
+									checked={this.state.gasPriceOption === 'custom' ? "checked" : false}/>Custom
+						<input type="text" style=
+						{{  
+							marginLeft: "15px",
+							width: "120px", 
+							backgroundColor: "rgba(0,0,0,0)", 
+							border: "2px solid white",
+							fontSize: "18px",
+							color: "white",
+							textAlign: "right",
+							paddingRight: "4px"
+						}} name="custom_gasprice"
+										value={this.state.gasPriceOption === 'custom' ? this.state.customGasPrice :""}
+										disabled={!this.isCustomGasPrice} onChange={this.handleCustomGasPriceUpdate} placeholder="Unit: gwei" />
+								</label>
+							</td></tr>
+                    
+                </tbody></table>
+				</form>
+		);
+	}
+
 	handleChange = (tabName) => {
-		this.setState({currentSettings: tabName});
+		this.setState({ currentSettings: tabName });
 	}
 
 	render = () => {
 		return (
-			<fieldset className="SettingView">
+			<fieldset className="item SettingView">
 				<legend className="item SettingTabs">
-					<input type="button" className="button tabset" value="Gas Price" onClick={this.handleChange.bind(this, "gas")} />
-					<input type="button" className="button tabset" value="Accounts" onClick={this.handleChange.bind(this, "acc")} />
-					<input type="button" className="button tabset" value="Apps" onClick={this.handleChange.bind(this, "app")} />
+					<input type="button" className="button tabset" value="Gas Price" style=
+						{{
+							backgroundColor: this.state.currentSettings === 'gas' ? "white" : "rgba(0,0,0,0)",
+							color: this.state.currentSettings === 'gas' ? "black" : "white"
+						}}
+						onClick={this.handleChange.bind(this, "gas")} />
+					<input type="button" className="button tabset" style=
+						{{
+							backgroundColor: this.state.currentSettings === 'acc' ? "white" : "rgba(0,0,0,0)",
+							color: this.state.currentSettings === 'acc' ? "black" : "white"
+						}} value="Accounts" onClick={this.handleChange.bind(this, "acc")} />
+					<input type="button" className="button tabset" value="Applications" style=
+						{{
+							backgroundColor: this.state.currentSettings === 'app' ? "white" : "rgba(0,0,0,0)",
+							color: this.state.currentSettings === 'app' ? "black" : "white"
+						}} onClick={this.handleChange.bind(this, "app")} />
 				</legend>
-				<div className="SettingInner">
-				{ 
-					this.state.currentSettings === "gas" ? "This is gas price change page" 
-					: this.state.currentSettings === "acc" ? "This is account management page"
-					: this.state.currentSettings === "app" ? "This is dApp settings page"
-					: "Error: unknown setting tab!"
-				}
+				<div className="item SettingInner">
+					{
+						this.state.currentSettings === "gas" ? this.gasSettings()
+							: this.state.currentSettings === "acc" ? <AccSettings />
+								: this.state.currentSettings === "app" ? <AppSettings />
+									: this.setState({ currentSettings: 'gas' })
+					}
 				</div>
 				<AlertModal content={this.state.alertContent} isAlertModalOpen={this.state.isAlertModalOpen} close={this.closeModal} />
 			</fieldset>

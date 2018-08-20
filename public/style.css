@@ -61,6 +61,7 @@ html {
 body {
   background-image: url("./assets/blockwall.png");
   background-size: 340px, auto;
+  overflow: hidden;
   min-height: calc(100vh - 20px);
   margin: 10px;
   /* background: white; */
@@ -498,6 +499,31 @@ h6 {
 
 .SettingView {
   display: grid;
+  border: 2px solid white;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  grid-template-areas: "settingInner";
+  overflow: hidden;
+  height: 95%;
+  background-color: rgba(0, 0, 0, 0);
+  border-radius: 0px;
+}
+
+.SettingTabs {
+  text-align: center;
+  border: 0px;
+  border-radius: 0px;
+  padding: 0px;
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.SettingInner {
+  grid-area: settingInner;
+  height: 95%;
+  background-color: rgba(0, 0, 0, 0);
+  border: 0px;
+  overflow-y: scroll;
+  padding-left: 6px;
 }
 
 /* React Dropdown */
@@ -715,6 +741,10 @@ h6 {
 .sendbutton:hover {
   background-color: white;
   color: black;
+}
+
+.tabset {
+  margin-bottom: 12px;
 }
 
 /* Custom Modal layout */

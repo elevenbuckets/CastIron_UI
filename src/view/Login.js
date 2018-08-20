@@ -115,7 +115,7 @@ class Login extends AlertModalUser {
                     display: "inline-block", padding: "20px", textAlign: "center"
                   }}>
 				            <legend style={{fontWeight: 'bold', marginBottom: '3px'}}>Please Enter New Master Password:</legend>
-				              <input type={this.state.reveal ? "text" : "password"} style={{
+				              <input autoFocus type={this.state.reveal ? "text" : "password"} style={{
                         width: "250px", 
                         backgroundColor: "rgba(255,255,255,0.11)", 
                         border: "2px solid white",
@@ -148,7 +148,7 @@ class Login extends AlertModalUser {
                 <label style={{ fontWeight: 'bold' }}>Master Password</label>
               </td></tr>
             <tr><td style={{textAlign: "center", margin: "25px"}}>
-                <input ref='mp' type='password' style=
+                <input autoFocus ref='mp' type='password' style=
                 {{
                   width: "65%", 
                   marginBottom: '35px',
