@@ -496,6 +496,10 @@ h6 {
   color: white;
 }
 
+.SettingView {
+  display: grid;
+}
+
 /* React Dropdown */
 .Dropdown-root {
   position: relative;

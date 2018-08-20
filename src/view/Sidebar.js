@@ -23,7 +23,9 @@ class Sidebar extends Reflux.Component {
       pfield: '28px',
       visible: false,
       sbutton: 'none',
-      rtoggle: 'Receipts'
+      rtoggle: 'Receipts',
+      stoggle: false,
+      sbefore: 'Settings'
     };
 
   }
@@ -88,15 +90,28 @@ class Sidebar extends Reflux.Component {
       CastIronActions.changeView(this.state.rtoggle);
       this.setState({rtoggle: 'Receipts'});
     }
-}
+  }
+
+  handleSettingClick = () => {
+    console.log("in handleSettingClick");
+    if (this.state.stoggle === false) {
+      console.log(`switch from ${this.state.currentView} to Settings`);
+      this.setState({sbefore: this.state.currentView, stoggle: true});
+      CastIronActions.changeView("Settings");
+    } else {
+      console.log(`switch from Settings back to previous view`);
+      CastIronActions.changeView(this.state.sbefore);
+      this.setState({stoggle: false, sbefore: 'Settings'});
+    }
+  }
 
   render = () => {
     return (
       <div className="item action">
-        <input type="button" className="button sbutton logout" value="Log Out" onClick={this.handleLogout}/>
-        <input type="button" className="button sbutton settings" value="Settings" onClick=""/>
-        <input type="button" className="button sbutton drawer" value="Apps" onClick=""/>
-        <input type="button" className="button sbutton receipts" value={this.state.rtoggle} onClick={this.handleReceiptClick}/>
+        <input type="button" className="button sbutton logout" value="Log Out" style={{display: this.state.stoggle ? 'none' : true}} onClick={this.handleLogout}/>
+        <input type="button" className={this.state.stoggle ? "button sbutton logout" : "button sbutton settings"} value={this.state.stoggle ? 'Back' : 'Settings'} onClick={this.handleSettingClick}/>
+        <input type="button" className="button sbutton drawer" value="Apps" style={{display: this.state.stoggle ? 'none' : true}} onClick="" />
+        <input type="button" className="button sbutton receipts" value={this.state.rtoggle} style={{display: this.state.stoggle ? 'none' : true}} onClick={this.handleReceiptClick}/>
       </div>
     );
   }
