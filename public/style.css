@@ -526,6 +526,77 @@ h6 {
   padding-left: 6px;
 }
 
+.accMgr {
+  background-color: rgba(0, 0, 0, 0);
+  border: 0px;
+}
+
+.accSettings {
+  border: 2px solid white;
+  background-color: rgba(0, 0, 0, 0);
+  width: 100%;
+  height: 100%;
+}
+
+.accTabs {
+  border: 0px;
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.newAccTab {
+  border: 0px;
+  background-color: rgba(0, 0, 0, 0);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr;
+  grid-template-areas: 
+    "natitle natitle"
+    "nafile nafile"
+    "napass napass"
+    "breveal bcreate";
+}
+
+.nafile {
+  grid-area: nafile;
+}
+
+.natitle {
+  font-size: 24px;
+  align-self: center;
+  justify-self: center;
+  grid-area: natitle;
+}
+
+.napass {
+  justify-self: center;
+  grid-area: napass;
+  width: 70%;
+  background-color: rgba(0,0,0,0.09);
+  border: 2px solid white;
+  font-size: 20px;
+  color: white;
+}
+
+.nawaiting {
+  font-size: 35px;
+  align-self: center;
+  justify-self: center;
+}
+
+.nareveal {
+  margin: 15px;
+  align-self: center;
+  justify-self: center;
+  grid-area: breveal;
+}
+
+.nacreate {
+  margin: 15px;
+  align-self: center;
+  justify-self: center;
+  grid-area: bcreate;
+}
+
 /* React Dropdown */
 .Dropdown-root {
   position: relative;
@@ -747,6 +818,19 @@ h6 {
   margin-bottom: 12px;
 }
 
+.loader {
+  border: 6px solid #f3f3f3; /* Light grey */
+  border-top: 6px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 20px;
+  max-width: 20px;
+  height: 20px;
+  margin: 0px;
+  padding: 0px;
+  animation: spin 2s linear infinite;
+  display: inline-block;
+}
+
 /* Custom Modal layout */
 .confirmModal {
   display: grid;
@@ -757,4 +841,3 @@ h6 {
   align-items: center;
   text-align: center;
 }
-

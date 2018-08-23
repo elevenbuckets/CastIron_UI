@@ -28,7 +28,8 @@ class Settings extends AlertModalUser {
 			reveal: false,
 			reveal2: false,
 			waiting: false,
-			currentSettings: 'gas'
+			currentSettings: 'gas',
+			currentAccSettings: 'new'
 		}
 
 		this.wallet = CastIronService.wallet;
@@ -72,32 +73,36 @@ class Settings extends AlertModalUser {
 
 	handleNewAcct = (event) => {
 		let stage = Promise.resolve();
+
+		if (typeof(this.variable) === 'undefined' || this.variable.length === 0) {
+			this.variable = undefined;
+			this.refs.vip.value = '';
+			this.setState({ waiting: false });
+			this.openModal("Creation Failed");
+			return false;
+		}
+
 		stage
 			.then(() => {
-				this.refs.fi.disabled = true;
-				this.refs.fa.disabled = true;
 				return this.setState({ waiting: true })
 			})
-			.then(() => { this.updateNew(); });
+			.then(() => { 
+				return this.updateNew(); 
+			});
 	}
 
 	updateNew = () => {
 		console.log("calling update now");
 		return this.accMgr.newAccount(this.variable).then((address) => {
 			this.variable = undefined;
-			this.refs.vip.value = '';
 			this.setState({ waiting: false });
 			this.openModal("New Address: " + address);
-			this.refs.fi.disabled = false;
-			this.refs.fa.disabled = false;
+			CastIronActions.infoUpdate();
 		})
 			.catch((err) => {
 				this.variable = undefined;
-				this.refs.vip.value = '';
 				this.setState({ waiting: false });
 				this.openModal("Creation Failed");
-				this.refs.fi.disabled = false;
-				this.refs.fa.disabled = false;
 			});
 	}
 
@@ -110,32 +115,23 @@ class Settings extends AlertModalUser {
 	}
 
 	handleImport = (event) => {
-		console.log("Importing " + this.keypath);
+		let filepath = this.keypath.current.files[0].path;
+		console.log("Importing " + filepath);
 		this.setState({ waiting: true });
-		this.refs.fi.disabled = true;
-		this.refs.fa.disabled = true;
 		this.accMgr.importFromJSON(this.keypath, this.variable).then((r) => {
 			this.accMgr.update(r.keyObj, r.password).then((address) => {
 				r = {};
-				this.refs.vif.value = '';
 				this.keypath = undefined;
-				this.refs.vop.value = '';
 				this.variable = undefined;
 				this.setState({ waiting: false });
 				this.openModal("Imported Address: " + address);
-				this.refs.fi.disabled = false;
-				this.refs.fa.disabled = false;
 			});
 		})
 			.catch((err) => {
-				this.refs.vif.value = '';
 				this.keypath = undefined;
-				this.refs.vop.value = '';
 				this.variable = undefined;
 				this.setState({ waiting: false });
 				this.openModal("Import Failed!");
-				this.refs.fi.disabled = false;
-				this.refs.fa.disabled = false;
 			})
 	}
 
@@ -146,35 +142,75 @@ class Settings extends AlertModalUser {
 	updatePath = (event) => {
 		console.log(this.refs.vif.files[0].path);
 		this.keypath = this.refs.vif.files[0].path;
-	}
+    }
+
 
 	accountMgr = () => {
-		return (
-			<div style={{ align: 'center' }}>
-				<fieldset ref="fa" id="fa" onMouseEnter={this.handleHover.bind(this, 'fa')} onMouseLeave={this.handleNoHover.bind(this, 'fa')}
-					style={{ display: 'inline-block', marginLeft: '130px', padding: '20px' }}>
-					<legend style={{ fontWeight: 'bold', marginBottom: '3px' }}>Create New Account:</legend>
-					Please Enter Password For New Account:<br />
-					<input ref="vip" style={{ marginLeft: '6px' }} type={this.state.reveal ? "text" : "password"} onChange={this.updateVar} />
-					<input type="button" style={{ marginRight: '6px' }} value={this.state.reveal ? "Hide" : "Reveal"} onClick={this.handleReveal} />
-					{this.state.waiting
-						? <div className="loader" style={{ height: '13px', width: '13px', display: "inline-block" }}></div>
-						: <input type="button" value="Create" onClick={this.handleNewAcct} />}
-				</fieldset>
-				<fieldset ref="fi" id="fi" onMouseEnter={this.handleHover.bind(this, 'fi')} onMouseLeave={this.handleNoHover.bind(this, 'fi')}
-					style={{ display: 'inline-block', padding: '20px' }}>
-					<legend style={{ fontWeight: 'bold' }}>Import Account:</legend>
-					Please Select File:
-				      <input ref="vif" style={{ marginLeft: '6px' }} type='file' onChange={this.updatePath} /><br />
-					Please Enter Password Of The Account:
-				      <input ref="vop" style={{ marginLeft: '6px' }} type={this.state.reveal2 ? "text" : "password"} onChange={this.updateVar} />
-					<input type="button" style={{ marginRight: '6px' }} value={this.state.reveal2 ? "Hide" : "Reveal"} onClick={this.handleReveal2} />
-					{this.state.waiting
-						? <div className="loader" style={{ height: '13px', width: '13px', display: "inline-block" }}></div>
-						: <input type="button" value="Create" onClick={this.handleImport} />}
-				</fieldset>
-			</div>
-		)
+		if (this.state.waiting === true) {
+			return (
+				<div className="item newAccTab">
+					<p className="nawaiting">Please Wait ...</p>
+				</div>
+			)
+		} else {
+			const __oldAcc = () => {
+				return (
+					<div className="item newAccTab">
+					    <p className="item nafile">Please Select File:
+				      		<input ref="vif" style={{ margin: '15px' }} type='file' onChange={this.updatePath}/>
+					    </p>
+						<p className="natitle">Please Enter Password of The Account:</p>
+						<input ref="vip1" className="napass" type={this.state.reveal ? "text" : "password"} onChange={this.updateVar} />
+						<input type="button" style={{margin: "15px"}} className="button nareveal"  
+							   value={this.state.reveal ? "Hide" : "Reveal"} onClick={this.handleReveal} />
+						<input type="button"  style={{margin: "15px"}} 
+							   className='button nacreate' 
+								value='Import' 
+							 onClick={this.handleImport} />
+					</div>
+				)
+			}
+
+			const __newAcc = () => {
+				return (
+					<div className="item newAccTab">
+						<p className="natitle" >Please Enter Password For New Account:</p>
+						<input ref="vip2" className="napass" type={this.state.reveal2 ? "text" : "password"} onChange={this.updateVar} />
+						<input type="button" style={{margin: "15px"}} className="button nareveal"  
+							   value={this.state.reveal2 ? "Hide" : "Reveal"} 
+							onClick={this.handleReveal2} />
+						<input type="button"  style={{margin: "15px"}} 
+							   className='button nacreate' 
+								value='Create' 
+							 onClick={this.handleNewAcct} />
+					</div>
+				)
+			}
+
+			return (
+				<div className="item accMgr">
+					<fieldset className="accSettings">
+						<legend className="item accTabs">
+						<input type="button" className="button tabset" value="Create New Account" style=
+							{{
+								backgroundColor: this.state.currentAccSettings === 'new' ? "white" : "rgba(0,0,0,0)",
+								color: this.state.currentAccSettings === 'new' ? "black" : "white"
+							}}
+							onClick={this.handleAccChange.bind(this, "new")} />
+						<input type="button" className="button tabset" value="Import Existing Account" style=
+							{{
+								backgroundColor: this.state.currentAccSettings === 'old' ? "white" : "rgba(0,0,0,0)",
+								color: this.state.currentAccSettings === 'old' ? "black" : "white"
+							}}
+							onClick={this.handleAccChange.bind(this, "old")} />
+						</legend>
+						{  this.state.currentAccSettings === 'new' ? __newAcc()
+						 : this.state.currentAccSettings === 'old' ? __oldAcc()
+						 : this.setState({currentAccSettings: 'new'})}
+					</fieldset>
+				</div>
+			)
+		}
 	}
 
 	gasSettings = () => {
@@ -231,6 +267,10 @@ class Settings extends AlertModalUser {
 		this.setState({ currentSettings: tabName });
 	}
 
+	handleAccChange = (tabName) => {
+		this.setState({ currentAccSettings: tabName });
+	}
+
 	render = () => {
 		return (
 			<fieldset className="item SettingView">
@@ -255,7 +295,7 @@ class Settings extends AlertModalUser {
 				<div className="item SettingInner">
 					{
 						this.state.currentSettings === "gas" ? this.gasSettings()
-							: this.state.currentSettings === "acc" ? <AccSettings />
+							: this.state.currentSettings === "acc" ? this.accountMgr()
 								: this.state.currentSettings === "app" ? <AppSettings />
 									: this.setState({ currentSettings: 'gas' })
 					}

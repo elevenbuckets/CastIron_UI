@@ -15,13 +15,13 @@ class AlertModal extends React.Component {
                     {
                         overlay: { width: '100%', maxHeight: '100%', zIndex: '5', backgroundColor: "rgba(0,12,20,0.75)" },
                         content: { 
-                            top: '40%', left: '31%', right: '31%', bottom: '40%',
+                            top: '40%', left: '30%', right: '30%', bottom: '40%',
                             border: "2px solid yellow",
                             backgroundColor: "black",
                             borderRadius: "6px",
                             color: "yellow",
                             textAlign: "center",
-                            fontSize: "26px",
+                            fontSize: "22px",
                             display: "grid",
                             padding: "0px",
                             gridTemplateRows: "1fr 1fr",
