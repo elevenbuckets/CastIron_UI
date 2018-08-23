@@ -115,8 +115,7 @@ class Settings extends AlertModalUser {
 	}
 
 	handleImport = (event) => {
-		let filepath = this.keypath.current.files[0].path;
-		console.log("Importing " + filepath);
+		console.log("Importing " + this.keypath);
 		this.setState({ waiting: true });
 		this.accMgr.importFromJSON(this.keypath, this.variable).then((r) => {
 			this.accMgr.update(r.keyObj, r.password).then((address) => {
