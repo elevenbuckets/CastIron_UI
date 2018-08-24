@@ -855,13 +855,13 @@ h6 {
 }
 
 @-webkit-keyframes bgColor {
-  0% { background: plum; }
-  100% { background: rebeccapurple; }
+  0% { background: rgb(24, 149, 202); color: white; }
+  100% { background: rgb(13, 227, 255); color: black; }
 }
 
 @keyframes bgColor {
-  0% {background: plum; }
-  100% { background: rebeccapurple; }
+  0% { background: rgb(24, 149, 202); color: white; }
+  100% { background: rgb(13, 227, 255); color: black; }
 }
 
 /* Custom Modal layout */

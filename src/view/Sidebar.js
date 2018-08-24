@@ -144,7 +144,7 @@ class Sidebar extends Reflux.Component {
         <input type="button" className="button sbutton logout" value="Log Out" style={{ display: this.state.stoggle ? 'none' : true }} onClick={this.handleLogout} />
         <input type="button" className={this.state.stoggle ? "button sbutton logout" : "button sbutton settings"} value={this.state.stoggle ? 'Back' : 'Settings'} onClick={this.handleSettingClick} />
         <input type="button" className="button sbutton drawer" value="Apps" style={{ display: this.state.stoggle ? 'none' : true }} onClick="" />
-        <input type="button" className="button sbutton receipts" value={this.state.rtoggle} style={{ display: this.state.stoggle ? 'none' : true, animation: n > 0 ? "bgColor 2s infinite linear" : "none" }} onClick={this.handleReceiptClick} />
+        <input type="button" className="button sbutton receipts" value={this.state.rtoggle} style={{ display: this.state.stoggle ? 'none' : true, animation: n > 0 ? "bgColor 2s infinite alternate" : "none" }} onClick={this.handleReceiptClick} />
       </div>
     );
   }
