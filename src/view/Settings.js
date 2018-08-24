@@ -114,8 +114,6 @@ class Settings extends AlertModalUser {
 	}
 
 	handleImport = (event) => {
-		console.log("Importing " + this.keypath);
-
 		// sanity check
 		if (!fs.existsSync(this.keypath) || typeof(this.keypath) === 'undefined') {
 			this.keypath = undefined;
@@ -123,9 +121,11 @@ class Settings extends AlertModalUser {
 			this.setState({ waiting: false });
 			this.openModal("Import Failed!");
 			return false;
+		} else {
+			console.log("Importing " + this.keypath);
+			this.setState({ waiting: true });
 		}
 
-		this.setState({ waiting: true });
 		this.accMgr.importFromJSON(this.keypath, this.variable).then((r) => {
 			this.accMgr.update(r.keyObj, r.password).then((address) => {
 				r = {};
@@ -133,6 +133,7 @@ class Settings extends AlertModalUser {
 				this.variable = undefined;
 				this.setState({ waiting: false });
 				this.openModal("Imported Address: " + address);
+				CastIronActions.infoUpdate();
 			});
 		})
 			.catch((err) => {
@@ -156,8 +157,7 @@ class Settings extends AlertModalUser {
 		if (this.state.waiting === true) {
 			return (
 				<div className="item newAccTab">
-					<p className="nawaiting">Please Wait ...</p>
-					<div className="nareveal loader"></div>
+					<p className="item nawaiting">Please Wait ...</p>
 				</div>
 			)
 		} else {
@@ -274,6 +274,7 @@ class Settings extends AlertModalUser {
 	}
 
 	render = () => {
+		console.log("in settings render ...")
 		return (
 			<fieldset className="item SettingView">
 				<legend className="item SettingTabs">
@@ -294,14 +295,18 @@ class Settings extends AlertModalUser {
 							color: this.state.currentSettings === 'app' ? "black" : "white"
 						}} onClick={this.handleChange.bind(this, "app")} />
 				</legend>
-				<div className="item SettingInner">
-					{
-						this.state.currentSettings === "gas" ? this.gasSettings()
-							: this.state.currentSettings === "acc" ? this.accountMgr()
-								: this.state.currentSettings === "app" ? <AppSettings />
-									: this.setState({ currentSettings: 'gas' })
-					}
-				</div>
+				{ 
+				  this.state.waiting === false ?
+					<div className="item SettingInner">
+						{
+							this.state.currentSettings === "gas" ? this.gasSettings()
+								: this.state.currentSettings === "acc" ? this.accountMgr()
+									: this.state.currentSettings === "app" ? <AppSettings />
+										: this.setState({ currentSettings: 'gas' })
+						}
+					</div>
+				  : <div className="item SettingInner"><div className="waiter">Please Wait...<br/><div className="loader"></div></div></div>
+				}	
 				<AlertModal content={this.state.alertContent} isAlertModalOpen={this.state.isAlertModalOpen} close={this.closeModal} />
 			</fieldset>
 		);

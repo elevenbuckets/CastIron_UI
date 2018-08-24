@@ -14,6 +14,9 @@ import CastIronActions from '../action/CastIronActions';
 // Views
 import GenSheets from './GenSheets';
 
+// Utils
+import Constants from '../util/Constants';
+
 class Sidebar extends Reflux.Component {
   constructor(props) {
     super(props);
@@ -61,18 +64,18 @@ class Sidebar extends Reflux.Component {
   }
 
   handleEnter = (event) => {
-	  if (event.keyCode === 13) CastIronActions.masterUpdate(this.refs.mp.value);
+    if (event.keyCode === 13) CastIronActions.masterUpdate(this.refs.mp.value);
   }
 
   handleLogout = () => {
     CastIronActions.masterUpdate('');
   }
-  
+
   copyAddress = () => {
     var dummy = document.createElement("input");
     document.body.appendChild(dummy);
     dummy.setAttribute("id", "dummy_id");
-    document.getElementById("dummy_id").value=this.state.address;
+    document.getElementById("dummy_id").value = this.state.address;
     dummy.select();
     document.execCommand("copy");
     document.body.removeChild(dummy);
@@ -83,12 +86,12 @@ class Sidebar extends Reflux.Component {
     console.log("in handleReceiptClick");
     if (this.state.rtoggle === 'Receipts') {
       console.log(`switch from ${this.state.currentView} to Receipts`);
-      this.setState({rtoggle: this.state.currentView});
+      this.setState({ rtoggle: this.state.currentView });
       CastIronActions.changeView("Receipts");
     } else {
       console.log(`switch from Receipts back to previous view`);
       CastIronActions.changeView(this.state.rtoggle);
-      this.setState({rtoggle: 'Receipts'});
+      this.setState({ rtoggle: 'Receipts' });
     }
   }
 
@@ -96,22 +99,52 @@ class Sidebar extends Reflux.Component {
     console.log("in handleSettingClick");
     if (this.state.stoggle === false) {
       console.log(`switch from ${this.state.currentView} to Settings`);
-      this.setState({sbefore: this.state.currentView, stoggle: true});
+      this.setState({ sbefore: this.state.currentView, stoggle: true });
       CastIronActions.changeView("Settings");
     } else {
       console.log(`switch from Settings back to previous view`);
       CastIronActions.changeView(this.state.sbefore);
-      this.setState({stoggle: false, sbefore: 'Settings'});
+      this.setState({ stoggle: false, sbefore: 'Settings' });
     }
   }
 
+  hasPendingReceipt = (receipts) => {
+    for (let i in receipts) {
+      if (this.getStatus(receipts[i]) == Constants.Pending) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  getStatus = (receipt) => {
+    if (receipt.status === "0x0") {
+      return Constants.Failed;
+    } else if (receipt.status === "0x1") {
+      return Constants.Succeeded;
+    } else if (receipt.error) {
+      return Constants.Errored;
+    }
+    return Constants.Pending;
+  }
+
+  hasNumberOfPendingReceipts = () => {
+    let pendingQs = Object.keys(this.state.receipts).filter(Q => {
+        return this.state.receipts[Q] && this.state.receipts[Q].length > 0 && this.hasPendingReceipt(this.state.receipts[Q])
+    })
+
+    return pendingQs.length;
+  }
+
   render = () => {
+    let n = this.hasNumberOfPendingReceipts();
+
     return (
       <div className="item action">
-        <input type="button" className="button sbutton logout" value="Log Out" style={{display: this.state.stoggle ? 'none' : true}} onClick={this.handleLogout}/>
-        <input type="button" className={this.state.stoggle ? "button sbutton logout" : "button sbutton settings"} value={this.state.stoggle ? 'Back' : 'Settings'} onClick={this.handleSettingClick}/>
-        <input type="button" className="button sbutton drawer" value="Apps" style={{display: this.state.stoggle ? 'none' : true}} onClick="" />
-        <input type="button" className="button sbutton receipts" value={this.state.rtoggle} style={{display: this.state.stoggle ? 'none' : true}} onClick={this.handleReceiptClick}/>
+        <input type="button" className="button sbutton logout" value="Log Out" style={{ display: this.state.stoggle ? 'none' : true }} onClick={this.handleLogout} />
+        <input type="button" className={this.state.stoggle ? "button sbutton logout" : "button sbutton settings"} value={this.state.stoggle ? 'Back' : 'Settings'} onClick={this.handleSettingClick} />
+        <input type="button" className="button sbutton drawer" value="Apps" style={{ display: this.state.stoggle ? 'none' : true }} onClick="" />
+        <input type="button" className="button sbutton receipts" value={this.state.rtoggle} style={{ display: this.state.stoggle ? 'none' : true, animation: n > 0 ? "bgColor 2s infinite linear" : "none" }} onClick={this.handleReceiptClick} />
       </div>
     );
   }
