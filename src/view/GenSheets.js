@@ -1,10 +1,21 @@
-import CastIronStore from "../store/CastIronStore";
+"use strict";
+
+// Third-parties
 import Reflux from 'reflux';
 import React from 'react';
 import Dropdown from 'react-dropdown';
+
+// Reflux store
+import CastIronStore from "../store/CastIronStore";
+
+// Reflux action
 import CastIronActions from '../action/CastIronActions';
+
+// Modals
 import AlertModal from '../components/AlertModal';
 import AlertModalUser from '../common/AlertModalUser';
+
+// Singleton services
 import CastIronService from '../service/CastIronService';
 import BMartService from '../service/BMartService';
 
@@ -102,40 +113,25 @@ class GenSheets extends AlertModalUser {
     } else {
       CastIronActions.changeView("Trade");
     }
-
   }
+
   render = () => {
     if (this.state.address == '') return (<p />);
 
     return (
-      <table className="balance-sheet">
-        <tbody>
-          <tr>
-            <th className="balance-sheet">Types</th>
-            <th className="balance-sheet">Amount</th>
-            <th className="balance-sheet" colSpan="3">Actions</th>
-          </tr>
-          <tr className="balance-sheet">
-            <td className="balance-sheet" width='185'>ETH:</td>
-            <td className="balance-sheet" width='35%'>{this.state.balances['ETH']}</td>
-            <td className="balance-sheet"><input type="button" className="button" onClick={this.handleClickTransactETH} value="Transact ETH" /></td>
-            <td className="balance-sheet"><input type="button" className="button" value="Trade ETH" disabled /></td>
-          </tr>
-          <tr className="balance-sheet">
-            <td className="balance-sheet" width='185'>ERC20:</td>
-            <td className="balance-sheet" width='35%'>
-              <Dropdown options={this.state.tokenBalances} onChange={this.handleChange} value={this.state.selected_token_name !== '' ? this.state.selected_token_name + ': ' + this.state.balances[this.state.selected_token_name] : ''} placeholder={'Found ' + this.state.tokenkinds + ' tokens'} />
-            </td>
-            <td className="balance-sheet"><input type="button" className="button" onClick={this.handleClickTransact} value={this.state.selected_token_name !== '' ? "Transact " + this.state.selected_token_name : 'Transact ...'} /></td>
-            <td className="balance-sheet"><input type="button" className="button" onClick={this.handleClickTrade}
-              value={this.state.selected_token_name !== '' ? "Trade " + this.state.selected_token_name : 'Trade ...'}
-              disabled={this.state.selected_token_name !== '' &&
-                !BMartService.Registry.isListed(CastIronService.wallet.TokenList[this.state.selected_token_name].addr)} /></td>
-          </tr>
-        </tbody>
-        <AlertModal content={this.state.alertContent} isAlertModalOpen={this.state.isAlertModalOpen} close={this.closeModal} />
-      </table>);
+      <div className="quickbalance">
+          <div className="item teth"><p>ETHER</p></div>
+          <div className="item beth"><p style={{color: "white", fontSize: "16px"}}>{this.state.balances['ETH']}</p></div>
+          <div className="item terc20"><p>ERC20</p></div>
+            <Dropdown className="berc20" options={this.state.tokenBalances} 
+                      onChange={this.handleChange} 
+                      value={this.state.selected_token_name !== '' ? this.state.selected_token_name + ': ' + this.state.balances[this.state.selected_token_name] : ''} 
+                      placeholder={'Found ' + this.state.tokenkinds + ' tokens'} 
+                      />
+          <AlertModal content={this.state.alertContent} isAlertModalOpen={this.state.isAlertModalOpen} close={this.closeModal} />
+      </div>
+    );
   }
 }
 
-export default GenSheets
+export default GenSheets;

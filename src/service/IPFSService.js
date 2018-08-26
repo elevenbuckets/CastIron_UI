@@ -1,9 +1,10 @@
-import IPFS_Base from 'ipfs_base/IPFS_Base';
+//import IPFS_Base from 'ipfs_base/IPFS_Base';
 // orbit-db modules will be loaded here.
+const remote = require('electron').remote;
 
 class IPFSService {
     constructor() {
-        this.IPFSBase = new IPFS_Base('.local/config.json');
+        this.IPFSBase = remote.getGlobal('ipfs');
     }
 
     pullFile = (ipfshash, outpath) => {

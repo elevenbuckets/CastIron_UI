@@ -1,20 +1,32 @@
+'use strict';
+
+// Major third-party modules
 import React, { Component } from 'react';
 import Reflux from 'reflux';
-import { Link } from 'react-router-dom';
-import CastIronService from '../service/CastIronService';
-import CastIronStore from '../store/CastIronStore';
-import ReceiptsView from './ReceiptsView';
-import QueryForm from './QueryForm'
-import Footer from './Footer';
-import Drawer from './Drawer';
-import Transfer from './Transfer'
-import Trade from './Trade';
 import Modal from 'react-modal';
-import ConfirmTXModal from '../components/ConfirmTXModal';
+
+// Singleton services
+import CastIronService from '../service/CastIronService';
+import DappViewService from '../service/DappViewService';
+
+// Reflux store
+import CastIronStore from '../store/CastIronStore';
+
+// Reflux actions
 import CastIronActions from '../action/CastIronActions';
+
+// Views
+import States from './States';
+import Accounts from './Accounts';
+import Login from './Login';
+import MainView from './MainView';
+import Sidebar from './Sidebar';
+//import ReceiptsView from './ReceiptsView';
+
+// Modals
+import ConfirmTXModal from '../components/ConfirmTXModal';
 import AlertModal from '../components/AlertModal';
 import ScheduleTXModal from '../components/ScheduleTXModal';
-import DappViewService from '../service/DappViewService'
 
 class DashBoard extends Reflux.Component {
     constructor(props) {
@@ -27,71 +39,56 @@ class DashBoard extends Reflux.Component {
 
     }
 
-    confirmTX = () => {
-        CastIronActions.confirmTx();
-    }
-
-    cancelTX = () => {
-        CastIronActions.cancelTx();
-    }
-
-    confirmScheduleTX = (queue) => {
-        CastIronActions.confirmScheduleTx(queue);
-    }
-
-    cancelScheduleTX = () => {
-        CastIronActions.cancelScheduleTx();
-    }
-
-    handleClick = (event) => {
-        this.setState({ drawerOut: !this.state.drawerOut });
-        event.target.blur();
-        event.stopPropagation();
-    }
+    confirmTX = () => { CastIronActions.confirmTx(); }
+    cancelTX = () => { CastIronActions.cancelTx(); }
+    confirmScheduleTX = (queue) => { CastIronActions.confirmScheduleTx(queue); }
+    cancelScheduleTX = () => { CastIronActions.cancelScheduleTx(); }
 
     render() {
         console.log("in Dashboard render()")
-        return (
-            <div id="dashboard" className={this.state.drawerOut ? 'raise' : 'close'}>
-                <div>
-                    <QueryForm ref="queryForm" />
-                    {this.state.currentView == "Transfer" ? <Transfer /> : this.state.currentView == "Receipts" ? <ReceiptsView />
-                        : this.state.currentView == "Trade"? <Trade canvas={this.refs.queryForm.refs.canvas}/> : 
-                        DappViewService.getView(this.state.currentView)}
 
-                    <AlertModal content={"Please unlock with your master passward!"}
-                        isAlertModalOpen={this.state.modalIsOpen && (!this.state.unlocked)} close={this.cancelTX} />
-                        {/*TODO: refactor this later*/}
-                        <Modal isOpen={this.state.modalIsOpen && this.state.unlocked} style=
-                        {
-                            {
-                                overlay: {
-                                    width: '100%',
-                                    maxHeight: '100%',
-                                    zIndex: '5'
-                                },
-                                content: {
-                                    top: '400px',
-                                    left: '400px',
-                                    right: '400px',
-                                    bottom: '400px'
-
-                                }
-                            }
-                        }> Please confirm!
-                <ConfirmTXModal confirmTX={this.confirmTX} cancelTX={this.cancelTX} />
-                    </Modal>
-                    <ScheduleTXModal confirmScheduleTX={this.confirmScheduleTX} cancelScheduleTX={this.cancelScheduleTX} 
-                    isScheduleModalOpen={this.state.scheduleModalIsOpen}/>
-                    <Footer handleDrawer={this.handleClick} draw={this.state.drawerOut} />
+        if (this.state.unlocked === false) {
+            document.body.style.background = "url(./assets/blockwall.png)";
+            return (
+                <div className="container locked">
+                    <States />
+                    <Login />
                 </div>
-                <Drawer refs="underlayer" handleClick={this.handleClick} draw={this.state.drawerOut} />
-            </div>
-        )
+            );
+        } else {
+            document.body.style.background = "linear-gradient(200deg, rgb(17, 31, 47), rgb(24, 156, 195))";
+            return (
+                <div className="container unlocked">
+                    <States />
+                    <Accounts />
+                    <MainView />
+                    <Sidebar />
+                    <Modal ariaHideApp={false} isOpen={this.state.modalIsOpen && this.state.unlocked} style=
+                        {{
+                            overlay: { width: '100%', maxHeight: '100%', zIndex: '5', backgroundColor: "rgba(0,12,20,0.75)" },
+                            content: { 
+                                top: '40%', left: '31%', right: '31%', bottom: '40%',
+                                border: "2px solid yellow",
+                                backgroundColor: "black",
+                                borderRadius: "6px",
+                                color: "yellow",
+                                textAlign: "center",
+                                fontSize: "26px",
+                                display: "grid",
+                                padding: "0px",
+                                gridTemplateRows: "1fr 1fr",
+                                gridTemplateColumns: "1fr",
+                                alignItems: "center"},
+                        }}> Please confirm!
+                      <ConfirmTXModal confirmTX={this.confirmTX} cancelTX={this.cancelTX} />
+                    </Modal>
+                    <ScheduleTXModal confirmScheduleTX={this.confirmScheduleTX} cancelScheduleTX={this.cancelScheduleTX}
+                    isScheduleModalOpen={this.state.scheduleModalIsOpen}/>
+                </div>
+            )
+        }
     }
-
 }
 
-
-export default DashBoard
+export default DashBoard;
 

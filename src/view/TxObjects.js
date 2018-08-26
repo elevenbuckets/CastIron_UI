@@ -1,12 +1,18 @@
-import CastIronStore from "../store/CastIronStore";
+"use strict";
+
+// Third-parties
 import Reflux from 'reflux';
 import React from 'react';
 import Dropdown from 'react-dropdown';
+
+// Reflux store
+import CastIronStore from "../store/CastIronStore";
+
+// Modals
 import AlertModalUser from '../common/AlertModalUser'
 import AlertModal from '../components/AlertModal';
 
 // Reflux components
-
 class TxObjects extends AlertModalUser {
   constructor(props) {
     super(props);
@@ -16,6 +22,7 @@ class TxObjects extends AlertModalUser {
     this.handleChangeGas = this.handleChangeGas.bind(this);
     this.handleEnqueue = this.handleEnqueue.bind(this);
     this.handleSend = this.handleSend.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
   handleChangeAmount(event) {
@@ -56,6 +63,11 @@ class TxObjects extends AlertModalUser {
     this.props.handleSend(this.props.recipient, type, this.state.amount, this.state.gas);
   }
 
+  handleClick() {
+    console.log("in handle click change token name function ....");
+    this.setState({selected_token_name: ''});
+  }
+
   handleEnqueue() {
     let tx = {};
     tx.from = this.state.address;
@@ -70,24 +82,52 @@ class TxObjects extends AlertModalUser {
   render = () => {
     if (this.state.address == '') return (<p />);
 
-    let sendkind = this.props.selected_token_name !== '' ? this.props.selected_token_name : 'ETH';
+    let sendkind = this.state.selected_token_name !== '' ? this.state.selected_token_name : 'ETH';
 
     return (
-      <form>
-        <table className="txform">
+      <form className="item TxObj">
+        <table>
           <tbody>
-            <tr className="txform">
-              <td className="txform" width='14%' style={{ whiteSpace: 'nowrap' }}>
-                Types<br /><div style={{ textAlign: 'right' }}>{sendkind}</div>
+            <tr>
+              <td width='14%' style={{ whiteSpace: 'nowrap' }}>
+                Types<br /><div style=
+                {{ 
+                  textAlign: 'center', 
+                  width: "3.5em", 
+                  margin: "10px 0 0 15px", 
+                  padding: "0px", 
+                  border: "1px solid white",
+                  cursor: "pointer"
+                }} onClick={this.handleClick}>{sendkind}</div>
               </td>
-              <td className="txform" width='43%'>
-                Amount<br /><div style={{ textAlign: 'center' }}><input type='text' size='32' onChange={this.handleChangeAmount} /></div>
+              <td width='43%'>
+                Amount<br /><div style={{ textAlign: 'center', marginTop: "10px" }}><input type='text' size='32' style=
+                {{
+                  backgroundColor: "rgba(255,255,255,0)",
+                  border: "1px solid white",
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: "24px",
+                  width: "200px",
+                  textAlign: "right",
+                  paddingRight: "12px"
+                }} onChange={this.handleChangeAmount} /></div>
               </td>
-              <td className="txform" width='43%'>
-                Gas<br /><div style={{ textAlign: 'center' }}><input type='text' size='32' onChange={this.handleChangeGas} /></div>
+              <td width='43%'>
+                Gas<br /><div style={{ textAlign: 'center', marginTop: "10px" }}><input type='text' size='32' style=
+                {{
+                  backgroundColor: "rgba(255,255,255,0)",
+                  border: "1px solid white",
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: "24px",
+                  width: "200px",
+                  textAlign: "right",
+                  paddingRight: "12px"
+                }} onChange={this.handleChangeGas} /></div>
               </td>
-              <td className="txform" ><input type="button" className="button" value={this.props.send_button_value} onClick={this.handleSend} /></td>
-              <td className="txform"><input type="button" className="button" value='Enqueue' onClick={this.handleEnqueue} /></td>
+              <td><input type="button" className="button" value={this.props.send_button_value} onClick={this.handleSend} /></td>
+              <td><input type="button" className="button" value='Enqueue' onClick={this.handleEnqueue} /></td>
             </tr>
           </tbody>
         </table>

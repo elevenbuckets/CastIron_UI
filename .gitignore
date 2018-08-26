@@ -47,6 +47,7 @@ public/store/
 public/view/
 public/util/
 public/app.js
+public/.old/
 
 # Do not ignore these files
 !public/index.html
@@ -74,3 +75,6 @@ typings/
 # dotenv environment variables file
 .env
 
+#dapps 
+dapps/
+!dapps/BMart

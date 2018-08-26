@@ -1,12 +1,22 @@
+"use strict";
+
+// Third-parties
 import Reflux from 'reflux';
 import React from 'react';
+import fs from 'fs';
 
+// Modals
 import AlertModal from '../components/AlertModal';
 import AlertModalUser from '../common/AlertModalUser'
-import fs from 'fs';
+
+// Singleton services
 import CastIronService from '../service/CastIronService';
-import CastIronActions from  '../action/CastIronActions';
 import AcctMgrService from '../service/AcctMgrService';
+
+// Reflux actions
+import CastIronActions from '../action/CastIronActions';
+
+// Reflux store
 import CastIronStore from '../store/CastIronStore';
 
 class Settings extends AlertModalUser {
@@ -18,135 +28,122 @@ class Settings extends AlertModalUser {
 			reveal: false,
 			reveal2: false,
 			waiting: false,
-			dappList: [
-				    'Scheduler',
-				    'Eleven Peers',
-				    'Mesh Eleven',
-				    'My Profolios',
-				    'Blood Line Registry',
-				    'ENS bidding app',
-				    'Club Badge',
-				    '11BE Blog',
-				    'Zombie Battles',
-				    'Crypto Fighters'
-				  ],
+			currentSettings: 'gas',
+			currentAccSettings: 'old'
 		}
 
 		this.wallet = CastIronService.wallet;
 		this.accMgr = AcctMgrService.accMgr;
-		this.variable = undefined;
 		this.keypath = undefined;
+		this.variable = undefined;
 	}
 
-	handleCustomGasPriceUpdate = (event) =>{
+	// Gas related functions
+	handleCustomGasPriceUpdate = (event) => {
 		let value = event.target.value;
-		if(isNaN(value)){
+		if (isNaN(value)) {
 			this.openModal("Please enter a number!")
-			 event.target.value = value.slice(0, -1);
-		}else{
-			this.props.handleCustomGasPriceUpdate(parseInt(event.target.value))
-		}	
+			event.target.value = value.slice(0, -1);
+		} else {
+			CastIronActions.customGasPriceUpdate(parseInt(event.target.value));
+		}
+	}
+
+	isCustomGasPriceValid = () => {
+		return (this.state.gasPriceOption != "custom" || this.state.customGasPrice)
+	}
+
+	isCustomGasPrice = () => {
+		return this.state.gasPriceOption == 'custom';
+	}
+
+	handleGasPriceSelect = (event) => {
+		event.currentTarget.checked = 'checked';
+		CastIronActions.gasPriceOptionSelect(event.currentTarget.defaultValue);
 	}
 
 	handleClickBack = () => {
-		if(!this.props.isCustomGasPriceValid()){
+		if (!this.isCustomGasPriceValid()) {
 			this.openModal("Please enter custom gas price!")
-		  }else{
+		} else {
 			this.props.handleClickBack();
 			CastIronActions.infoUpdate();
-		  }
-	}
-
-	handleNewArch = (event) => {
-		this.accMgr.newArchive(this.variable).then( () => { 
-			this.variable = undefined; 
-			this.openModal("New Archive created. You still needs to be unlocked to use it.");
-		});
-		// Should we update config.json with actual archive path, instead of pre-defined? 
-		// Should we *also* update config.json to store custom gas price, if set?
+		}
 	}
 
 	handleNewAcct = (event) => {
 		let stage = Promise.resolve();
-		stage
-		  .then( () => { 
-			  this.refs.fi.disabled = true;
-			  this.refs.fa.disabled = true;
-			  return this.setState({waiting: true}) 
-		  })
-		  .then( () => { this.updateNew(); } );
-	}
 
-	dappTable = () => {
-		//react understand array
-		return this.state.dappList.map((appName) => {
-			return ( <tr className="balance-sheet">
-			    <td className="balance-sheet" style={{width: "1000px"}}>{appName}</td>
-			    <td className="balance-sheet" style={{width: "10%"}}>y</td>
-			    <td className="balance-sheet" style={{width: "10%"}}>y</td>
-			    <td className="balance-sheet" style={{width: "10%"}}>n</td>
-			  </tr> )
-		});
+		if (typeof (this.variable) === 'undefined' || this.variable.length === 0) {
+			this.variable = undefined;
+			this.setState({ waiting: false });
+			this.openModal("Creation Failed");
+			return false;
+		}
+
+		stage
+			.then(() => {
+				return this.setState({ waiting: true })
+			})
+			.then(() => {
+				return this.updateNew();
+			});
 	}
 
 	updateNew = () => {
 		console.log("calling update now");
-		return this.accMgr.newAccount(this.variable).then( (address) => { 
-			this.variable = undefined; 
-			this.refs.vip.value = '';
-			this.setState({waiting: false});
-			this.openModal("New Address: " + address);
-			this.refs.fi.disabled = false;
-			this.refs.fa.disabled = false;
-		})
-		.catch((err) => { 
+		return this.accMgr.newAccount(this.variable).then((address) => {
 			this.variable = undefined;
-			this.refs.vip.value = '';
-			this.setState({waiting: false});
-			this.openModal("Creation Failed");
-			this.refs.fi.disabled = false;
-			this.refs.fa.disabled = false;
-		});
+			this.setState({ waiting: false });
+			this.openModal("New Address: " + address);
+			CastIronActions.infoUpdate();
+		})
+			.catch((err) => {
+				this.variable = undefined;
+				this.setState({ waiting: false });
+				this.openModal("Creation Failed");
+			});
 	}
 
 	handleReveal = (event) => {
-		this.setState({reveal: !this.state.reveal});
+		this.setState({ reveal: !this.state.reveal });
 	}
 
 	handleReveal2 = (event) => {
-		this.setState({reveal2: !this.state.reveal2});
+		this.setState({ reveal2: !this.state.reveal2 });
 	}
 
 	handleImport = (event) => {
-		console.log("Importing " + this.keypath);
-		this.setState({waiting: true});
-		this.refs.fi.disabled = true;
-		this.refs.fa.disabled = true;
-		this.accMgr.importFromJSON(this.keypath, this.variable).then( (r) => {
-			this.accMgr.update(r.keyObj, r.password).then( (address) => {
+		// sanity check
+		if (!fs.existsSync(this.keypath) || typeof(this.keypath) === 'undefined') {
+			this.keypath = undefined;
+			this.variable = undefined;
+			this.setState({ waiting: false });
+			this.openModal("Import Failed!");
+			return false;
+		} else {
+			console.log("Importing " + this.keypath);
+			this.setState({ waiting: true });
+		}
+
+		this.accMgr.importFromJSON(this.keypath, this.variable).then((r) => {
+			this.accMgr.update(r.keyObj, r.password).then((address) => {
 				r = {};
-				this.refs.vif.value = '';
 				this.keypath = undefined;
-				this.refs.vop.value = '';
 				this.variable = undefined;
-				this.setState({waiting: false});
+				this.setState({ waiting: false });
 				this.openModal("Imported Address: " + address);
-				this.refs.fi.disabled = false;
-				this.refs.fa.disabled = false;
+				CastIronActions.infoUpdate();
 			});
 		})
-		.catch((err) => {
-			this.refs.vif.value = '';
-			this.keypath = undefined;
-			this.refs.vop.value = '';
-			this.variable = undefined;
-			this.setState({waiting: false});
-			this.openModal("Import Failed!");
-			this.refs.fi.disabled = false;
-			this.refs.fa.disabled = false;
-		})
+			.catch((err) => {
+				this.keypath = undefined;
+				this.variable = undefined;
+				this.setState({ waiting: false });
+				this.openModal("Import Failed!");
+			})
 	}
-	
+
 	updateVar = (event) => {
 		this.variable = event.target.value;
 	}
@@ -156,139 +153,162 @@ class Settings extends AlertModalUser {
 		this.keypath = this.refs.vif.files[0].path;
 	}
 
-	handleHover = (enter) => {
-		if (enter === 'fa') {
-			this.refs.fa.disabled = false;
-			this.refs.fi.disabled = true;
-		} else if (enter === 'fi') {
-			this.refs.fi.disabled = false;
-			this.refs.fa.disabled = true;
-		}
-	}
-
-	handleNoHover(left) {
-		if (left === 'fa' && this.refs.fi.disabled) {
-		       this.refs.fi.disabled = false;
-	        } else if (left === 'fi' && this.refs.fa.disabled) {
-		       this.refs.fa.disabled = false;
-	 	}		
-	}
-
 	accountMgr = () => {
-		if (fs.existsSync(this.wallet.archfile) === false) {
-			// create new buttercup archive using one time password input
+		if (this.state.waiting === true) {
 			return (
-				<div style={{align: 'center'}}>
-			          <fieldset style={{display: 'inline-block', marginLeft: '32%', padding: '20px'}}>
-				    <legend style={{fontWeight: 'bold', marginBottom: '3px'}}>Please Enter New Master Password:</legend>
-				      <input type={this.state.reveal ? "text" : "password"} onChange={this.updateVar}/>
-				      <input type="button" value={this.state.reveal ? "Hide" : "Reveal"} onClick={this.handleReveal} />
-				      <input type="button" value="Set Master Password" onClick={this.handleNewArch} />
-			          </fieldset>
+				<div className="item newAccTab">
+					<p className="item nawaiting">Please Wait ...</p>
 				</div>
-			       )
-		}
-
-		if (this.state.unlocked === false) {
-			return (<p style={{fontSize: '1.5em', height: '102px', textAlign: 'center'}}> Please Unlock Your Master Password First! </p>);
+			)
 		} else {
-			return (
-				<div style={{align: 'center'}}>
-				  <fieldset ref="fa" id="fa" onMouseEnter={this.handleHover.bind(this,'fa')} onMouseLeave={this.handleNoHover.bind(this, 'fa')}
-				         style={{display: 'inline-block', marginLeft: '130px', padding: '20px'}}>
-				    <legend style={{fontWeight: 'bold', marginBottom: '3px'}}>Create New Account:</legend>
-			              Please Enter Password For New Account:<br/>
-				      <input ref="vip" style={{marginLeft: '6px'}} type={this.state.reveal ? "text" : "password"} onChange={this.updateVar}/>
-				      <input type="button" style={{marginRight: '6px'}} value={this.state.reveal ? "Hide" : "Reveal"} onClick={this.handleReveal} />
-				      { this.state.waiting 
-					      ? <div className="loader" style={{height: '13px', width: '13px', display: "inline-block"}}></div>
-					      : <input type="button" value="Create" onClick={this.handleNewAcct} /> }
-				  </fieldset>
-				  <fieldset ref="fi" id="fi" onMouseEnter={this.handleHover.bind(this, 'fi')} onMouseLeave={this.handleNoHover.bind(this, 'fi')}
-				         style={{display: 'inline-block', padding: '20px'}}>
-				    <legend style={{fontWeight: 'bold'}}>Import Account:</legend>
-				      Please Select File:
-				      <input ref="vif" style={{marginLeft: '6px'}} type='file' onChange={this.updatePath}/><br/>
-			              Please Enter Password Of The Account:
-				      <input ref="vop" style={{marginLeft: '6px'}} type={this.state.reveal2 ? "text" : "password"} onChange={this.updateVar}/>
-				      <input type="button" style={{marginRight: '6px'}} value={this.state.reveal2 ? "Hide" : "Reveal"} onClick={this.handleReveal2} />
-				      { this.state.waiting 
-					      ? <div className="loader" style={{height: '13px', width: '13px', display: "inline-block"}}></div>
-					      : <input type="button" value="Create" onClick={this.handleImport} /> }
-				  </fieldset>
-				</div>
+			const __oldAcc = () => {
+				return (
+					<div className="item newAccTab">
+						<p className="item nafile">Please Select File:
+				      		<input ref="vif" style={{ margin: '15px' }} type='file' onChange={this.updatePath} />
+						</p>
+						<p className="natitle">Please Enter Password of The Account:</p>
+						<input ref="vip1" className="napass" type={this.state.reveal ? "text" : "password"} defaultValue='' onChange={this.updateVar} />
+						<input type="button" style={{ margin: "15px" }} className="button nareveal" value={this.state.reveal ? "Hide" : "Reveal"} onClick={this.handleReveal} />
+						<input type="button" style={{ margin: "15px" }} className='button nacreate' value='Import' onClick={this.handleImport} />
+					</div>
 				)
+			}
+
+			const __newAcc = () => {
+				return (
+					<div className="item newAccTab">
+						<p className="natitle" >Please Enter Password For New Account:</p>
+						<input ref="vip2" className="napass" type={this.state.reveal2 ? "text" : "password"} defaultValue='' onChange={this.updateVar} />
+						<input type="button" style={{ margin: "15px" }} className="button nareveal" value={this.state.reveal2 ? "Hide" : "Reveal"} onClick={this.handleReveal2} />
+						<input type="button" style={{ margin: "15px" }}
+							className='button nacreate'
+							value='Create'
+							onClick={this.handleNewAcct} />
+					</div>
+				)
+			}
+
+			return (
+				<div className="item accMgr">
+					<fieldset className="accSettings">
+						<legend className="item accTabs">
+							<input type="button" className="button tabset" value="Create New Account" style=
+								{{
+									backgroundColor: this.state.currentAccSettings === 'new' ? "white" : "rgba(0,0,0,0)",
+									color: this.state.currentAccSettings === 'new' ? "black" : "white"
+								}}
+								onClick={this.handleAccChange.bind(this, "new")} />
+							<input type="button" className="button tabset" value="Import Existing Account" style=
+								{{
+									backgroundColor: this.state.currentAccSettings === 'old' ? "white" : "rgba(0,0,0,0)",
+									color: this.state.currentAccSettings === 'old' ? "black" : "white"
+								}}
+								onClick={this.handleAccChange.bind(this, "old")} />
+						</legend>
+						{this.state.currentAccSettings === 'new' ? __newAcc()
+							: this.state.currentAccSettings === 'old' ? __oldAcc()
+								: this.setState({ currentAccSettings: 'old' })}
+					</fieldset>
+				</div>
+			)
 		}
+	}
+
+	gasSettings = () => {
+		return (
+			<form style={{ fontSize: "18px", textAlign: 'center' }} onSubmit={(e) => { e.preventDefault() }} >
+				<table style={{border: "0px"}}><tbody>
+						<tr>
+							<td>
+								<label><input type="radio"
+									onChange={this.handleGasPriceSelect} name="gasprice" value="low" 
+									checked={this.state.gasPriceOption === 'low' ? "checked" : false}/>{"Slow(" + this.state.gasPriceInfo.low +  ")" }</label><br />
+							</td>
+							<td>
+								<label><input type="radio"
+									onChange={this.handleGasPriceSelect} name="gasprice" value="mid"
+									checked={this.state.gasPriceOption === 'mid' ? "checked" : false} />{"Mid(" + this.state.gasPriceInfo.mid +  ")" }</label><br />
+							</td>
+							<td>
+								<label><input type="radio"
+									onChange={this.handleGasPriceSelect} name="gasprice" value="high" 
+									checked={this.state.gasPriceOption === 'high' ? "checked" : false} />{"Normal(" + this.state.gasPriceInfo.high +  ")" }</label><br />
+							</td>
+							<td>
+								<label><input type="radio"
+									onChange={this.handleGasPriceSelect} name="gasprice" value="fast" 
+									checked={this.state.gasPriceOption === 'fast' ? "checked" : false}/>{"Fast(" + this.state.gasPriceInfo.fast +  ")" }</label><br />
+							</td>
+							<td>
+								<label><input type="radio"
+									onChange={this.handleGasPriceSelect} name="gasprice" value="custom"
+									checked={this.state.gasPriceOption === 'custom' ? "checked" : false}/>Custom
+						<input type="text" style=
+						{{  
+							marginLeft: "15px",
+							width: "120px", 
+							backgroundColor: "rgba(0,0,0,0)", 
+							border: "2px solid white",
+							fontSize: "18px",
+							color: "white",
+							textAlign: "right",
+							paddingRight: "4px"
+						}} name="custom_gasprice"
+										value={this.state.gasPriceOption === 'custom' ? (this.state.customGasPrice? this.state.customGasPrice : 0) :""}
+										disabled={!this.isCustomGasPrice} onChange={this.handleCustomGasPriceUpdate} placeholder="Unit: gwei" />
+								</label>
+							</td></tr>
+                    
+                </tbody></table>
+				</form>
+		);
+	}
+
+	handleChange = (tabName) => {
+		this.setState({ currentSettings: tabName });
+	}
+
+	handleAccChange = (tabName) => {
+		this.setState({ currentAccSettings: tabName });
 	}
 
 	render = () => {
-		let visibility = 'hide';
-		if (this.props.visibility) visibility = 'show';
-
+		console.log("in settings render ...")
 		return (
-			<div id="settings"
-				className={visibility}>
-				<h2><a style={{display: 'inline'}} href="#">General</a>
-				    <p style={{display: 'inline', margin: "0 0 0 71%"}}>{"Network ID: " + this.wallet.networkID}</p>
-				</h2><hr color='#333' width='90%' />
-				<div style={{ display: 'block', marginLeft: "7%", marginRight: "10%", marginTop: '40px', marginBottom: '40px', textAlign: "center" }}>
-					<table className="settings-sheet" border="0"><tbody>
-						<form style={{textAlign: 'center'}} onSubmit={(e) =>{e.preventDefault()}} >
-						    <fieldset style={{marginLeft: "7.5%", padding: "5px 25px 5px 25px", width: "83%", textAlign: "center"}}>
-							<legend style={{textAlign: 'left', fontWeight: "bold" }}>Gas Price: </legend>
-							<tr className="settings-sheet" style={{ backgroundColor: "rgba(0,0,0,0)" }}>
-								<td className="settings-sheet" style={{ backgroundColor: "rgba(0,0,0,0)", marginLeft: "30px" }}>
-									<label style={{ fontSize: '1.05em', fontWeight: "bold" }}><input type="radio"
-										onClick={this.props.handleGasPriceSelect} name="gasprice" value="low" />Slow</label><br />
-								</td>
-								<td className="settings-sheet" style={{ backgroundColor: "rgba(0,0,0,0)" }}>
-									<label style={{ fontSize: '1.05em', fontWeight: "bold" }}><input type="radio"
-										onClick={this.props.handleGasPriceSelect} name="gasprice" value="mid" />Mid</label><br />
-								</td>
-								<td className="settings-sheet" style={{ backgroundColor: "rgba(0,0,0,0)" }}>
-									<label style={{ fontSize: '1.05em', fontWeight: "bold" }}><input type="radio"
-										onClick={this.props.handleGasPriceSelect} name="gasprice" value="high" defaultChecked/>Normal</label><br />
-								</td>
-								<td className="settings-sheet" style={{ backgroundColor: "rgba(0,0,0,0)" }}>
-									<label style={{ fontSize: '1.05em', fontWeight: "bold" }}><input type="radio"
-										onClick={this.props.handleGasPriceSelect} name="gasprice" value="fast" />Fast</label><br />
-								</td>
-								<td className="settings-sheet" style={{ backgroundColor: "rgba(0,0,0,0)" }}>
-									<label style={{ fontSize: '1.05em', fontWeight: "bold" }}><input type="radio"
-										onClick={this.props.handleGasPriceSelect} name="gasprice" value="custom" />Custom
-			<input type="text" style={{ marginLeft: '10px' }} name="custom_gasprice" 
-			disabled={this.props.isCustomGasPrice} onChange={this.handleCustomGasPriceUpdate} placeholder="custom (in gwei)..." />
-									</label>
-								</td></tr>
-						   </fieldset>
-						</form>
-					</tbody></table>
-				</div>
-				<h2><a href="#">Accounts</a></h2><hr color='#333' width='90%' />
-				<div style={{ display: 'block', margin: '40px' }}>
-				{ this.accountMgr() }
-				</div>
-                    {	/*				
-				<h2><a href="#">Applications</a></h2><hr color='#333' width='90%' />
-				  <table border="1" className="appList"><tbody style={{display: 'block', height: '340px', overflow: "hidden"}}>
-					  <tr>
-					    <td style={{width: "1000px"}}>App Name</td>
-					    <td style={{width: "10%"}}>installed</td>
-					    <td style={{width: "10%"}}>drawer</td>
-					    <td style={{width: "10%"}}>launch</td>
-					    <td style={{width: "2px", padding: "0px", border: "0px", color: "black"}}>.</td>
-					  </tr>
-					  <table><tbody style={{display: 'block', height: '300px', overflow: "scroll"}}>
-					  { this.dappTable() }
-					  </tbody></table>
-				    </tbody></table>
-		     */   }
-				<div style={{ margin: '150px', textAlign: "center" }}>
-					<input type="button" className="button" onClick={this.handleClickBack} value="Back" />
-				</div>
-
-				<AlertModal content={this.state.alertContent} isAlertModalOpen={this.state.isAlertModalOpen} close={this.closeModal}/>
-			</div>
+			<fieldset className="item SettingView">
+				<legend className="item SettingTabs">
+					<input type="button" className="button tabset" value="Gas Price" style=
+						{{
+							backgroundColor: this.state.currentSettings === 'gas' ? "white" : "rgba(0,0,0,0)",
+							color: this.state.currentSettings === 'gas' ? "black" : "white"
+						}}
+						onClick={this.handleChange.bind(this, "gas")} />
+					<input type="button" className="button tabset" style=
+						{{
+							backgroundColor: this.state.currentSettings === 'acc' ? "white" : "rgba(0,0,0,0)",
+							color: this.state.currentSettings === 'acc' ? "black" : "white"
+						}} value="Accounts" onClick={this.handleChange.bind(this, "acc")} />
+					<input type="button" className="button tabset" value="Applications" style=
+						{{
+							backgroundColor: this.state.currentSettings === 'app' ? "white" : "rgba(0,0,0,0)",
+							color: this.state.currentSettings === 'app' ? "black" : "white"
+						}} onClick={this.handleChange.bind(this, "app")} />
+				</legend>
+				{ 
+				  this.state.waiting === false ?
+					<div className="item SettingInner">
+						{
+							this.state.currentSettings === "gas" ? this.gasSettings()
+								: this.state.currentSettings === "acc" ? this.accountMgr()
+									: this.state.currentSettings === "app" ? <AppSettings />
+										: this.setState({ currentSettings: 'gas' })
+						}
+					</div>
+				  : <div className="item SettingInner"><div className="waiter">Please Wait...<br/><div className="loader"></div></div></div>
+				}	
+				<AlertModal content={this.state.alertContent} isAlertModalOpen={this.state.isAlertModalOpen} close={this.closeModal} />
+			</fieldset>
 		);
 	}
 }

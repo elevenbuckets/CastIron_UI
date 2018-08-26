@@ -2,31 +2,38 @@ const {app, BrowserWindow} = require('electron')
 const path = require('path')
 const url = require('url')
 
+const ipfs_go  = require('ipfs_base/IPFS_GO.js');
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let win
+let win;
+let ipfs  = new ipfs_go('.local/config.json');
 
 function createWindow () {
   // Create the browser window.
-  win = new BrowserWindow({width: 1280, height: 960, resizable: false, icon: path.join(__dirname, 'public', 'assets', 'icon', '11be_logo.png')});
-  win.setMenu(null);
+  ipfs.start().then((API) => {
+    win = new BrowserWindow({minWidth: 1280, minHeight: 960, resizable: true, icon: path.join(__dirname, 'public', 'assets', 'icon', '11be_logo.png')});
+    win.setMenu(null);
+  
+    // and load the index.html of the app.
+    win.loadURL(url.format({
+      pathname: path.join(__dirname, '/public/index.html'),
+      protocol: 'file:',
+      slashes: true
+    }))
+  
+    global.ipfs  = ipfs;
 
-  // and load the index.html of the app.
-  win.loadURL(url.format({
-    pathname: path.join(__dirname, '/public/index.html'),
-    protocol: 'file:',
-    slashes: true
-  }))
-
-  // Open the DevTools.
-  win.webContents.openDevTools()
-
-  // Emitted when the window is closed.
-  win.on('closed', () => {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    win = null
+    // Open the DevTools.
+    win.webContents.openDevTools()
+  
+    // Emitted when the window is closed.
+    win.on('closed', () => {
+      // Dereference the window object, usually you would store windows
+      // in an array if your app supports multi windows, this is the time
+      // when you should delete the corresponding element.
+      win = null
+    })
   })
 }
 

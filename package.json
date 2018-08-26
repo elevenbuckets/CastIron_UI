@@ -23,9 +23,7 @@
     ]
   },
   "scripts": {
-    "serve": "live-server public/",
-    "build": "webpack",
-    "dev-server": "webpack-dev-server",
+    "watch": "node_modules/.bin/browser-sync start --localOnly --files 'public/**/*.css, public/**/*.html, public/**/*.js, !node_modules/**/*' --directory",
     "compile": "./node_modules/.bin/babel src --out-dir public"
   },
   "dependencies": {
@@ -34,17 +32,13 @@
     "async": "^2.6.1",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.1",
     "babel-plugin-dynamic-import-node": "^2.0.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
-    "css-loader": "0.28.4",
+    "browser-sync": "^2.24.6",
     "ipfs_base": "git+ssh://git@github.com/elevenbuckets/ipfs_go.git",
-    "json-loader": "^0.5.7",
-    "live-server": "^1.2.0",
-    "node-loader": "^0.6.0",
     "react": "15.6.1",
     "react-bootstrap": "^0.32.1",
     "react-dom": "15.6.1",
@@ -53,7 +47,6 @@
     "react-router-dom": "^4.2.2",
     "react-toggle": "^4.0.2",
     "reflux": "^6.4.1",
-    "style-loader": "0.18.2",
     "tar": "^4.4.4",
     "uuid": "^3.2.1",
     "validator": "8.0.0"
