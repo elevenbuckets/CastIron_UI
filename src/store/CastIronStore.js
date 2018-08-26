@@ -31,7 +31,8 @@ class CastIronStore extends Reflux.Store {
             scheduleModalIsOpen: false,
             unlocked: false,
             gasPriceOption: "high",
-            customGasPrice: null
+            customGasPrice: null,
+            gasPriceInfo: null
         }
         this.funcToConfirm = null;
         this.listenables = CastIronActions;
@@ -110,9 +111,9 @@ class CastIronStore extends Reflux.Store {
         this.setUpSchedule(this.batchSend.bind(this), [[tx]]);
     }
 
-   
+
     onScheduleTxInQueue(tx) {
-        this.setUpSchedule(this.batchSend.bind(this), [[tx]], CastIronActions.dequeueSchedule, arguments) ;
+        this.setUpSchedule(this.batchSend.bind(this), [[tx]], CastIronActions.dequeueSchedule, arguments);
     }
 
 
@@ -122,7 +123,7 @@ class CastIronStore extends Reflux.Store {
         this.confirmTxs(this.sendTxInQueue, arguments);
     }
 
-   
+
 
     sendTxInQueue(tx) {
         CastIronActions.dequeue(tx);
@@ -173,12 +174,12 @@ class CastIronStore extends Reflux.Store {
 
     onBatchSend() {
         this.confirmTxs(this.batchSend, [this.state.queuedTxs],
-        CastIronActions.clearQueue, arguments);
+            CastIronActions.clearQueue, arguments);
     }
 
     onBatchSchedule() {
         this.setUpSchedule(this.batchSend.bind(this), [this.state.scheduleQueuedTxs],
-         CastIronActions.clearQueueSchedule, arguments);
+            CastIronActions.clearQueueSchedule, arguments);
     }
 
     batchSend(queuedTxs) {
@@ -304,15 +305,20 @@ class CastIronStore extends Reflux.Store {
 
     onGasPriceOptionSelect(option) {
         let stage = Promise.resolve(this.setState({ gasPriceOption: option }))
-        stage.then(() => {
-            this.updateInfo();
+
+        if (option === "custom" && this.state.customGasPrice ) {
+            this.setState({gasPrice: this.state.customGasPrice})
+        }else{
+            this.setState({gasPrice: this.state.gasPriceInfo[option]});
         }
 
-        );
 
     }
 
     onCustomGasPriceUpdate(price) {
+        if(!price){
+            price = 0;
+        }
         let stage = Promise.resolve(this.setState({ customGasPrice: price }))
         stage.then(() => {
             this.updateInfo();
@@ -409,33 +415,72 @@ class CastIronStore extends Reflux.Store {
     }
 
     updateInfo = () => {
-        this.getAccounts();
+        let stage = Promise.resolve(this.getAccounts())
 
-        this.wallet.gasPriceEst().then(data => {
-            if (this.state.gasPriceOption != "custom") {
-                let gasPrice = this.wallet.toEth(data[this.state.gasPriceOption], 9).toString();
-                this.wallet.gasPrice = data[this.state.gasPriceOption];
-                this.setState(
-                    { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice: gasPrice }
-                )
-            } else {
-                if (this.state.customGasPrice) {
-                    this.wallet.gasPrice = this.wallet.toWei(this.state.customGasPrice, 9);
+        stage.then(() => {
+            this.getGasPriceWithRetry(3);
+        })
+
+    }
+
+    getGasPriceWithRetry = (n) => {
+        console.log("CastIronStore: the retry index is : " + n);
+        return new Promise((resolve, reject) => {
+            this.wallet.gasPriceEst().then(data => {
+                let gasPriceInfo = {};
+                gasPriceInfo.low = this.wallet.toEth(data.low, 9).toString();
+                gasPriceInfo.mid = this.wallet.toEth(data.mid, 9).toString();
+                gasPriceInfo.high = this.wallet.toEth(data.high, 9).toString();
+                gasPriceInfo.fast = this.wallet.toEth(data.fast, 9).toString();
+                if (this.state.gasPriceOption != "custom") {
+                    let gasPrice = this.wallet.toEth(data[this.state.gasPriceOption], 9).toString();
+                    this.wallet.gasPrice = data[this.state.gasPriceOption];
+                    this.setState(
+                        { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice: gasPrice, gasPriceInfo: gasPriceInfo }
+                    )
+                } else {
+                    if (this.state.customGasPrice) {
+                        this.wallet.gasPrice = this.wallet.toWei(this.state.customGasPrice, 9);
+                    }
+                    this.setState(
+                        { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice: this.state.customGasPrice, gasPriceInfo: gasPriceInfo }
+                    )
                 }
-                this.setState(
-                    { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice: this.state.customGasPrice }
-                )
+
+
             }
+                , error => {
+                    if (n > 0) {
+                        setTimeout(() => {
+                            this.getGasPriceWithRetry(n - 1).then(resolve).catch(reject);
+                        }, 200)
+
+                    } else {
+                        if (this.state.gasPriceOption != "custom") {
+                            let gasPrice = this.wallet.toEth(this.wallet.configs.defaultGasPrice, 9).toString();
+                            this.wallet.gasPrice = this.wallet.configs.defaultGasPrice;
+                            if (this.state.gasPriceInfo) {
+                                gasPrice = this.state.gasPriceInfo[this.state.gasPriceOption];
+                                this.wallet.gasPrice = this.wallet.toWei(this.state.gasPriceInfo[this.state.gasPriceOption], 9).toString();
+                            }
+                            this.setState(() => {
+                                return { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice: gasPrice }
+                            })
+                        } else {
+                            this.setState(() => {
+                                return { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime }
+                            })
+                        }
 
 
-        }
-            , error => {
-                let gasPrice = this.wallet.toEth(this.wallet.configs.defaultGasPrice, 9).toString();
-                this.wallet.gasPrice = this.wallet.configs.defaultGasPrice;
-                this.setState(() => {
-                    return { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice: gasPrice }
-                })
-            });
+
+
+
+
+                    }
+
+                });
+        })
     }
 
     // to confirm tx in modal
@@ -447,7 +492,7 @@ class CastIronStore extends Reflux.Store {
             this.argsToConfirm = [];
         }
 
-        if(this.funcAfterConfirmTx){
+        if (this.funcAfterConfirmTx) {
             this.funcAfterConfirmTx(...this.argsAfterConfirmTx);
             this.funcAfterConfirmTx = null;
             this.argsAfterConfirmTx = [];
@@ -462,7 +507,7 @@ class CastIronStore extends Reflux.Store {
     }
 
     // Open confirm modal for tx sending
-    confirmTxs = (func, args,afterConfirmFunc, afterConfirmArgs) => {
+    confirmTxs = (func, args, afterConfirmFunc, afterConfirmArgs) => {
         this.setState({ modalIsOpen: true });
         this.funcToConfirm = func;
         this.argsToConfirm = args;
@@ -489,7 +534,7 @@ class CastIronStore extends Reflux.Store {
             this.argsToSchedule = [];
         }
 
-        if(this.funcAfterConfirmSchedule){
+        if (this.funcAfterConfirmSchedule) {
             this.funcAfterConfirmSchedule(...this.argsAfterConfirmSchedule);
             this.funcAfterConfirmSchedule = null;
             this.argsAfterConfirmSchedule = [];
@@ -505,7 +550,7 @@ class CastIronStore extends Reflux.Store {
 
 
     // Open Schedular modal for tx sending
-    setUpSchedule = (func, args, afterConfirmFunc, afterConfirmArgs ) => {
+    setUpSchedule = (func, args, afterConfirmFunc, afterConfirmArgs) => {
         this.setState({ scheduleModalIsOpen: true });
         this.funcToScheudle = func;
         this.argsToSchedule = args;
@@ -514,19 +559,19 @@ class CastIronStore extends Reflux.Store {
     }
 
     onDeleteScheduledQ(Q) {
-        if(this.state.scheduledQs.indexOf(Q) != -1){
+        if (this.state.scheduledQs.indexOf(Q) != -1) {
             this.state.scheduledQs.splice(this.state.scheduledQs.indexOf(Q), 1);
         }
         this.setState({ scheduledQs: this.state.scheduledQs })
     }
 
     onDeleteScheduledQs(Qs) {
-        Qs.map(Q =>{
-            if(this.state.scheduledQs.indexOf(Q) != -1){
+        Qs.map(Q => {
+            if (this.state.scheduledQs.indexOf(Q) != -1) {
                 this.state.scheduledQs.splice(this.state.scheduledQs.indexOf(Q), 1);
             }
         })
-        
+
         this.setState({ scheduledQs: this.state.scheduledQs })
     }
 

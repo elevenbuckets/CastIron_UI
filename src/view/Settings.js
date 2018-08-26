@@ -220,22 +220,22 @@ class Settings extends AlertModalUser {
 							<td>
 								<label><input type="radio"
 									onChange={this.handleGasPriceSelect} name="gasprice" value="low" 
-									checked={this.state.gasPriceOption === 'low' ? "checked" : false}/>Slow</label><br />
+									checked={this.state.gasPriceOption === 'low' ? "checked" : false}/>{"Slow(" + this.state.gasPriceInfo.low +  ")" }</label><br />
 							</td>
 							<td>
 								<label><input type="radio"
 									onChange={this.handleGasPriceSelect} name="gasprice" value="mid"
-									checked={this.state.gasPriceOption === 'mid' ? "checked" : false} />Mid</label><br />
+									checked={this.state.gasPriceOption === 'mid' ? "checked" : false} />{"Mid(" + this.state.gasPriceInfo.mid +  ")" }</label><br />
 							</td>
 							<td>
 								<label><input type="radio"
 									onChange={this.handleGasPriceSelect} name="gasprice" value="high" 
-									checked={this.state.gasPriceOption === 'high' ? "checked" : false} />Normal</label><br />
+									checked={this.state.gasPriceOption === 'high' ? "checked" : false} />{"Normal(" + this.state.gasPriceInfo.high +  ")" }</label><br />
 							</td>
 							<td>
 								<label><input type="radio"
 									onChange={this.handleGasPriceSelect} name="gasprice" value="fast" 
-									checked={this.state.gasPriceOption === 'fast' ? "checked" : false}/>Fast</label><br />
+									checked={this.state.gasPriceOption === 'fast' ? "checked" : false}/>{"Fast(" + this.state.gasPriceInfo.fast +  ")" }</label><br />
 							</td>
 							<td>
 								<label><input type="radio"
@@ -252,7 +252,7 @@ class Settings extends AlertModalUser {
 							textAlign: "right",
 							paddingRight: "4px"
 						}} name="custom_gasprice"
-										value={this.state.gasPriceOption === 'custom' ? this.state.customGasPrice :""}
+										value={this.state.gasPriceOption === 'custom' ? (this.state.customGasPrice? this.state.customGasPrice : 0) :""}
 										disabled={!this.isCustomGasPrice} onChange={this.handleCustomGasPriceUpdate} placeholder="Unit: gwei" />
 								</label>
 							</td></tr>
