@@ -43,7 +43,6 @@ class ReceiptsView extends Reflux.Component {
             </div>
         )
     }
-
 }
 
-export default ReceiptsView
+export default ReceiptsView;
