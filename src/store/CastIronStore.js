@@ -256,21 +256,8 @@ class CastIronStore extends Reflux.Store {
         if (this._count == this._target) CastIronActions.finishUpdate();
     }
 
-    onInfoUpdate(blockHeight, blockTime) {
+    onInfoUpdate() {
         this.getAccounts();
-
-        this.wallet.gasPriceEst().then(data => {
-            let gasPrice = this.wallet.toEth(data.fast, 9).toString()
-            this.setState(
-                { blockHeight: blockHeight, blockTime: blockTime, gasPrice: gasPrice }
-            )
-        }
-            , error => {
-                let gasPrice = this.wallet.toEth(this.wallet.configs.defaultGasPrice, 9).toString();
-                this.setState(
-                    { blockHeight: blockHeight, blockTime: blockTime, gasPricconfirmTXe: gasPrice }
-                )
-            });
     }
 
     onFinishUpdate() {

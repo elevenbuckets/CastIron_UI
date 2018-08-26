@@ -29,13 +29,13 @@ class Settings extends AlertModalUser {
 			reveal2: false,
 			waiting: false,
 			currentSettings: 'gas',
-			currentAccSettings: 'new'
+			currentAccSettings: 'old'
 		}
 
 		this.wallet = CastIronService.wallet;
 		this.accMgr = AcctMgrService.accMgr;
-		this.variable = undefined;
 		this.keypath = undefined;
+		this.variable = undefined;
 	}
 
 	// Gas related functions
@@ -74,9 +74,8 @@ class Settings extends AlertModalUser {
 	handleNewAcct = (event) => {
 		let stage = Promise.resolve();
 
-		if (typeof(this.variable) === 'undefined' || this.variable.length === 0) {
+		if (typeof (this.variable) === 'undefined' || this.variable.length === 0) {
 			this.variable = undefined;
-			this.refs.vip.value = '';
 			this.setState({ waiting: false });
 			this.openModal("Creation Failed");
 			return false;
@@ -86,8 +85,8 @@ class Settings extends AlertModalUser {
 			.then(() => {
 				return this.setState({ waiting: true })
 			})
-			.then(() => { 
-				return this.updateNew(); 
+			.then(() => {
+				return this.updateNew();
 			});
 	}
 
@@ -115,8 +114,18 @@ class Settings extends AlertModalUser {
 	}
 
 	handleImport = (event) => {
-		console.log("Importing " + this.keypath);
-		this.setState({ waiting: true });
+		// sanity check
+		if (!fs.existsSync(this.keypath) || typeof(this.keypath) === 'undefined') {
+			this.keypath = undefined;
+			this.variable = undefined;
+			this.setState({ waiting: false });
+			this.openModal("Import Failed!");
+			return false;
+		} else {
+			console.log("Importing " + this.keypath);
+			this.setState({ waiting: true });
+		}
+
 		this.accMgr.importFromJSON(this.keypath, this.variable).then((r) => {
 			this.accMgr.update(r.keyObj, r.password).then((address) => {
 				r = {};
@@ -124,6 +133,7 @@ class Settings extends AlertModalUser {
 				this.variable = undefined;
 				this.setState({ waiting: false });
 				this.openModal("Imported Address: " + address);
+				CastIronActions.infoUpdate();
 			});
 		})
 			.catch((err) => {
@@ -141,31 +151,26 @@ class Settings extends AlertModalUser {
 	updatePath = (event) => {
 		console.log(this.refs.vif.files[0].path);
 		this.keypath = this.refs.vif.files[0].path;
-    }
-
+	}
 
 	accountMgr = () => {
 		if (this.state.waiting === true) {
 			return (
 				<div className="item newAccTab">
-					<p className="nawaiting">Please Wait ...</p>
+					<p className="item nawaiting">Please Wait ...</p>
 				</div>
 			)
 		} else {
 			const __oldAcc = () => {
 				return (
 					<div className="item newAccTab">
-					    <p className="item nafile">Please Select File:
-				      		<input ref="vif" style={{ margin: '15px' }} type='file' onChange={this.updatePath}/>
-					    </p>
+						<p className="item nafile">Please Select File:
+				      		<input ref="vif" style={{ margin: '15px' }} type='file' onChange={this.updatePath} />
+						</p>
 						<p className="natitle">Please Enter Password of The Account:</p>
-						<input ref="vip1" className="napass" type={this.state.reveal ? "text" : "password"} onChange={this.updateVar} />
-						<input type="button" style={{margin: "15px"}} className="button nareveal"  
-							   value={this.state.reveal ? "Hide" : "Reveal"} onClick={this.handleReveal} />
-						<input type="button"  style={{margin: "15px"}} 
-							   className='button nacreate' 
-								value='Import' 
-							 onClick={this.handleImport} />
+						<input ref="vip1" className="napass" type={this.state.reveal ? "text" : "password"} defaultValue='' onChange={this.updateVar} />
+						<input type="button" style={{ margin: "15px" }} className="button nareveal" value={this.state.reveal ? "Hide" : "Reveal"} onClick={this.handleReveal} />
+						<input type="button" style={{ margin: "15px" }} className='button nacreate' value='Import' onClick={this.handleImport} />
 					</div>
 				)
 			}
@@ -174,14 +179,12 @@ class Settings extends AlertModalUser {
 				return (
 					<div className="item newAccTab">
 						<p className="natitle" >Please Enter Password For New Account:</p>
-						<input ref="vip2" className="napass" type={this.state.reveal2 ? "text" : "password"} onChange={this.updateVar} />
-						<input type="button" style={{margin: "15px"}} className="button nareveal"  
-							   value={this.state.reveal2 ? "Hide" : "Reveal"} 
-							onClick={this.handleReveal2} />
-						<input type="button"  style={{margin: "15px"}} 
-							   className='button nacreate' 
-								value='Create' 
-							 onClick={this.handleNewAcct} />
+						<input ref="vip2" className="napass" type={this.state.reveal2 ? "text" : "password"} defaultValue='' onChange={this.updateVar} />
+						<input type="button" style={{ margin: "15px" }} className="button nareveal" value={this.state.reveal2 ? "Hide" : "Reveal"} onClick={this.handleReveal2} />
+						<input type="button" style={{ margin: "15px" }}
+							className='button nacreate'
+							value='Create'
+							onClick={this.handleNewAcct} />
 					</div>
 				)
 			}
@@ -190,22 +193,22 @@ class Settings extends AlertModalUser {
 				<div className="item accMgr">
 					<fieldset className="accSettings">
 						<legend className="item accTabs">
-						<input type="button" className="button tabset" value="Create New Account" style=
-							{{
-								backgroundColor: this.state.currentAccSettings === 'new' ? "white" : "rgba(0,0,0,0)",
-								color: this.state.currentAccSettings === 'new' ? "black" : "white"
-							}}
-							onClick={this.handleAccChange.bind(this, "new")} />
-						<input type="button" className="button tabset" value="Import Existing Account" style=
-							{{
-								backgroundColor: this.state.currentAccSettings === 'old' ? "white" : "rgba(0,0,0,0)",
-								color: this.state.currentAccSettings === 'old' ? "black" : "white"
-							}}
-							onClick={this.handleAccChange.bind(this, "old")} />
+							<input type="button" className="button tabset" value="Create New Account" style=
+								{{
+									backgroundColor: this.state.currentAccSettings === 'new' ? "white" : "rgba(0,0,0,0)",
+									color: this.state.currentAccSettings === 'new' ? "black" : "white"
+								}}
+								onClick={this.handleAccChange.bind(this, "new")} />
+							<input type="button" className="button tabset" value="Import Existing Account" style=
+								{{
+									backgroundColor: this.state.currentAccSettings === 'old' ? "white" : "rgba(0,0,0,0)",
+									color: this.state.currentAccSettings === 'old' ? "black" : "white"
+								}}
+								onClick={this.handleAccChange.bind(this, "old")} />
 						</legend>
-						{  this.state.currentAccSettings === 'new' ? __newAcc()
-						 : this.state.currentAccSettings === 'old' ? __oldAcc()
-						 : this.setState({currentAccSettings: 'new'})}
+						{this.state.currentAccSettings === 'new' ? __newAcc()
+							: this.state.currentAccSettings === 'old' ? __oldAcc()
+								: this.setState({ currentAccSettings: 'old' })}
 					</fieldset>
 				</div>
 			)
@@ -215,6 +218,7 @@ class Settings extends AlertModalUser {
 	gasSettings = () => {
 		return (
 			<form style={{ fontSize: "18px", textAlign: 'center' }} onSubmit={(e) => { e.preventDefault() }} >
+<<<<<<< HEAD
 				<table style={{border: "0px"}}><tbody>
 						<tr>
 							<td>
@@ -259,6 +263,52 @@ class Settings extends AlertModalUser {
                     
                 </tbody></table>
 				</form>
+=======
+				<table style={{ border: "0px" }}><tbody>
+					<tr>
+						<td>
+							<label><input type="radio"
+								onChange={this.handleGasPriceSelect} name="gasprice" value="low"
+								checked={this.state.gasPriceOption === 'low' ? "checked" : false} />Slow</label><br />
+						</td>
+						<td>
+							<label><input type="radio"
+								onChange={this.handleGasPriceSelect} name="gasprice" value="mid"
+								checked={this.state.gasPriceOption === 'mid' ? "checked" : false} />Mid</label><br />
+						</td>
+						<td>
+							<label><input type="radio"
+								onChange={this.handleGasPriceSelect} name="gasprice" value="high"
+								checked={this.state.gasPriceOption === 'high' ? "checked" : false} />Normal</label><br />
+						</td>
+						<td>
+							<label><input type="radio"
+								onChange={this.handleGasPriceSelect} name="gasprice" value="fast"
+								checked={this.state.gasPriceOption === 'fast' ? "checked" : false} />Fast</label><br />
+						</td>
+						<td>
+							<label><input type="radio"
+								onChange={this.handleGasPriceSelect} name="gasprice" value="custom"
+								checked={this.state.gasPriceOption === 'custom' ? "checked" : false} />Custom
+						<input type="text" style=
+									{{
+										marginLeft: "15px",
+										width: "120px",
+										backgroundColor: "rgba(0,0,0,0)",
+										border: "2px solid white",
+										fontSize: "18px",
+										color: "white",
+										textAlign: "right",
+										paddingRight: "4px"
+									}} name="custom_gasprice"
+									value={this.state.gasPriceOption === 'custom' ? this.state.customGasPrice : ""}
+									disabled={!this.isCustomGasPrice} onChange={this.handleCustomGasPriceUpdate} placeholder="Unit: gwei" />
+							</label>
+						</td></tr>
+
+				</tbody></table>
+			</form>
+>>>>>>> New-UI-CSS-Grid
 		);
 	}
 
@@ -271,6 +321,7 @@ class Settings extends AlertModalUser {
 	}
 
 	render = () => {
+		console.log("in settings render ...")
 		return (
 			<fieldset className="item SettingView">
 				<legend className="item SettingTabs">
@@ -291,14 +342,18 @@ class Settings extends AlertModalUser {
 							color: this.state.currentSettings === 'app' ? "black" : "white"
 						}} onClick={this.handleChange.bind(this, "app")} />
 				</legend>
-				<div className="item SettingInner">
-					{
-						this.state.currentSettings === "gas" ? this.gasSettings()
-							: this.state.currentSettings === "acc" ? this.accountMgr()
-								: this.state.currentSettings === "app" ? <AppSettings />
-									: this.setState({ currentSettings: 'gas' })
-					}
-				</div>
+				{ 
+				  this.state.waiting === false ?
+					<div className="item SettingInner">
+						{
+							this.state.currentSettings === "gas" ? this.gasSettings()
+								: this.state.currentSettings === "acc" ? this.accountMgr()
+									: this.state.currentSettings === "app" ? <AppSettings />
+										: this.setState({ currentSettings: 'gas' })
+						}
+					</div>
+				  : <div className="item SettingInner"><div className="waiter">Please Wait...<br/><div className="loader"></div></div></div>
+				}	
 				<AlertModal content={this.state.alertContent} isAlertModalOpen={this.state.isAlertModalOpen} close={this.closeModal} />
 			</fieldset>
 		);
