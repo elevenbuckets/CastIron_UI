@@ -218,50 +218,50 @@ class Settings extends AlertModalUser {
 	gasSettings = () => {
 		return (
 			<form style={{ fontSize: "18px", textAlign: 'center' }} onSubmit={(e) => { e.preventDefault() }} >
-				<table style={{ border: "0px" }}><tbody>
-					<tr>
-						<td>
-							<label><input type="radio"
-								onChange={this.handleGasPriceSelect} name="gasprice" value="low"
-								checked={this.state.gasPriceOption === 'low' ? "checked" : false} />Slow</label><br />
-						</td>
-						<td>
-							<label><input type="radio"
-								onChange={this.handleGasPriceSelect} name="gasprice" value="mid"
-								checked={this.state.gasPriceOption === 'mid' ? "checked" : false} />Mid</label><br />
-						</td>
-						<td>
-							<label><input type="radio"
-								onChange={this.handleGasPriceSelect} name="gasprice" value="high"
-								checked={this.state.gasPriceOption === 'high' ? "checked" : false} />Normal</label><br />
-						</td>
-						<td>
-							<label><input type="radio"
-								onChange={this.handleGasPriceSelect} name="gasprice" value="fast"
-								checked={this.state.gasPriceOption === 'fast' ? "checked" : false} />Fast</label><br />
-						</td>
-						<td>
-							<label><input type="radio"
-								onChange={this.handleGasPriceSelect} name="gasprice" value="custom"
-								checked={this.state.gasPriceOption === 'custom' ? "checked" : false} />Custom
+				<table style={{border: "0px"}}><tbody>
+						<tr>
+							<td>
+								<label><input type="radio"
+									onChange={this.handleGasPriceSelect} name="gasprice" value="low" 
+									checked={this.state.gasPriceOption === 'low' ? "checked" : false}/>{"Slow(" + this.state.gasPriceInfo.low +  ")" }</label><br />
+							</td>
+							<td>
+								<label><input type="radio"
+									onChange={this.handleGasPriceSelect} name="gasprice" value="mid"
+									checked={this.state.gasPriceOption === 'mid' ? "checked" : false} />{"Mid(" + this.state.gasPriceInfo.mid +  ")" }</label><br />
+							</td>
+							<td>
+								<label><input type="radio"
+									onChange={this.handleGasPriceSelect} name="gasprice" value="high" 
+									checked={this.state.gasPriceOption === 'high' ? "checked" : false} />{"Normal(" + this.state.gasPriceInfo.high +  ")" }</label><br />
+							</td>
+							<td>
+								<label><input type="radio"
+									onChange={this.handleGasPriceSelect} name="gasprice" value="fast" 
+									checked={this.state.gasPriceOption === 'fast' ? "checked" : false}/>{"Fast(" + this.state.gasPriceInfo.fast +  ")" }</label><br />
+							</td>
+							<td>
+								<label><input type="radio"
+									onChange={this.handleGasPriceSelect} name="gasprice" value="custom"
+									checked={this.state.gasPriceOption === 'custom' ? "checked" : false}/>Custom
 						<input type="text" style=
-									{{
-										marginLeft: "15px",
-										width: "120px",
-										backgroundColor: "rgba(0,0,0,0)",
-										border: "2px solid white",
-										fontSize: "18px",
-										color: "white",
-										textAlign: "right",
-										paddingRight: "4px"
-									}} name="custom_gasprice"
-									value={this.state.gasPriceOption === 'custom' ? this.state.customGasPrice : ""}
-									disabled={!this.isCustomGasPrice} onChange={this.handleCustomGasPriceUpdate} placeholder="Unit: gwei" />
-							</label>
-						</td></tr>
-
-				</tbody></table>
-			</form>
+						{{  
+							marginLeft: "15px",
+							width: "120px", 
+							backgroundColor: "rgba(0,0,0,0)", 
+							border: "2px solid white",
+							fontSize: "18px",
+							color: "white",
+							textAlign: "right",
+							paddingRight: "4px"
+						}} name="custom_gasprice"
+										value={this.state.gasPriceOption === 'custom' ? (this.state.customGasPrice? this.state.customGasPrice : 0) :""}
+										disabled={!this.isCustomGasPrice} onChange={this.handleCustomGasPriceUpdate} placeholder="Unit: gwei" />
+								</label>
+							</td></tr>
+                    
+                </tbody></table>
+				</form>
 		);
 	}
 
