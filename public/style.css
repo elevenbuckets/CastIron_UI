@@ -600,6 +600,20 @@ h6 {
   grid-area: bcreate;
 }
 
+.dAppsView {
+  background-color: rgba(0, 0, 0, 0);
+  border: 2px solid white;
+  border-radius: 0px;
+}
+
+.dAppsTabs {
+  text-align: center;
+  align-self: center;
+  justify-self: center;
+  background-color: rgba(0, 0, 0, 0);
+  border: 0px;
+}
+
 /* React Dropdown */
 .Dropdown-root {
   position: relative;

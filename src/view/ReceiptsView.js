@@ -30,7 +30,13 @@ class ReceiptsView extends Reflux.Component {
     }
 
     handleChange = (event) => { this.setState({ selectedQ: event.value }); }
-    getReceipts = () => { return this.state.receipts[this.state.selectedQ] }
+    getReceipts = () => { 
+        if (this.state.Qs.length > 0 && this.state.selectedQ === "") {
+            this.setState({selectedQ: [...this.state.Qs].splice(-1)});
+        }
+            
+        return this.state.receipts[this.state.selectedQ]
+    }
 
     render() {
         console.log("in ReceiptsView render()");
