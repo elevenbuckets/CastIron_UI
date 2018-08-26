@@ -61,7 +61,7 @@ class Drawer extends React.Component {
 	render = () => {
 		console.log("in render() of Drawer")
 		return (
-			<div id="drawer" className={this.props.draw ? 'raise' : 'close'} >
+			<div id="drawer" className="mainView">
 				<div className="card" onClick={this.handleIconClick.bind(this, 'Transfer')}>
 					<img src="assets/transfer-icon.png" style={{ width: "64px", height: "64px", marginTop: "16px", marginBotton: "9px" }} />
 					<p style={{ textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontWeight: "bold" }}>Wallet</p>

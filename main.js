@@ -12,7 +12,7 @@ let ipfs  = new ipfs_go('.local/config.json');
 function createWindow () {
   // Create the browser window.
   ipfs.start().then((API) => {
-    win = new BrowserWindow({width: 1280, height: 960, resizable: false, icon: path.join(__dirname, 'public', 'assets', 'icon', '11be_logo.png')});
+    win = new BrowserWindow({minWidth: 1280, minHeight: 960, resizable: true, icon: path.join(__dirname, 'public', 'assets', 'icon', '11be_logo.png')});
     win.setMenu(null);
   
     // and load the index.html of the app.

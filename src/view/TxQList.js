@@ -22,7 +22,7 @@ class TxQList extends Reflux.Component {
   }
 
   render = () => {
-    if (this.state.address == '') return (<p />);
+    if (this.state.address == '') return (<p className="item TQList" />);
 
     let tokenBalances = [];
     let tokenkinds = 0;
@@ -32,29 +32,29 @@ class TxQList extends Reflux.Component {
     });
 
     return (
-      <div style={{ overflow: 'scroll', margin: '0', maxHeight: "430", height: '430px' }} >
-        <table className="txform">
+      <div className="TQList">
+        <table style={{width: "100%"}}>
           <tbody>
             <tr>
-              <td className="txform" width='3%'>X</td>
-              <td className="txform" width='32%'>From</td>
-              <td className="txform" width='32%'>To</td>
-              <td className="txform" width='4%'>Type</td>
-              <td className="txform" width='10%'>Amount</td>
-              <td className="txform" width='10%'>Gas Fee</td>
-              <td className="txform">Actions</td>
+              <td width='3%'>X</td>
+              <td width='32%'>From</td>
+              <td width='32%'>To</td>
+              <td width='4%'>Type</td>
+              <td width='10%'>Amount</td>
+              <td width='10%'>Gas Fee</td>
+              <td>Actions</td>
             </tr>
             {this.state.queuedTxs.map((tx) => {
               return (
                 <tr>
-                  <td className="txform" width='5%'><input type="button" className="xbutton" value='X'
+                  <td style={{maxWidth: '12px'}}><input type="button" className="button xbutton" value='X'
                     onClick={this.handleDequeue.bind(this, tx)} /></td>
-                  <td className="txform" width='32%'>{tx.from}</td>
-                  <td className="txform" width='32%'>{tx.to}</td>
-                  <td className="txform" width='4%' >{tx.type}</td>
-                  <td className="txform" width='10%'>{tx.amount}</td>
-                  <td className="txform" width='10%'>{tx.gas * this.state.gasPrice}</td>
-                  <td className="txform"><input type="button" className="button" value='Send'
+                  <td width='32%'>{tx.from}</td>
+                  <td width='32%'>{tx.to}</td>
+                  <td width='4%' >{tx.type}</td>
+                  <td width='10%'>{tx.amount}</td>
+                  <td width='10%'>{tx.gas * this.state.gasPrice}</td>
+                  <td><input type="button" className="button sendbutton" value='Send'
                     onClick={this.handSendTxInQueue.bind(this, tx)} /></td>
                 </tr>
               );

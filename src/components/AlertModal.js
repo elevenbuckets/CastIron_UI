@@ -10,24 +10,31 @@ class AlertModal extends React.Component {
 
     render() {
         return (
-            <Modal isOpen={this.props.isAlertModalOpen} style=
+            <Modal ariaHideApp={false} isOpen={this.props.isAlertModalOpen} style=
                 {
                     {
-                        overlay: {
-                            width: '100%',
-                            maxHeight: '100%',
-                            zIndex: '1005'
-                        },
-                        content: {
-                            top: '400px',
-                            left: '400px',
-                            right: '400px',
-                            bottom: '400px'
-
-                        }
+                        overlay: { width: '100%', maxHeight: '100%', zIndex: '5', backgroundColor: "rgba(0,12,20,0.75)" },
+                        content: { 
+                            top: '40%', left: '30%', right: '30%', bottom: '40%',
+                            border: "2px solid yellow",
+                            backgroundColor: "black",
+                            borderRadius: "6px",
+                            color: "yellow",
+                            textAlign: "center",
+                            fontSize: "22px",
+                            display: "grid",
+                            padding: "0px",
+                            gridTemplateRows: "1fr 1fr",
+                            gridTemplateColumns: "1fr",
+                            alignItems: "center"}
                     }
                 }> {this.props.content}
-                <div style={{ marginTop: '40px', textAlign: "center" }}>
+                <div style=
+                {{  
+                    justifyItems: "center",
+                    alignItems: "center",
+                    textAlign: "center" 
+                }}>
                     <input type="button" className="button"
                         value='OK' onClick={this.props.close}
                     />

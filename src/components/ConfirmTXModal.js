@@ -6,13 +6,9 @@ class ConfirmTXModal extends React.Component {
 
     render() {
         return (
-            <div>
-                <input type="button" className="button"
-                    value='Confirm' onClick={this.props.confirmTX}
-                    style={{ width: '160px', marginTop: '9px', marginLeft: '5%', marginRight: '5%' }} />
-                <input type="button" className="button"
-                    value='Cancel' onClick={this.props.cancelTX}
-                    style={{ backgroundColor: 'rgb(250,0,0)', width: '160px', marginTop: '9px', marginLeft: '5%', marginRight: '5%' }} />
+            <div className="confirmModal">
+                <input type="button" className="button" value='Confirm' style={{gridArea: "confirm"}} onClick={this.props.confirmTX} />
+                <input type="button" className="button xbutton" value='Cancel'style={{gridArea: "cancel"}} onClick={this.props.cancelTX} />
             </div>
         )
     }
