@@ -45,7 +45,7 @@ class Settings extends AlertModalUser {
 			this.openModal("Please enter a number!")
 			event.target.value = value.slice(0, -1);
 		} else {
-			CastIronActions.customGasPriceUpdate(parseInt(event.target.value));
+			CastIronActions.customGasPriceUpdate(event.target.value);
 		}
 	}
 
@@ -255,7 +255,7 @@ class Settings extends AlertModalUser {
 							textAlign: "right",
 							paddingRight: "4px"
 						}} name="custom_gasprice"
-										value={this.state.gasPriceOption === 'custom' ? (this.state.customGasPrice? this.state.customGasPrice : 0) :""}
+										value={this.state.gasPriceOption === 'custom' ? (this.state.customGasPrice? this.state.customGasPrice : undefined) :""}
 										disabled={!this.isCustomGasPrice} onChange={this.handleCustomGasPriceUpdate} placeholder="Unit: gwei" />
 								</label>
 							</td></tr>

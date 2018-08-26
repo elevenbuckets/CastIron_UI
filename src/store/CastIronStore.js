@@ -292,12 +292,22 @@ class CastIronStore extends Reflux.Store {
 
     onGasPriceOptionSelect(option) {
         let stage = Promise.resolve(this.setState({ gasPriceOption: option }))
+        stage.then(()=>{
+            let gasPrice;
+            if (option === "custom" && this.state.customGasPrice ) {
+                gasPrice = this.state.customGasPrice;
+            }else if( option != "custom"){
+                gasPrice = this.state.gasPriceInfo[option];
+            }else{
+                return;
+            }
 
-        if (option === "custom" && this.state.customGasPrice ) {
-            this.setState({gasPrice: this.state.customGasPrice})
-        }else{
-            this.setState({gasPrice: this.state.gasPriceInfo[option]});
-        }
+
+            this.setState({gasPrice: gasPrice})
+            this.wallet.gasPrice =  this.wallet.gasPrice = this.wallet.toWei(gasPrice, 9);
+        })
+
+        
 
 
     }
@@ -308,7 +318,11 @@ class CastIronStore extends Reflux.Store {
         }
         let stage = Promise.resolve(this.setState({ customGasPrice: price }))
         stage.then(() => {
-            this.updateInfo();
+            if (this.state.customGasPrice) {
+                let gasPrice = parseFloat(this.state.customGasPrice).toString();
+                this.wallet.gasPrice = this.wallet.toWei(gasPrice, 9);
+                this.setState({gasPrice: gasPrice});
+            }
         }
 
         );
@@ -427,11 +441,17 @@ class CastIronStore extends Reflux.Store {
                     )
                 } else {
                     if (this.state.customGasPrice) {
-                        this.wallet.gasPrice = this.wallet.toWei(this.state.customGasPrice, 9);
+                        let gasPrice = parseFloat(this.state.customGasPrice).toString();
+                        this.wallet.gasPrice = this.wallet.toWei(gasPrice, 9);
+                        this.setState(
+                            { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice: gasPrice, gasPriceInfo: gasPriceInfo }
+                        )
+                    }else{
+                        this.setState(
+                            { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPriceInfo: gasPriceInfo }
+                        )
                     }
-                    this.setState(
-                        { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice: this.state.customGasPrice, gasPriceInfo: gasPriceInfo }
-                    )
+                    
                 }
 
 
