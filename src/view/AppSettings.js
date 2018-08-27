@@ -19,6 +19,9 @@ import CastIronActions from '../action/CastIronActions';
 // Reflux store
 import CastIronStore from '../store/CastIronStore';
 
+// View
+import AppStore from "./AppStore";
+
 class AppSettings extends AlertModalUser {
 	constructor(props) {
 		super(props);
@@ -57,7 +60,7 @@ class AppSettings extends AlertModalUser {
 				{ 
 					<div className="item dAppsViewInner">
 						{
-							this.state.currentdAppSettings === "store" ? "This is where dApp store will be hosted for browsing"
+							this.state.currentdAppSettings === "store" ? <AppStore />
 								: this.state.currentdAppSettings === "installed" ? "This is where all installed apps are listed"
 									: this.state.currentdAppSettings === "appcfgs" ? "This is where installed apps get configured"
 										: this.setState({ currentdAppSettings: 'store' })
