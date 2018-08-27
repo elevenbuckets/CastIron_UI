@@ -29,14 +29,14 @@ class ReceiptsView extends Reflux.Component {
 
     }
 
-    handleChange = (event) => { this.setState({ selectedQ: event.value }); }
-    getReceipts = () => { 
+    componentDidMount = () => {
         if (this.state.Qs.length > 0 && this.state.selectedQ === "") {
-            this.setState({selectedQ: [...this.state.Qs].splice(-1)});
+            this.setState({selectedQ: [...this.state.Qs].splice(-1)[0]});
         }
-            
-        return this.state.receipts[this.state.selectedQ]
     }
+
+    handleChange = (event) => { this.setState({ selectedQ: event.value }); }
+    getReceipts = () => { return this.state.receipts[this.state.selectedQ] }
 
     render() {
         console.log("in ReceiptsView render()");
@@ -49,7 +49,6 @@ class ReceiptsView extends Reflux.Component {
             </div>
         )
     }
-
 }
 
-export default ReceiptsView
+export default ReceiptsView;
