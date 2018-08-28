@@ -71,6 +71,19 @@ class Sidebar extends Reflux.Component {
     CastIronActions.masterUpdate('');
   }
 
+  handleDrawerClick = () => {
+    console.log("in handleDrawerClick");
+    if (this.state.stoggle === false) {
+      console.log(`switch from ${this.state.currentView} to AppView`);
+      this.setState({ sbefore: this.state.currentView, stoggle: true });
+      CastIronActions.changeView("AppView");
+    } else {
+      console.log(`switch from AppView back to previous view`);
+      CastIronActions.changeView(this.state.sbefore);
+      this.setState({ stoggle: false, sbefore: 'Settings' });
+    }
+  }
+
   copyAddress = () => {
     var dummy = document.createElement("input");
     document.body.appendChild(dummy);
@@ -143,8 +156,8 @@ class Sidebar extends Reflux.Component {
       <div className="item action">
         <input type="button" className="button sbutton logout" value="Log Out" style={{ display: this.state.stoggle ? 'none' : true }} onClick={this.handleLogout} />
         <input type="button" className={this.state.stoggle ? "button sbutton logout" : "button sbutton settings"} value={this.state.stoggle ? 'Back' : 'Settings'} onClick={this.handleSettingClick} />
-        <input type="button" className="button sbutton drawer" value="Apps" style={{ display: this.state.stoggle ? 'none' : true }} onClick="" />
-        <input type="button" className="button sbutton receipts" value={this.state.rtoggle} style={{ display: this.state.stoggle ? 'none' : true, animation: n > 0 ? "bgColor 2s infinite alternate" : "none" }} onClick={this.handleReceiptClick} />
+        <input type="button" className="button sbutton drawer" value="Apps" style={{ display: this.state.stoggle ? 'none' : true }} onClick={this.handleDrawerClick} />
+        <input type="button" className="button sbutton receipts" value={this.state.rtoggle} style={{ display: this.state.stoggle ? 'none' : true, animation: n > 0 ? "bgColor 1.1s infinite alternate" : "none" }} onClick={this.handleReceiptClick} />
       </div>
     );
   }
