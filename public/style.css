@@ -604,13 +604,14 @@ h6 {
   background-color: rgba(0, 0, 0, 0);
   border: 2px solid white;
   border-radius: 0px;
-  height: calc(100vh - 200px);
+  margin: 8px 5px 0px 5px;
+  height: 92%;
 }
 
 .dAppsViewInner {
   overflow-y: scroll;
   padding-left: 6px;
-  height: calc(100vh - 200px);
+  height: 95%;
 }
 
 .dAppsTabs {
@@ -724,7 +725,7 @@ h6 {
   display: grid;
   grid-template-columns: 1fr;
   grid-auto-rows: 1fr;
-  grid-gap: 4px;
+  grid-gap: 10px;
 }
 
 /* dApp store style */
@@ -732,14 +733,13 @@ h6 {
   display: grid;
   grid-template-columns: repeat(auto-fill, 128px);
   grid-auto-rows: 128px;
-  grid-gap: 10px;
+  grid-gap: 4px;
 }
 
 .card {
-  width: calc(100vw - 500px);
+  width: calc(100vw - 268px);
   height: 96px;
   padding: 2px;
-  margin: 12px 12px;
   background-color: rgba(0,0,0,0);
   text-align: center;
   color: #FFF;
