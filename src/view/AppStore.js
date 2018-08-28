@@ -83,22 +83,26 @@ class AppStore extends React.Component {
 	render = () => {
 		console.log("in render() of Drawer")
 		return (
-			<div className="appHolder">
-				<div className="card appcard">
+			<div className="item cardHolder">
+				<div className="card">
 				<img src="assets/transfer-icon.png" className="cardicon"/>
 				<p className="cardtext">Wallet App</p>
+				<input type="button" className="button cardget" value="install" onClick=""/>
 				</div>
-				<div className="card appcard">
+				<div className="card">
 				<img src="assets/delegate-icon.png" className="cardicon"/>
 				<p className="cardtext">Delegate App</p>
+				<input type="button" className="button cardget" value="install" onClick=""/>
 				</div>
-				<div className="card appcard">
+				<div className="card">
 				<img src="assets/forum-icon.png" className="cardicon"/>
 				<p className="cardtext">Forum App</p>
+				<input type="button" className="button cardget" value="install" onClick=""/>
 				</div>
-				<div className="card appcard">
+				<div className="card">
 				<img src="assets/plus-icon.png" className="cardicon"/>
 				<p className="cardtext">Add More</p>
+				<input type="button" className="button cardget" value="install" onClick=""/>
 				</div>
 			</div>
 		)
