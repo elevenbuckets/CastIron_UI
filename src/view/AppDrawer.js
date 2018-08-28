@@ -77,9 +77,9 @@ class AppDrawer extends React.Component {
 			let src = "../dapps/" + key + "/assets/clock-icon.png";
 
 
-			return (<div className="card" onClick={this.handleIconClick.bind(this, key)}>
-				<img src={src} style={{ width: "64px", height: "64px", marginTop: "16px", marginBotton: "9px" }} />
-				<p style={{ textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontWeight: "bold" }}>{key}</p>
+			return (<div className="card appcard" onClick={this.handleIconClick.bind(this, key)}>
+			<img src={src} className="cardicon"/>
+			<p className="cardtext">{key}</p>
 			</div>)
 		})
 	}
@@ -92,18 +92,7 @@ class AppDrawer extends React.Component {
 				<img src="assets/transfer-icon.png" className="cardicon"/>
 				<p className="cardtext">Wallet App</p>
 				</div>
-				<div className="card appcard">
-				<img src="assets/delegate-icon.png" className="cardicon"/>
-				<p className="cardtext">Delegate App</p>
-				</div>
-				<div className="card appcard">
-				<img src="assets/forum-icon.png" className="cardicon"/>
-				<p className="cardtext">Forum App</p>
-				</div>
-				<div className="card appcard">
-				<img src="assets/plus-icon.png" className="cardicon"/>
-				<p className="cardtext">Add More</p>
-				</div>
+			{this.getDappIcons()}
 			</div>
 		)
 	}
