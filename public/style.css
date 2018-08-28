@@ -609,6 +609,7 @@ h6 {
 }
 
 .dAppsViewInner {
+  align-items: baseline;
   overflow-y: scroll;
   padding-left: 6px;
   height: 95%;
