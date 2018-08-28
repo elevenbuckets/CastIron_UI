@@ -6,11 +6,20 @@ import Installer from '../util/Installer';
 import AppInstallationModal from '../components/AppInstallationModal';
 // Reflux components
 
-class AppStore extends React.Component {
+import AppStore from "./AppStore";
+import AppDrawer from "./AppDrawer";
+
+// Modals
+import AlertModal from '../components/AlertModal';
+import AlertModalUser from '../common/AlertModalUser'
+
+class AppView extends AlertModalUser {
 	constructor(props) {
 		super(props);
 		this.state = {
-			isAppInstallationModalOpen : false
+			isAppInstallationModalOpen : false,
+			currentdAppSettings: 'drawer'
+
 		}
 	}
 
@@ -80,29 +89,38 @@ class AppStore extends React.Component {
 		})
 	}
 
+	handleChange = (tabName) => {
+		this.setState({ currentdAppSettings: tabName });
+	}
+
 	render = () => {
 		console.log("in render() of Drawer")
 		return (
-			<div className="appHolder">
-				<div className="card appcard">
-				<img src="assets/transfer-icon.png" className="cardicon"/>
-				<p className="cardtext">Wallet App</p>
-				</div>
-				<div className="card appcard">
-				<img src="assets/delegate-icon.png" className="cardicon"/>
-				<p className="cardtext">Delegate App</p>
-				</div>
-				<div className="card appcard">
-				<img src="assets/forum-icon.png" className="cardicon"/>
-				<p className="cardtext">Forum App</p>
-				</div>
-				<div className="card appcard">
-				<img src="assets/plus-icon.png" className="cardicon"/>
-				<p className="cardtext">Add More</p>
-				</div>
-			</div>
+			<fieldset className="item dAppsView">
+				<legend className="item dAppsTabs">
+					<input type="button" className="button tabset" value="Browse dApps" style=
+						{{
+							backgroundColor: this.state.currentdAppSettings === 'browse' ? "white" : "rgba(0,0,0,0)",
+							color: this.state.currentdAppSettings === 'browse' ? "black" : "white"
+						}}
+						onClick={this.handleChange.bind(this, "browse")} />
+					<input type="button" className="button tabset" style=
+						{{
+							backgroundColor: this.state.currentdAppSettings === 'drawer' ? "white" : "rgba(0,0,0,0)",
+							color: this.state.currentdAppSettings === 'drawer' ? "black" : "white"
+						}} value="Installed Apps" onClick={this.handleChange.bind(this, "drawer")} />
+				</legend>
+					<div className="dAppsViewInner">
+						{
+							this.state.currentdAppSettings === "browse" ? <AppStore />
+								: this.state.currentdAppSettings === "drawer" ? "This is where installed dApps be (launcher)"
+									: this.setState({ currentdAppSettings: 'drawer' })
+						}
+					</div>
+				<AlertModal content={this.state.alertContent} isAlertModalOpen={this.state.isAlertModalOpen} close={this.closeModal} />
+			</fieldset>
 		)
 	}
 }
 
-export default AppStore;
+export default AppView;

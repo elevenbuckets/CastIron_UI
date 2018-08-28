@@ -292,11 +292,6 @@ class Settings extends AlertModalUser {
 							backgroundColor: this.state.currentSettings === 'acc' ? "white" : "rgba(0,0,0,0)",
 							color: this.state.currentSettings === 'acc' ? "black" : "white"
 						}} value="Accounts" onClick={this.handleChange.bind(this, "acc")} />
-					<input type="button" className="button tabset" value="Applications" style=
-						{{
-							backgroundColor: this.state.currentSettings === 'app' ? "white" : "rgba(0,0,0,0)",
-							color: this.state.currentSettings === 'app' ? "black" : "white"
-						}} onClick={this.handleChange.bind(this, "app")} />
 				</legend>
 				{ 
 				  this.state.waiting === false ?
@@ -304,8 +299,7 @@ class Settings extends AlertModalUser {
 						{
 							this.state.currentSettings === "gas" ? this.gasSettings()
 								: this.state.currentSettings === "acc" ? this.accountMgr()
-									: this.state.currentSettings === "app" ? <AppSettings />
-										: this.setState({ currentSettings: 'gas' })
+									: this.setState({ currentSettings: 'gas' })
 						}
 					</div>
 				  : <div className="item SettingInner"><div className="waiter">Please Wait...<br/><div className="loader"></div></div></div>
