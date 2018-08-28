@@ -613,6 +613,8 @@ h6 {
   overflow-y: scroll;
   padding-left: 6px;
   height: 95%;
+  background: none;
+  border: none;
 }
 
 .dAppsTabs {
@@ -724,9 +726,11 @@ h6 {
 
 .cardHolder {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(1fr, 360px));
   grid-auto-rows: 1fr;
   grid-gap: 10px;
+  background: none;
+  border: none;
 }
 
 /* dApp store style */
@@ -735,10 +739,12 @@ h6 {
   grid-template-columns: repeat(auto-fill, 128px);
   grid-auto-rows: 128px;
   grid-gap: 4px;
+  height: 100%;
+  width: calc(100vw - 250px);
 }
 
 .card {
-  width: calc(100vw - 268px);
+  width: 360px;
   height: 96px;
   padding: 2px;
   background-color: rgba(0,0,0,0);
