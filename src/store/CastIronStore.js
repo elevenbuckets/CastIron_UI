@@ -304,7 +304,7 @@ class CastIronStore extends Reflux.Store {
 
 
             this.setState({gasPrice: gasPrice})
-            this.wallet.gasPrice =  this.wallet.gasPrice = this.wallet.toWei(gasPrice, 9);
+            this.wallet.gasPrice = this.wallet.toWei(gasPrice, 9);
         })
 
         

@@ -1,6 +1,3 @@
-import Reflux from 'reflux';
-import CastIronActions from '../action/CastIronActions'
-import React, { Component } from 'react';
 import BlockTimer from './BlockTimer'
 
 class Scheduler {
