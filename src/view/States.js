@@ -114,7 +114,7 @@ class States extends Reflux.Component {
                     <div className="item blockheight"><p id="cbh" >{this.state.blockHeight}</p></div>
                     <div className="item blockstamp"><p id="cbs">{this.state.blockTime}</p></div>
                     <div className="item localtime"><p id="clt">{String(this.state.localTime).substring(0,24)}</p></div>
-                    <div className="item gasprice"><p id="cgp">{this.state.gasPrice}</p></div>
+                    <div className="item gasprice"><p id="cgp">{this.wallet.toEth(this.wallet.gasPrice, 9).toString()}</p></div>
                 </div>
             )
         } else {
@@ -127,7 +127,7 @@ class States extends Reflux.Component {
                     <div className="item blockheight" style={{borderLeft: "2px solid white"}}><p id="cbh" >{this.state.blockHeight}</p></div>
                     <div className="item blockstamp"><p id="cbs">{this.state.blockTime}</p></div>
                     <div className="item localtime"><p id="clt">{String(this.state.localTime).substring(0,24)}</p></div>
-                    <div className="item gasprice"><p id="cgp">{this.state.gasPrice}</p></div>
+                    <div className="item gasprice"><p id="cgp">{this.wallet.toEth(this.wallet.gasPrice, 9).toString()}</p></div>
                 </div>
             )
         }

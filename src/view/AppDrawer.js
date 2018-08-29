@@ -6,7 +6,7 @@ import Installer from '../util/Installer';
 import AppInstallationModal from '../components/AppInstallationModal';
 // Reflux components
 
-class Drawer extends React.Component {
+class AppDrawer extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -77,9 +77,9 @@ class Drawer extends React.Component {
 			let src = "../dapps/" + key + "/assets/clock-icon.png";
 
 
-			return (<div className="card" onClick={this.handleIconClick.bind(this, key)}>
-				<img src={src} style={{ width: "64px", height: "64px", marginTop: "16px", marginBotton: "9px" }} />
-				<p style={{ textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontWeight: "bold" }}>{key}</p>
+			return (<div className="card appcard" onClick={this.handleIconClick.bind(this, key)}>
+			<img src={src} className="cardicon"/>
+			<p className="cardtext">{key}</p>
 			</div>)
 		})
 	}
@@ -87,33 +87,15 @@ class Drawer extends React.Component {
 	render = () => {
 		console.log("in render() of Drawer")
 		return (
-			<div id="drawer" className="mainView">
-				<div className="card" onClick={this.handleIconClick.bind(this, 'Transfer')}>
-					<img src="assets/transfer-icon.png" style={{ width: "64px", height: "64px", marginTop: "16px", marginBotton: "9px" }} />
-					<p style={{ textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontWeight: "bold" }}>Wallet</p>
+			<div className="appHolder">
+				<div className="card appcard">
+				<img src="assets/transfer-icon.png" className="cardicon"/>
+				<p className="cardtext">Wallet App</p>
 				</div>
-				{this.getDappIcons()}
-				<div className="card">
-					<img src="assets/forum-icon.png" style={{ width: "64px", height: "64px", marginTop: "16px", marginBotton: "9px" }} />
-					<p style={{ textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontWeight: "bold" }}>Forum</p>
-					<div className="label-soon">Comming Soon!</div>
-				</div>
-				<div className="card">
-					<img src="assets/delegate-icon.png" style={{ width: "64px", height: "64px", marginTop: "16px", marginBotton: "9px" }} />
-					<p style={{ textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontWeight: "bold" }}>Delegates</p>
-					<div className="label-soon">Comming Soon!</div>
-				</div>
-
-				<div className="card" onClick={this.handleAddIconClick.bind(this)}>
-					<img src="assets/plus-icon.png" style={{ width: "64px", height: "64px", marginTop: "16px", marginBotton: "9px" }} />
-					<p style={{ textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontWeight: "bold" }}>Add</p>
-				</div>
-				<AppInstallationModal isAppInstallationModalOpen={this.state.isAppInstallationModalOpen}
-				 goBack={this.handleGoBackFromApps} install={this.install}/>
+			{this.getDappIcons()}
 			</div>
-
 		)
 	}
 }
 
-export default Drawer
+export default AppDrawer

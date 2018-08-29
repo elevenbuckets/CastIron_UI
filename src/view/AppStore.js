@@ -3,16 +3,19 @@ import CastIronActions from '../action/CastIronActions'
 import React from 'react';
 import DappViewService from '../service/DappViewService';
 import Installer from '../util/Installer';
-import AppInstallationModal from '../components/AppInstallationModal';
 // Reflux components
 
 class AppStore extends React.Component {
 	constructor(props) {
-		super(props);
-		this.state = {
-			isAppInstallationModalOpen : false
-		}
-	}
+        super(props);
+        this.state = {
+            availableApps: {
+                Schedular: {
+					installButtonValue : "Install"
+                }
+            }
+        }
+    }
 
 	changeView(view) {
 		CastIronActions.changeView(view);
@@ -49,14 +52,42 @@ class AppStore extends React.Component {
 		// Installer.install("Schedular")
 	}
 
-	install = () => {
+	handleClickInstall = (appName) => {
+
+        let stage = Promise.resolve();
+        stage.then(() => {
+            return this.setState({
+                availableApps: {
+                    Schedular: {
+                        installButtonValue: "Installing..."
+                    }
+                }
+            });
+
+        }).then(() => {
+            return  this.install(appName);
+
+        }).then(()=>{
+            return this.setState({
+                availableApps: {
+                    Schedular: {
+                        installButtonValue: "Remove"
+                    }
+                }
+            });
+        });
+
+       
+    }
+
+	install = (appName) => {
 
 		let stage = Promise.resolve();
 		stage.then(() => {
 			// return Installer.fetchPackage("Schedular").then(()=>{
 			// 	return Installer.install("Schedular");
 			// });
-			return Installer.install("Schedular");
+			return Installer.install(appName);
 
 		}).then(() => {
 			console.log("Drawer: before forceUpdate!")
@@ -98,6 +129,13 @@ class AppStore extends React.Component {
 				<img src="assets/forum-icon.png" className="cardicon"/>
 				<p className="cardtext">Forum App</p>
 				<input type="button" className="button cardget" value="install" onClick=""/>
+				</div>
+				<div className="card">
+				<img src="assets/clock-icon.png" className="cardicon"/>
+				<p className="cardtext">Schedular</p>
+				<input type="button" className="button cardget" 
+				value={this.state.availableApps.Schedular.installButtonValue} 
+				onClick={this.handleClickInstall.bind(this, "Schedular")}/>
 				</div>
 				<div className="card">
 				<img src="assets/plus-icon.png" className="cardicon"/>

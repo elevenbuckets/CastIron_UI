@@ -113,7 +113,7 @@ class AppView extends AlertModalUser {
 					<div className="item dAppsViewInner">
 						{
 							this.state.currentdAppSettings === "browse" ? <AppStore />
-								: this.state.currentdAppSettings === "drawer" ? "This is where installed dApps be (launcher)"
+								: this.state.currentdAppSettings === "drawer" ?<AppDrawer/>
 									: this.setState({ currentdAppSettings: 'drawer' })
 						}
 					</div>
