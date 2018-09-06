@@ -295,16 +295,15 @@ class CastIronStore extends Reflux.Store {
         stage.then(()=>{
             let gasPrice;
             if (option === "custom" && this.state.customGasPrice ) {
-                gasPrice = this.state.customGasPrice;
+                gasPrice = this.wallet.toWei(this.state.customGasPrice, 9).toString();
             }else if( option != "custom"){
                 gasPrice = this.state.gasPriceInfo[option];
             }else{
                 return;
             }
 
-
             this.setState({gasPrice: gasPrice})
-            this.wallet.gasPrice = this.wallet.toWei(gasPrice, 9);
+            this.wallet.gasPrice = gasPrice;
         })
 
         
@@ -443,14 +442,14 @@ class CastIronStore extends Reflux.Store {
 			.then((data) => {
 				if (Object.keys(data).length === 0) {
 					console.log("gas price query failed, using default gas prices");
-					let gasPriceInfo = { low: '5', mid: '9', high: '15', fast: '20' }; // should come from config.json
+					let gasPriceInfo = { low: '5000000000', mid: '9000000000', high: '15000000000', fast: '20000000000' }; // should from config.json
 					return this.setState({gasPriceInfo});
 				} else {
                 			let gasPriceInfo = {};
-					gasPriceInfo.low = this.wallet.toEth(data.low, 9).toString();
-					gasPriceInfo.mid = this.wallet.toEth(data.mid, 9).toString();
-					gasPriceInfo.high = this.wallet.toEth(data.high, 9).toString();
-					gasPriceInfo.fast = this.wallet.toEth(data.fast, 9).toString();
+					gasPriceInfo.low = data.low.toString();
+					gasPriceInfo.mid = data.mid.toString();
+					gasPriceInfo.high = data.high.toString();
+					gasPriceInfo.fast = data.fast.toString();
 
 					return this.setState({gasPriceInfo});
 				}

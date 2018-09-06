@@ -226,22 +226,22 @@ class Settings extends AlertModalUser {
 							<td>
 								<label><input type="radio"
 									onChange={this.handleGasPriceSelect} name="gasprice" value="low" 
-									checked={this.state.gasPriceOption === 'low' ? "checked" : false}/>{"Slow(" + this.state.gasPriceInfo.low +  ")" }</label><br />
+									checked={this.state.gasPriceOption === 'low' ? "checked" : false}/>{"Slow (" + this.wallet.toEth(this.state.gasPriceInfo.low, 9).toString() +  ")" }</label><br />
 							</td>
 							<td>
 								<label><input type="radio"
 									onChange={this.handleGasPriceSelect} name="gasprice" value="mid"
-									checked={this.state.gasPriceOption === 'mid' ? "checked" : false} />{"Mid(" + this.state.gasPriceInfo.mid +  ")" }</label><br />
+									checked={this.state.gasPriceOption === 'mid' ? "checked" : false} />{"Mid (" + this.wallet.toEth(this.state.gasPriceInfo.mid, 9).toString() +  ")" }</label><br />
 							</td>
 							<td>
 								<label><input type="radio"
 									onChange={this.handleGasPriceSelect} name="gasprice" value="high" 
-									checked={this.state.gasPriceOption === 'high' ? "checked" : false} />{"Normal(" + this.state.gasPriceInfo.high +  ")" }</label><br />
+									checked={this.state.gasPriceOption === 'high' ? "checked" : false} />{"Normal (" + this.wallet.toEth(this.state.gasPriceInfo.high, 9).toString() +  ")" }</label><br />
 							</td>
 							<td>
 								<label><input type="radio"
 									onChange={this.handleGasPriceSelect} name="gasprice" value="fast" 
-									checked={this.state.gasPriceOption === 'fast' ? "checked" : false}/>{"Fast(" + this.state.gasPriceInfo.fast +  ")" }</label><br />
+									checked={this.state.gasPriceOption === 'fast' ? "checked" : false}/>{"Fast (" + this.wallet.toEth(this.state.gasPriceInfo.fast, 9).toString() +  ")" }</label><br />
 							</td>
 							<td>
 								<label><input type="radio"
