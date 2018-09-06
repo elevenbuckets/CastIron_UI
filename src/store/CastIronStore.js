@@ -27,6 +27,8 @@ class CastIronStore extends Reflux.Store {
             gasPrice: null,
             selected_token_name: '',
             currentView: 'Transfer',
+	    retrying: 0,
+	    rpcfailed: false,
             modalIsOpen: false,
             scheduleModalIsOpen: false,
             unlocked: false,
@@ -44,10 +46,14 @@ class CastIronStore extends Reflux.Store {
         this._count;
         this._target;
 
-        // initialize the state
-        // this.getAccounts();
         BlockTimer.register(this.updateInfo);
         this.updateInfo()
+    }
+
+    onInitPlatform() {
+	    console.log('Re-init platform');
+	    this.setState({retrying: 0, rpcfailed: false});
+	    this.updateInfo();
     }
 
     onEnqueue(tx) {
@@ -305,10 +311,6 @@ class CastIronStore extends Reflux.Store {
             this.setState({gasPrice: gasPrice})
             this.wallet.gasPrice = gasPrice;
         })
-
-        
-
-
     }
 
     onCustomGasPriceUpdate(price) {
@@ -425,15 +427,16 @@ class CastIronStore extends Reflux.Store {
                 		if (!rc && trial < retries) {
                         		trial++;
                         		console.log(`retrying (${trial}/${retries})`);
+					this.setState({retrying: trial})
                         		return __delay(5000, null).then(() => { return __reconnect(p, trial, retries); });
                 		} else if (!rc && trial >= retries) {
                         		throw("Please check your geth connection");
                 		} else if (rc) {
+					this.setState({retrying: 0, rpcfailed: false});
                         		return p;
                 		}
-
         		})
-        		.catch( (err) => { throw(err); });
+        		.catch( (err) => { this.setState({rpcfailed: true}); throw(err); });
 	}
 
 	const __gasPriceQuery = (p) => {

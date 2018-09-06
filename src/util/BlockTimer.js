@@ -25,7 +25,12 @@ class BlockTimer {
         this.register(this.reportNewBlock);
     }
 
-    watchAndNotify = () =>{
+    watchAndNotify = () => {
+	if (!this.wallet.connected()) {
+		CastIronActions.initPlatform();
+		clearInterval(this.timer); // if reconnected, CastIronService.updateInfo will call BlockTimer.initialize() again to setup this.timer;
+	}
+
         let netStatus = this.wallet.ethNetStatus();
         if (this.state.highestBlock == this.state.blockHeight && netStatus.blockHeight != this.state.blockHeight) {
             this.state.blockHeight = netStatus.blockHeight;
