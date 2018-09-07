@@ -52,7 +52,7 @@ class CastIronStore extends Reflux.Store {
 
     onInitPlatform() {
 	    console.log('Re-init platform');
-	    this.setState({retrying: 0, rpcfailed: false});
+	    this.setState({retrying: 1, rpcfailed: false});
 	    this.updateInfo();
     }
 
@@ -122,14 +122,9 @@ class CastIronStore extends Reflux.Store {
         this.setUpSchedule(this.batchSend.bind(this), [[tx]], CastIronActions.dequeueSchedule, arguments);
     }
 
-
-
-
     onSendTxInQueue(tx) {
         this.confirmTxs(this.sendTxInQueue, arguments);
     }
-
-
 
     sendTxInQueue(tx) {
         CastIronActions.dequeue(tx);

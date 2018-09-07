@@ -27,7 +27,7 @@
     "compile": "./node_modules/.bin/babel src --out-dir public"
   },
   "dependencies": {
-    "CastIron": "git+ssh://git@github.com/elevenbuckets/CastIron.git#sdk",
+    "CastIron": "git+ssh://git@github.com/elevenbuckets/CastIron.git",
     "accMgr": "git+ssh://git@github.com/elevenbuckets/accmgr.git",
     "async": "^2.6.1",
     "babel-cli": "^6.26.0",
