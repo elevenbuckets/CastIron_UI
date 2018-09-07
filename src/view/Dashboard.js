@@ -4,6 +4,7 @@
 import React, { Component } from 'react';
 import Reflux from 'reflux';
 import Modal from 'react-modal';
+const ipcRenderer = require('electron').ipcRenderer;
 
 // Singleton services
 import CastIronService from '../service/CastIronService';
@@ -35,7 +36,7 @@ class DashBoard extends Reflux.Component {
         this.state = {
             drawerOut: false
         }
-	this.storeKeys = [ "unlocked", "currentView", "modalIsOpen", "scheduleModalIsOpen", "accounts", "retrying", "rpcfailed" ];
+	this.storeKeys = [ "unlocked", "currentView", "modalIsOpen", "scheduleModalIsOpen", "accounts", "retrying", "rpcfailed", "configured" ];
     }
 
     confirmTX = () => { CastIronActions.confirmTx(); }
@@ -43,6 +44,7 @@ class DashBoard extends Reflux.Component {
     confirmScheduleTX = (queue) => { CastIronActions.confirmScheduleTx(queue); }
     cancelScheduleTX = () => { CastIronActions.cancelScheduleTx(); }
     reinit = () => { CastIronActions.initPlatform(); };
+    relaunch = () => { ipcRenderer.send('reload', true); };
 
     render() {
         console.log("in Dashboard render()")
@@ -57,12 +59,12 @@ class DashBoard extends Reflux.Component {
 					Welcome! Please setup CastIron Wallet with following options
 				</p>
 				<input style={{marginTop: "25px"}} 
-				       type="button" className="button reload" value="retry" onClick={this.reinit} />
+				       type="button" className="button reload" value="retry" onClick={this.relaunch} />
 			    </div>
 			</div>
 		    </div>
 	    );
-	} else if (this.state.configured === true && this.state.retrying > 0 && this.state.rpcfailed === false) {
+	} else if (this.state.retrying > 0 && this.state.rpcfailed === false) {
             document.body.style.background = "linear-gradient(100deg, rgb(17, 31, 47), rgb(24, 156, 195))";
             return (
 		    <div className="container locked">
@@ -73,7 +75,7 @@ class DashBoard extends Reflux.Component {
 			</div>
 		    </div>
 	    );
-	} else if (this.state.configured === true && this.state.retrying == 3 && this.state.rpcfailed === true ) {
+	} else if (this.state.retrying == 3 && this.state.rpcfailed === true ) {
             document.body.style.background = "linear-gradient(100deg, rgb(17, 31, 47), rgb(24, 156, 195))";
             return (
 		    <div className="container locked">
