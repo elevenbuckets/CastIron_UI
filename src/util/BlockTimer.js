@@ -12,21 +12,27 @@ class BlockTimer {
             observers : [],
             blockTime : null
         }
-        this.initialize();
+        //this.initialize();
     }
 
     initialize = () => {
         let netStatus = this.wallet.ethNetStatus();
         this.state.blockHeight = netStatus.blockHeight;
         this.state.blockTime = netStatus.blockTime;
+	this.state.highestBlock = netStatus.highestBlock;
         this.timer = setInterval(this.watchAndNotify, 1000);
 
         this.register(this.reportNewBlock);
     }
 
-    watchAndNotify = () =>{
+    watchAndNotify = () => {
+	if (!this.wallet.connected()) {
+		CastIronActions.initPlatform();
+		clearInterval(this.timer); // if reconnected, CastIronService.updateInfo will call BlockTimer.initialize() again to setup this.timer;
+	}
+
         let netStatus = this.wallet.ethNetStatus();
-        if (netStatus.blockHeight != this.state.blockHeight) {
+        if (this.state.highestBlock == this.state.blockHeight && netStatus.blockHeight != this.state.blockHeight) {
             this.state.blockHeight = netStatus.blockHeight;
             this.state.blockTime = netStatus.blockTime;
             this.notifyObservers()
@@ -52,7 +58,11 @@ class BlockTimer {
     }
 
     reportNewBlock = () =>{
-        console.log("Block Height from reportNewBlock is " + this.state.blockHeight);
+	if (this.state.blockHeight != this.state.highestBlock) {
+		console.log(`Block syncing in progress: ${this.state.blockHeight} / ${this.state.highestBlock}`)
+	} else {
+        	console.log(`Block Height from reportNewBlock is ${this.state.blockHeight}`);
+	}
     }
 
 }

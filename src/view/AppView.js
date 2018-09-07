@@ -110,7 +110,7 @@ class AppView extends AlertModalUser {
 							color: this.state.currentdAppSettings === 'drawer' ? "black" : "white"
 						}} value="Installed Apps" onClick={this.handleChange.bind(this, "drawer")} />
 				</legend>
-					<div className="dAppsViewInner">
+					<div className="item dAppsViewInner">
 						{
 							this.state.currentdAppSettings === "browse" ? <AppStore />
 								: this.state.currentdAppSettings === "drawer" ?<AppDrawer/>

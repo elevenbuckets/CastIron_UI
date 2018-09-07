@@ -35,19 +35,45 @@ class DashBoard extends Reflux.Component {
         this.state = {
             drawerOut: false
         }
-	this.storeKeys = [ "unlocked", "currentView", "modalIsOpen", "scheduleModalIsOpen", "accounts" ];
-
+	this.storeKeys = [ "unlocked", "currentView", "modalIsOpen", "scheduleModalIsOpen", "accounts", "retrying", "rpcfailed" ];
     }
 
     confirmTX = () => { CastIronActions.confirmTx(); }
     cancelTX = () => { CastIronActions.cancelTx(); }
     confirmScheduleTX = (queue) => { CastIronActions.confirmScheduleTx(queue); }
     cancelScheduleTX = () => { CastIronActions.cancelScheduleTx(); }
+    reinit = () => { CastIronActions.initPlatform(); };
 
     render() {
         console.log("in Dashboard render()")
 
-        if (this.state.unlocked === false) {
+	if (this.state.retrying > 0 && this.state.rpcfailed === false) {
+            document.body.style.background = "linear-gradient(100deg, rgb(17, 31, 47), rgb(24, 156, 195))";
+            return (
+		    <div className="container locked">
+			<div className="item list" style={{background: "none"}}>
+			    <div style={{border: "2px solid white", padding: "44px", textAlign: "center"}}>
+			        <p style={{fontSize: "22px"}}>Connecting to local geth RPC ({this.state.retrying + ' / 3'})</p>
+			    </div>
+			</div>
+		    </div>
+	    );
+	} else if ( this.state.retrying == 3 && this.state.rpcfailed === true ) {
+            document.body.style.background = "linear-gradient(100deg, rgb(17, 31, 47), rgb(24, 156, 195))";
+            return (
+		    <div className="container locked">
+			<div className="item list" style={{background: "none"}}>
+			    <div style={{border: "2px solid white", padding: "40px", textAlign: "center"}}>
+				<p style={{alignSelf: "flex-end", fontSize: "22px"}}>
+					Please check your geth RPC connection
+				</p>
+				<input style={{marginTop: "25px"}} 
+				       type="button" className="button reload" value="retry" onClick={this.reinit} />
+			    </div>
+			</div>
+		    </div>
+	    );
+	} else if (this.state.retrying == 0 && this.state.rpcfailed === false && this.state.unlocked === false) {
             document.body.style.background = "url(./assets/blockwall.png)";
             return (
                 <div className="container locked">
@@ -55,7 +81,7 @@ class DashBoard extends Reflux.Component {
                     <Login />
                 </div>
             );
-        } else {
+        } else if (this.state.retrying == 0 && this.state.rpcfailed === false && this.state.unlocked === true){
             document.body.style.background = "linear-gradient(200deg, rgb(17, 31, 47), rgb(24, 156, 195))";
             return (
                 <div className="container unlocked">

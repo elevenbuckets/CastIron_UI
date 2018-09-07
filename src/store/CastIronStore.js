@@ -27,6 +27,8 @@ class CastIronStore extends Reflux.Store {
             gasPrice: null,
             selected_token_name: '',
             currentView: 'Transfer',
+            retrying: 0,
+            rpcfailed: false,
             modalIsOpen: false,
             scheduleModalIsOpen: false,
             unlocked: false,
@@ -40,14 +42,18 @@ class CastIronStore extends Reflux.Store {
         this.accMgr = AcctMgrService.accMgr;
         this.getAccounts = this.getAccounts.bind(this);
         this.state.tokenList = this.wallet.configs.watchTokens || ['OMG'];
-        this.wallet.hotGroups(this.state.tokenList);
+
         this._count;
         this._target;
 
-        // initialize the state
-        // this.getAccounts();
         BlockTimer.register(this.updateInfo);
         this.updateInfo()
+    }
+
+    onInitPlatform() {
+	    console.log('Re-init platform');
+	    this.setState({retrying: 1, rpcfailed: false});
+	    this.updateInfo();
     }
 
     onEnqueue(tx) {
@@ -116,14 +122,9 @@ class CastIronStore extends Reflux.Store {
         this.setUpSchedule(this.batchSend.bind(this), [[tx]], CastIronActions.dequeueSchedule, arguments);
     }
 
-
-
-
     onSendTxInQueue(tx) {
         this.confirmTxs(this.sendTxInQueue, arguments);
     }
-
-
 
     sendTxInQueue(tx) {
         CastIronActions.dequeue(tx);
@@ -167,6 +168,8 @@ class CastIronStore extends Reflux.Store {
                 tk.args)(tk.txObj.value, tk.txObj.gas,
                     tk.tkObj);
         })
+
+        this.wallet.gasPrice = gasPrice;
 
         let qPromise = wallet.processJobs(jobList);
         this.processQPromise(qPromise)
@@ -292,36 +295,29 @@ class CastIronStore extends Reflux.Store {
 
     onGasPriceOptionSelect(option) {
         let stage = Promise.resolve(this.setState({ gasPriceOption: option }))
-        stage.then(()=>{
+        stage.then(() => {
             let gasPrice;
-            if (option === "custom" && this.state.customGasPrice ) {
-                gasPrice = this.state.customGasPrice;
-            }else if( option != "custom"){
+            if (option === "custom" && this.state.customGasPrice) {
+                gasPrice = this.wallet.toWei(this.state.customGasPrice, 9).toString();
+            } else if (option != "custom") {
                 gasPrice = this.state.gasPriceInfo[option];
-            }else{
+            } else {
                 return;
             }
 
-
-            this.setState({gasPrice: gasPrice})
-            this.wallet.gasPrice = this.wallet.toWei(gasPrice, 9);
+            this.setGasPrice(gasPrice);
         })
-
-        
-
-
     }
 
     onCustomGasPriceUpdate(price) {
-        if(!price){
+        if (!price) {
             price = 0;
         }
         let stage = Promise.resolve(this.setState({ customGasPrice: price }))
         stage.then(() => {
             if (this.state.customGasPrice) {
-                let gasPrice = parseFloat(this.state.customGasPrice).toString();
-                this.wallet.gasPrice = this.wallet.toWei(gasPrice, 9);
-                this.setState({gasPrice: gasPrice});
+                let gasPrice = this.wallet.toWei(parseFloat(this.state.customGasPrice).toString(),9);
+                this.setGasPrice(gasPrice);
             }
         }
 
@@ -416,78 +412,68 @@ class CastIronStore extends Reflux.Store {
     }
 
     updateInfo = () => {
-        let stage = Promise.resolve(this.getAccounts())
+        let stage = Promise.resolve();
 
-        stage.then(() => {
-            this.getGasPriceWithRetry(3);
-        })
-
-    }
-
-    getGasPriceWithRetry = (n) => {
-        console.log("CastIronStore: the retry index is : " + n);
-        return new Promise((resolve, reject) => {
-            this.wallet.gasPriceEst().then(data => {
-                let gasPriceInfo = {};
-                gasPriceInfo.low = this.wallet.toEth(data.low, 9).toString();
-                gasPriceInfo.mid = this.wallet.toEth(data.mid, 9).toString();
-                gasPriceInfo.high = this.wallet.toEth(data.high, 9).toString();
-                gasPriceInfo.fast = this.wallet.toEth(data.fast, 9).toString();
-                if (this.state.gasPriceOption != "custom") {
-                    let gasPrice = this.wallet.toEth(data[this.state.gasPriceOption], 9).toString();
-                    this.wallet.gasPrice = data[this.state.gasPriceOption];
-                    this.setState(
-                        { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice: gasPrice, gasPriceInfo: gasPriceInfo }
-                    )
-                } else {
-                    if (this.state.customGasPrice) {
-                        let gasPrice = parseFloat(this.state.customGasPrice).toString();
-                        this.wallet.gasPrice = this.wallet.toWei(gasPrice, 9);
-                        this.setState(
-                            { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice: gasPrice, gasPriceInfo: gasPriceInfo }
-                        )
-                    }else{
-                        this.setState(
-                            { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPriceInfo: gasPriceInfo }
-                        )
+        const __delay = (t, v) => { return new Promise((resolve) => { setTimeout(resolve.bind(null, v), t) }); }
+        const __reconnect = (p, trial, retries) => { // p: promise, trial: current retry, retries: max retry times
+            return p
+                .then(() => { return this.wallet.connect(); })
+                .then((rc) => {
+                    if (!rc && trial < retries) {
+                        trial++;
+                        console.log(`retrying (${trial}/${retries})`);
+                        this.setState({ retrying: trial })
+                        return __delay(5000, null).then(() => { return __reconnect(p, trial, retries); });
+                    } else if (!rc && trial >= retries) {
+                        throw ("Please check your geth connection");
+                    } else if (rc) {
+                        this.setState({ retrying: 0, rpcfailed: false });
+                        return p;
                     }
-                    
-                }
+                })
+                .catch((err) => { this.setState({ rpcfailed: true }); throw (err); });
+        }
 
-
-            }
-                , error => {
-                    if (n > 0) {
-                        setTimeout(() => {
-                            this.getGasPriceWithRetry(n - 1).then(resolve).catch(reject);
-                        }, 200)
-
+        const __gasPriceQuery = (p) => {
+            return p
+                .then(() => { return this.wallet.gasPriceEst().catch((err) => { return {}; }) })
+                .then((data) => {
+                    if (Object.keys(data).length === 0) {
+                        console.log("gas price query failed, using default gas prices");
+                        let gasPriceInfo = { low: '5000000000', mid: '9000000000', high: '15000000000', fast: '20000000000' }; // should from config.json
+                        return this.setState({ gasPriceInfo });
                     } else {
-                        if (this.state.gasPriceOption != "custom") {
-                            let gasPrice = this.wallet.toEth(this.wallet.configs.defaultGasPrice, 9).toString();
-                            this.wallet.gasPrice = this.wallet.configs.defaultGasPrice;
-                            if (this.state.gasPriceInfo) {
-                                gasPrice = this.state.gasPriceInfo[this.state.gasPriceOption];
-                                this.wallet.gasPrice = this.wallet.toWei(this.state.gasPriceInfo[this.state.gasPriceOption], 9).toString();
-                            }
-                            this.setState(() => {
-                                return { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime, gasPrice: gasPrice }
-                            })
-                        } else {
-                            this.setState(() => {
-                                return { blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime }
-                            })
-                        }
+                        let gasPriceInfo = {};
+                        gasPriceInfo.low = data.low.toString();
+                        gasPriceInfo.mid = data.mid.toString();
+                        gasPriceInfo.high = data.high.toString();
+                        gasPriceInfo.fast = data.fast.toString();
 
-
-
-
-
-
+                        return this.setState({ gasPriceInfo });
                     }
+                })
+        }
 
-                });
+        // Actual function logic of updateInfo
+        stage = __gasPriceQuery(stage);
+        stage.then(() => {
+            if (this.state.gasPriceOption !== "custom") {
+                let gasPrice = this.state.gasPriceInfo[this.state.gasPriceOption]
+                this.setGasPrice(gasPrice);
+            } else if (this.state.customGasPrice) {
+                let gasPrice = this.wallet.toWei(parseFloat(this.state.customGasPrice).toString(), 9);
+                this.setGasPrice(gasPrice);
+            }
+        });
+        stage = __reconnect(stage, 0, 3);
+        stage.then(() => {
+            // BlockTimer needs to *NOT* querying geth RPC in constructor, but in separated class function!!!
+            // Since it is possible that CastIron cannot connect to RPC!
+            BlockTimer.initialize();
+            this.wallet.hotGroups(this.state.tokenList);
+            return this.setState({ blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime });
         })
+            .then(() => { return this.getAccounts(); })
     }
 
     // to confirm tx in modal
@@ -592,18 +578,10 @@ class CastIronStore extends Reflux.Store {
         return oout;
     }
 
-    render() {
-        <canvas ref='canvas' width={66} height={66} style=
-            {
-                {
-                    border: "3px solid #ccc",
-                    borderBottomLeftRadius: "2.8em",
-                    borderBottomRightRadius: "2.8em",
-                    borderTopRightRadius: "2.8em",
-                    borderTopLeftRadius: "2.8em"
-                }
-            }
-        />
+    // Set gas price for both wallet and state, arg gagPrice is with unit Wei, 
+    setGasPrice = gasPrice =>{
+        this.wallet.gasPrice = gasPrice;
+        this.setState({gasPrice : gasPrice}) ;
     }
 
 }
