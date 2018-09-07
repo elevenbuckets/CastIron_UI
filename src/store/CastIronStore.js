@@ -29,6 +29,7 @@ class CastIronStore extends Reflux.Store {
             currentView: 'Transfer',
             retrying: 0,
             rpcfailed: false,
+	    configured: true,
             modalIsOpen: false,
             scheduleModalIsOpen: false,
             unlocked: false,
@@ -52,7 +53,7 @@ class CastIronStore extends Reflux.Store {
 
     onInitPlatform() {
 	    console.log('Re-init platform');
-	    this.setState({retrying: 1, rpcfailed: false});
+	    this.setState({retrying: 1, rpcfailed: false, configured: true});
 	    this.updateInfo();
     }
 
@@ -413,6 +414,8 @@ class CastIronStore extends Reflux.Store {
 
     updateInfo = () => {
         let stage = Promise.resolve();
+
+	if (!this.wallet.configured()) return this.setState({configured: false});
 
         const __delay = (t, v) => { return new Promise((resolve) => { setTimeout(resolve.bind(null, v), t) }); }
         const __reconnect = (p, trial, retries) => { // p: promise, trial: current retry, retries: max retry times

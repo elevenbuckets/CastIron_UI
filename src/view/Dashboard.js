@@ -47,7 +47,22 @@ class DashBoard extends Reflux.Component {
     render() {
         console.log("in Dashboard render()")
 
-	if (this.state.retrying > 0 && this.state.rpcfailed === false) {
+	if (this.state.configured === false) {
+            document.body.style.background = "linear-gradient(-90deg, rgb(17, 31, 47), rgb(24, 156, 195))";
+            return (
+		    <div className="container locked">
+			<div className="item list" style={{background: "none"}}>
+			    <div style={{border: "2px solid white", padding: "40px", textAlign: "center"}}>
+				<p style={{alignSelf: "flex-end", fontSize: "22px"}}>
+					Welcome! Please setup CastIron Wallet with following options
+				</p>
+				<input style={{marginTop: "25px"}} 
+				       type="button" className="button reload" value="retry" onClick={this.reinit} />
+			    </div>
+			</div>
+		    </div>
+	    );
+	} else if (this.state.configured === true && this.state.retrying > 0 && this.state.rpcfailed === false) {
             document.body.style.background = "linear-gradient(100deg, rgb(17, 31, 47), rgb(24, 156, 195))";
             return (
 		    <div className="container locked">
@@ -58,7 +73,7 @@ class DashBoard extends Reflux.Component {
 			</div>
 		    </div>
 	    );
-	} else if ( this.state.retrying == 3 && this.state.rpcfailed === true ) {
+	} else if (this.state.configured === true && this.state.retrying == 3 && this.state.rpcfailed === true ) {
             document.body.style.background = "linear-gradient(100deg, rgb(17, 31, 47), rgb(24, 156, 195))";
             return (
 		    <div className="container locked">
@@ -73,7 +88,7 @@ class DashBoard extends Reflux.Component {
 			</div>
 		    </div>
 	    );
-	} else if (this.state.retrying == 0 && this.state.rpcfailed === false && this.state.unlocked === false) {
+	} else if (this.state.configured === true && this.state.retrying == 0 && this.state.rpcfailed === false && this.state.unlocked === false) {
             document.body.style.background = "url(./assets/blockwall.png)";
             return (
                 <div className="container locked">
@@ -81,7 +96,7 @@ class DashBoard extends Reflux.Component {
                     <Login />
                 </div>
             );
-        } else if (this.state.retrying == 0 && this.state.rpcfailed === false && this.state.unlocked === true){
+        } else if (this.state.configured === true && this.state.retrying == 0 && this.state.rpcfailed === false && this.state.unlocked === true){
             document.body.style.background = "linear-gradient(200deg, rgb(17, 31, 47), rgb(24, 156, 195))";
             return (
                 <div className="container unlocked">
