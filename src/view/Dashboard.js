@@ -51,19 +51,25 @@ class DashBoard extends Reflux.Component {
             document.body.style.background = "linear-gradient(100deg, rgb(17, 31, 47), rgb(24, 156, 195))";
             return (
 		    <div className="container locked">
-			<div className="item list"><p>Connecting to local geth RPC ({this.state.retrying + ' / 3'})</p></div>
+			<div className="item list" style={{background: "none"}}>
+			    <div style={{border: "2px solid white", padding: "44px", textAlign: "center"}}>
+			        <p style={{fontSize: "22px"}}>Connecting to local geth RPC ({this.state.retrying + ' / 3'})</p>
+			    </div>
+			</div>
 		    </div>
 	    );
 	} else if ( this.state.retrying == 3 && this.state.rpcfailed === true ) {
             document.body.style.background = "linear-gradient(100deg, rgb(17, 31, 47), rgb(24, 156, 195))";
             return (
 		    <div className="container locked">
-			<div className="item list">
-				<p style={{alignSelf: "flex-end"}}>
+			<div className="item list" style={{background: "none"}}>
+			    <div style={{border: "2px solid white", padding: "40px", textAlign: "center"}}>
+				<p style={{alignSelf: "flex-end", fontSize: "22px"}}>
 					Please check your geth RPC connection
 				</p>
-				<input style={{alignSelf: "baseline", justifySelf: "center", marginTop: "15px"}} 
+				<input style={{marginTop: "25px"}} 
 				       type="button" className="button reload" value="retry" onClick={this.reinit} />
+			    </div>
 			</div>
 		    </div>
 	    );
