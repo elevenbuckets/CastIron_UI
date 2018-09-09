@@ -28,6 +28,7 @@ function createWindow () {
     }))
   
     global.ipfs  = ipfs;
+    global.cfgobj = cfgobj;
 
     // Open the DevTools.
     win.webContents.openDevTools()
