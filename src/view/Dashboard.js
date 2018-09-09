@@ -22,7 +22,6 @@ import Accounts from './Accounts';
 import Login from './Login';
 import MainView from './MainView';
 import Sidebar from './Sidebar';
-//import ReceiptsView from './ReceiptsView';
 
 // Modals
 import ConfirmTXModal from '../components/ConfirmTXModal';
@@ -36,7 +35,7 @@ class DashBoard extends Reflux.Component {
         this.state = {
             drawerOut: false
         }
-	this.storeKeys = [ "unlocked", "currentView", "modalIsOpen", "scheduleModalIsOpen", "accounts", "retrying", "rpcfailed", "configured" ];
+	this.storeKeys = [ "unlocked", "currentView", "modalIsOpen", "scheduleModalIsOpen", "accounts", "retrying", "rpcfailed", "configured", "userCfgDone" ];
     }
 
     confirmTX = () => { CastIronActions.confirmTx(); }
@@ -45,22 +44,31 @@ class DashBoard extends Reflux.Component {
     cancelScheduleTX = () => { CastIronActions.cancelScheduleTx(); }
     reinit = () => { CastIronActions.initPlatform(); };
     relaunch = () => { ipcRenderer.send('reload', true); };
+    setupdone = () => { this.setState({userCfgDone: true}) };
 
     render() {
         console.log("in Dashboard render()")
 
 	if (this.state.configured === false) {
-            document.body.style.background = "linear-gradient(-90deg, rgb(17, 31, 47), rgb(24, 156, 195))";
+            document.body.style.background = "linear-gradient(-120deg, rgb(17, 31, 47), rgb(24, 156, 195))";
             return (
 		    <div className="container locked">
 			<div className="item list" style={{background: "none"}}>
 			    <div style={{border: "2px solid white", padding: "40px", textAlign: "center"}}>
-				<p style={{alignSelf: "flex-end", fontSize: "22px"}}>
-					Welcome! Please setup CastIron Wallet with following options
-				</p>
-				<input style={{marginTop: "25px"}} 
-				       type="button" className="button reload" value="retry" onClick={this.relaunch} />
-			    </div>
+				<p style={{alignSelf: "flex-end", fontSize: "24px"}}>
+					Welcome! Thank you for choosing CastIron Wallet!
+				</p><br/>
+                <p style={{alignSelf: "flex-end", fontSize: "24px"}}>
+					Please setup the following paths:
+				</p><br/>
+				<Login />
+                {
+                    this.state.userCfgDone ? <input style={{marginTop: "25px"}} 
+                    type="button" className="button reload" value="restart" onClick={this.relaunch} />
+                    : <input style={{marginTop: "25px"}} 
+                    type="button" className="button reload" value="confirm" onClick={this.setupdone} />
+                }
+                </div>	
 			</div>
 		    </div>
 	    );

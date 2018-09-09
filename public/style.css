@@ -30,6 +30,11 @@
   border-radius: 2px;
 }
 
+::-webkit-input-placeholder {
+  color: rgb(4, 73, 94);
+  opacity: 0.5;
+}
+
 @font-face {
   font-family: digits;
   src: url(./assets/fonts/nk57-monospace-cd-rg.ttf);
