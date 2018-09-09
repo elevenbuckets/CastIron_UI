@@ -1,4 +1,4 @@
-const {app, BrowserWindow} = require('electron')
+const {app, BrowserWindow, ipcMain} = require('electron')
 const path = require('path')
 const url = require('url')
 
@@ -41,6 +41,12 @@ function createWindow () {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow)
+
+// Whole process reloader via ipcRenderer for config reload
+ipcMain.on('reload', (e, args) => {
+	app.relaunch();
+	app.exit();	
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {

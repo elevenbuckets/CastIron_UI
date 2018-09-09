@@ -14,9 +14,6 @@ const condPath = (ctrName, condName) => { return path.join(__condir, ctrName, co
 class CastIronService {
     constructor() {
         this.wallet = new Wallet('.local/config.json');
-
-	if (!this.wallet.configured()) throw("Failed to load configuration");
-
         this.state = { currentQs: [] }
     }
 
