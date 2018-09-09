@@ -10,9 +10,9 @@ let win;
 let ipfs;
 
 function createWindow () {
-  let cfgobj = fs.readFileSync('.local/default.json');
+  let cfgobj = fs.readFileSync('.local/bootstrap_config.json');
   let ipfscfg = path.join(cfgobj.configDir, 'ipfsserv.json');
-  
+
   ipfs  = new ipfs_go(ipfscfg);
   // Create the browser window.
   ipfs.start().then((API) => {
