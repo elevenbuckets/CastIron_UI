@@ -1,15 +1,20 @@
 const {app, BrowserWindow, ipcMain} = require('electron')
 const path = require('path')
 const url = require('url')
-
+const fs = require('fs')
 const ipfs_go  = require('ipfs_base/IPFS_GO.js');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
-let ipfs  = new ipfs_go('.local/config.json');
+let ipfs;
 
 function createWindow () {
+  let buffer = fs.readFileSync('.local/bootstrap_config.json');
+  let cfgobj = JSON.parse(buffer.toString());
+  let ipfscfg = path.join(cfgobj.configDir, 'ipfsserv.json');
+
+  ipfs  = new ipfs_go(ipfscfg);
   // Create the browser window.
   ipfs.start().then((API) => {
     win = new BrowserWindow({minWidth: 1280, minHeight: 960, resizable: true, icon: path.join(__dirname, 'public', 'assets', 'icon', '11be_logo.png')});
@@ -23,6 +28,7 @@ function createWindow () {
     }))
   
     global.ipfs  = ipfs;
+    global.cfgobj = cfgobj;
 
     // Open the DevTools.
     win.webContents.openDevTools()
