@@ -50,25 +50,30 @@ class DashBoard extends Reflux.Component {
     reinit = () => { CastIronActions.initPlatform(); };
     relaunch = () => { ipcRenderer.send('reload', true); };
     setupdone = () => {
+	// confine config fields
         const mainFields = ["configDir"];
-        let mainWriter = ConfigWriterService.getFileWriter(".local/bootstrap_config.json", mainFields);
-        const castIronFields = ["datadir", "rpcAddr", "ipcPath", "defaultGasPrice", "gasOracleAPI", "condition", "networkID",
-            "watchTokens", "passVault"];
-        let castIronWriter = ConfigWriterService.getFileWriter(path.join(this.state.configFolder + "/config.json"), castIronFields);
+        const castIronFields = ["datadir", "rpcAddr", "ipcPath", "defaultGasPrice", "gasOracleAPI", "condition", "networkID", "watchTokens", "passVault"];
         const ipfsFields = ["lockerpathjs", "repoPathJs", "lockerpathgo", "repoPathGo", "ipfsBinary"];
+
+	// ConfigWriter instances
+        let mainWriter = ConfigWriterService.getFileWriter(".local/bootstrap_config.json", mainFields);
+        let castIronWriter = ConfigWriterService.getFileWriter(path.join(this.state.configFolder + "/config.json"), castIronFields);
         let ipfsWriter = ConfigWriterService.getFileWriter(path.join(this.state.configFolder, "/ipfsserv.json"), ipfsFields);
+
+	// internal config update
         let mainJson = { "configDir": this.state.configFolder };
         mainWriter.writeJSON(mainJson);
 
+	// castiron config update
         let castIronJson = {
             "datadir": this.state.gethDataDir,
             "rpcAddr": "http://127.0.0.1:8545",
-            "ipcPath": "/home/liang/.ethereum/net1100/geth.ipc",
+            "ipcPath": path.join(this.state.gethDataDir, "geth.ipc"),
             "defaultGasPrice": "20000000000",
             "gasOracleAPI": "https://ethgasstation.info/json/ethgasAPI.json",
             "condition": "sanity",
             "networkID": "1100",
-            "passVault": "/home/liang/Liang_Learn/git_hub/CastIron_UI/.local/myArchive.bcup",
+            "passVault": path.join(this.state.configFolder, "myArchive.bcup"),
             "watchTokens": [
                 "TKA",
                 "TKB",
@@ -95,16 +100,14 @@ class DashBoard extends Reflux.Component {
 
         castIronWriter.writeJSON(castIronJson);
 
+	// ipfs config update
         let ipfsJson = {
-            "lockerpathjs": "/home/liang/Liang_Learn/git_hub/CastIron_UI/.local/.ipfslock",
-            "repoPathJs": "/home/liang/ipfs_repo",
-            "lockerpathgo": "/home/liang/Liang_Learn/git_hub/CastIron_UI/.local/.ipfslock_go",
-            "repoPathGo": this.state.ipfsRepoDir,
-            "ipfsBinary": "/home/liang/Liang_Learn/git_hub/CastIron_UI/node_modules/go-ipfs-dep/go-ipfs/ipfs"
+            "lockerpathjs": path.join(this.state.configFolder, ".ipfslock"),
+            "lockerpathgo": path.join(this.state.configFolder, ".ipfslock_go"),
+            "repoPathGo": this.state.ipfsRepoDir
         }
 
         ipfsWriter.writeJSON(ipfsJson);
-
 
         this.setState({ userCfgDone: true })
     };
