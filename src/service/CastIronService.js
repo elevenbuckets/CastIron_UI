@@ -2,6 +2,7 @@
 
 import Wallet from 'CastIron/core/CastIron';
 import path from 'path';
+const remote = require('electron').remote;
 
 /** NOT using them for now, should be re-enabled as generic purpose bootstrap function for individual dapp
 const __pkgdir = path.join('dapps', 'BMart');
@@ -13,7 +14,8 @@ const condPath = (ctrName, condName) => { return path.join(__condir, ctrName, co
 
 class CastIronService {
     constructor() {
-        this.wallet = new Wallet('.local/config.json');
+        this.cfgobj = remote.getGlobal('cfgobj');
+        this.wallet = new Wallet(path.join(this.cfgobj.configDir, "config.json"));
         this.state = { currentQs: [] }
     }
 

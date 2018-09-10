@@ -120,7 +120,8 @@ class Login extends AlertModalUser {
 									padding: "0 5px 0 5px",
 									textAlign: "center"
 								}}
-								defaultValue="" placeholder={path.join( os.homedir(), ".castiron")}/></td>
+								defaultValue="" placeholder={path.join( os.homedir(), ".castiron")} 
+								onChange={this.props.updateState.bind(this,"configFolder")}/></td>
 							</tr>
 							<tr>
 								<td style={{ padding: "5px", fontWeight: "bold", textAlign: "center", fontSize: "22px" }}>Geth data folder</td>
@@ -133,7 +134,8 @@ class Login extends AlertModalUser {
 									padding: "0 5px 0 5px",
 									textAlign: "center"
 								}} 
-								defaultValue="" placeholder={path.join( os.homedir(), ".ethereum")}/></td>
+								defaultValue="" placeholder={path.join( os.homedir(), ".ethereum")}
+								onChange={this.props.updateState.bind(this,"gethDataDir")}/></td>
 							</tr>
 							<tr>
 								<td style={{ padding: "5px", fontWeight: "bold", textAlign: "center", fontSize: "22px" }}>IPFS repo folder</td>
@@ -146,7 +148,8 @@ class Login extends AlertModalUser {
 									padding: "0 5px 0 5px",
 									textAlign: "center"
 								}}
-								defaultValue="" placeholder={path.join( os.homedir(), "ipfs_repo")}/></td>
+								defaultValue="" placeholder={path.join( os.homedir(), "ipfs_repo")}
+								onChange={this.props.updateState.bind(this,"ipfsRepoDir")}/></td>
 							</tr>
 							</tbody>
 					</table>
