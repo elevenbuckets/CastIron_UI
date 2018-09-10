@@ -19,9 +19,6 @@ import CastIronActions from '../action/CastIronActions';
 // Reflux store
 import CastIronStore from '../store/CastIronStore';
 
-// View
-import AppSettings from './AppSettings';
-
 class Settings extends AlertModalUser {
 	constructor(props) {
 		super(props);
