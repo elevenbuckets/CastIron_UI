@@ -40,7 +40,21 @@ class DashBoard extends Reflux.Component {
             gethDataDir: "",
             ipfsRepoDir: ""
         }
-        this.storeKeys = ["unlocked", "currentView", "modalIsOpen", "scheduleModalIsOpen", "accounts", "retrying", "rpcfailed", "configured", "userCfgDone"];
+
+        this.storeKeys = [
+		"unlocked", 
+		"currentView", 
+		"modalIsOpen", 
+		"scheduleModalIsOpen", 
+		"accounts", 
+		"retrying", 
+		"rpcfailed", 
+		"configured", 
+		"userCfgDone", 
+		"syncInProgress",
+	        "blockHeight",
+		"highestBlock"	
+	];
     }
 
     confirmTX = () => { CastIronActions.confirmTx(); }
@@ -119,7 +133,21 @@ class DashBoard extends Reflux.Component {
     render() {
         console.log("in Dashboard render()")
 
-        if (this.state.configured === false) {
+	if (this.state.syncInProgress === true) {
+            document.body.style.background = "linear-gradient(-180deg, rgb(17, 31, 47), rgb(24, 156, 195))";
+	    return (
+                <div className="container locked">
+                    <div className="item list" style={{ background: "none" }}>
+                        <div style={{ border: "2px solid white", padding: "40px", textAlign: "center" }}>
+			    <div className="loader"></div><br/>
+                            <p style={{ alignSelf: "flex-end", fontSize: "24px" }}>
+                                Block syncing in progress {this.state.blockHighet} / {this.state.highestBlock} ...
+			    </p>
+                        </div>
+                    </div>
+                </div>
+	    );
+	} else if (this.state.configured === false) {
             document.body.style.background = "linear-gradient(-120deg, rgb(17, 31, 47), rgb(24, 156, 195))";
             return (
                 <div className="container locked">
@@ -168,7 +196,7 @@ class DashBoard extends Reflux.Component {
                     </div>
                 </div>
             );
-        } else if (this.state.configured === true && this.state.retrying == 0 && this.state.rpcfailed === false && this.state.unlocked === false) {
+        } else if (this.state.syncInProgress === false && this.state.configured === true && this.state.retrying == 0 && this.state.rpcfailed === false && this.state.unlocked === false) {
             document.body.style.background = "url(./assets/blockwall.png)";
             return (
                 <div className="container locked">

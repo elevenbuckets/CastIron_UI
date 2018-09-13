@@ -10,7 +10,8 @@ class BlockTimer {
         this.state = {
             blockHeight : null,
             observers : [],
-            blockTime : null
+            blockTime : null,
+	    highestBlock : 0 
         }
         //this.initialize();
     }
@@ -32,11 +33,11 @@ class BlockTimer {
 	}
 
         let netStatus = this.wallet.ethNetStatus();
-        if (this.state.highestBlock == this.state.blockHeight && netStatus.blockHeight != this.state.blockHeight) {
+        if (this.state.highestBlock === this.state.blockHeight && netStatus.blockHeight != this.state.blockHeight) {
             this.state.blockHeight = netStatus.blockHeight;
             this.state.blockTime = netStatus.blockTime;
             this.notifyObservers()
-        }
+	}
        
     }
 

@@ -24,6 +24,7 @@ class CastIronStore extends Reflux.Store {
             balances: { 'ETH': 0 },
             blockHeight: null,
             blockTime: null,
+	    highestBlock: 0,
             gasPrice: null,
             selected_token_name: '',
             currentView: 'Transfer',
@@ -31,6 +32,7 @@ class CastIronStore extends Reflux.Store {
             rpcfailed: false,
             configured: false,
             userCfgDone: false,
+	    syncInProgress: false,
             modalIsOpen: false,
             scheduleModalIsOpen: false,
             unlocked: false,
@@ -479,7 +481,9 @@ class CastIronStore extends Reflux.Store {
             // Since it is possible that CastIron cannot connect to RPC!
             BlockTimer.initialize();
             this.wallet.hotGroups(this.state.tokenList);
-            return this.setState({ blockHeight: BlockTimer.state.blockHeight, blockTime: BlockTimer.state.blockTime });
+	    let syncInProgress = false;
+	    if (BlockTimer.state.blockHeight !== BlockTimer.state.highestBlock) syncInProgress = true;
+	    return this.setState({ blockHeight: BlockTimer.state.blockHeight, highestBlock: BlockTimer.state.highestBlock, blockTime: BlockTimer.state.blockTime, syncInProgress });
         })
             .then(() => { return this.getAccounts(); })
     }
