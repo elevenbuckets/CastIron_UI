@@ -299,7 +299,7 @@ class Settings extends AlertModalUser {
 									: this.setState({ currentSettings: 'gas' })
 						}
 					</div>
-				  : <div className="item SettingInner"><div className="waiter">Please Wait...<br/><div className="loader"></div></div></div>
+				  : <div className="item SettingInner"><div className="waiter"><p style={{marginBottom: "7px"}}>Please Wait...</p><br/><div className="loader"></div></div></div>
 				}	
 				<AlertModal content={this.state.alertContent} isAlertModalOpen={this.state.isAlertModalOpen} close={this.closeModal} />
 			</fieldset>

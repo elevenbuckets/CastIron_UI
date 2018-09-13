@@ -134,25 +134,41 @@ class DashBoard extends Reflux.Component {
         console.log("in Dashboard render()")
 
 	if (this.state.configured === true && this.state.retrying == 0 && this.state.rpcfailed === false && this.state.syncInProgress === true) {
-            document.body.style.background = "linear-gradient(-180deg, rgb(17, 31, 47), rgb(24, 156, 195))";
-	    return (
-                <div className="container locked">
-                    <div className="item list" style={{ background: "none" }}>
-                        <div style={{ border: "2px solid white", padding: "40px", textAlign: "center" }}>
-			    <div className="loader"></div><br/>
-                            <p style={{ alignSelf: "flex-end", fontSize: "24px" }}>
-                                Block syncing in progress {this.state.blockHeight} / {this.state.highestBlock} ...
-			    </p>
-                        </div>
-                    </div>
-                </div>
-	    );
+	    if (this.state.highestBlock === 0) {
+	            document.body.style.background = "rgb(17, 31, 47)";
+		    return (
+	                <div className="container locked" style={{ background: "rgb(17, 31, 47)"}}>
+	                    <div className="item list" style={{ background: "none" }}>
+	                        <div style={{ border: "2px solid white", padding: "40px", textAlign: "center" }}>
+				    <div className="loader"></div><br/>
+	                            <p style={{ alignSelf: "flex-end", fontSize: "24px", marginTop: "10px" }}>
+	                                Awaiting incomming blocks from peers ...
+				    </p>
+	                        </div>
+	                    </div>
+	                </div>
+		    );
+	    } else {
+	            document.body.style.background = "linear-gradient(-180deg, rgb(17, 31, 47), rgb(24, 156, 195))";
+		    return (
+	                <div className="container locked" style={{ background: "none"}}>
+	                    <div className="item list" style={{ background: "none" }}>
+	                        <div style={{ border: "2px solid white", padding: "40px", textAlign: "center" }}>
+				    <div className="loader"></div><br/>
+	                            <p style={{ alignSelf: "flex-end", fontSize: "24px" }}>
+	                                Block syncing in progress {this.state.blockHeight} / {this.state.highestBlock} ...
+				    </p>
+	                        </div>
+	                    </div>
+	                </div>
+		    );
+	    }
 	} else if (this.state.configured === false) {
             document.body.style.background = "linear-gradient(-120deg, rgb(17, 31, 47), rgb(24, 156, 195))";
             return (
-                <div className="container locked">
+                <div className="container locked" style={{ background: "none"}}>
                     <div className="item list" style={{ background: "none" }}>
-                        <div style={{ border: "2px solid white", padding: "40px", textAlign: "center" }}>
+                        <div style={{ border: "2px solid white", padding: "40px", textAlign: "center", background: "none" }}>
                             <p style={{ alignSelf: "flex-end", fontSize: "24px" }}>
                                 Welcome! Thank you for choosing CastIron Wallet!
 				</p><br />
@@ -173,7 +189,7 @@ class DashBoard extends Reflux.Component {
         } else if (this.state.retrying > 0 && this.state.rpcfailed === false) {
             document.body.style.background = "linear-gradient(100deg, rgb(17, 31, 47), rgb(24, 156, 195))";
             return (
-                <div className="container locked">
+                <div className="container locked" style={{ background: "none"}}>
                     <div className="item list" style={{ background: "none" }}>
                         <div style={{ border: "2px solid white", padding: "44px", textAlign: "center" }}>
                             <p style={{ fontSize: "22px" }}>Connecting to local geth RPC ({this.state.retrying + ' / 3'})</p>
@@ -184,7 +200,7 @@ class DashBoard extends Reflux.Component {
         } else if (this.state.retrying == 3 && this.state.rpcfailed === true) {
             document.body.style.background = "linear-gradient(100deg, rgb(17, 31, 47), rgb(24, 156, 195))";
             return (
-                <div className="container locked">
+                <div className="container locked" style={{ background: "none"}}>
                     <div className="item list" style={{ background: "none" }}>
                         <div style={{ border: "2px solid white", padding: "40px", textAlign: "center" }}>
                             <p style={{ alignSelf: "flex-end", fontSize: "22px" }}>
