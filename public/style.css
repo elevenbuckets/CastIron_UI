@@ -881,8 +881,10 @@ h6 {
 }
 
 .loader {
-  border: 13px solid #f3f3f3; /* Light grey */
-  border-top: 13px solid #3498db; /* Blue */
+  border-left: 13px solid red;
+  border-top: 2px solid red;
+  border-right: 13px solid yellow;
+  border-bottom: 2px solid yellow;
   border-radius: 50%;
   width: 50px;
   max-width: 50px;
