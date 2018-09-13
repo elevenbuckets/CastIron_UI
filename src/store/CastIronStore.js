@@ -57,6 +57,7 @@ class CastIronStore extends Reflux.Store {
     onInitPlatform() {
 	    console.log('Re-init platform');
 	    this.setState({retrying: 1, rpcfailed: false, configured: false});
+	    BlockTimer.state.initialized = false;
 	    this.updateInfo();
     }
 
@@ -482,7 +483,7 @@ class CastIronStore extends Reflux.Store {
             BlockTimer.initialize();
             this.wallet.hotGroups(this.state.tokenList);
 	    let syncInProgress = false;
-	    if (BlockTimer.state.blockHeight !== BlockTimer.state.highestBlock) syncInProgress = true;
+	    if (BlockTimer.state.blockHeight !== BlockTimer.state.highestBlock || BlockTimer.state.highestBlock == 0) syncInProgress = true;
 	    return this.setState({ blockHeight: BlockTimer.state.blockHeight, highestBlock: BlockTimer.state.highestBlock, blockTime: BlockTimer.state.blockTime, syncInProgress });
         })
             .then(() => { return this.getAccounts(); })

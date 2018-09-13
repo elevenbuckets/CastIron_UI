@@ -133,7 +133,7 @@ class DashBoard extends Reflux.Component {
     render() {
         console.log("in Dashboard render()")
 
-	if (this.state.syncInProgress === true) {
+	if (this.state.configured === true && this.state.retrying == 0 && this.state.rpcfailed === false && this.state.syncInProgress === true) {
             document.body.style.background = "linear-gradient(-180deg, rgb(17, 31, 47), rgb(24, 156, 195))";
 	    return (
                 <div className="container locked">
@@ -141,7 +141,7 @@ class DashBoard extends Reflux.Component {
                         <div style={{ border: "2px solid white", padding: "40px", textAlign: "center" }}>
 			    <div className="loader"></div><br/>
                             <p style={{ alignSelf: "flex-end", fontSize: "24px" }}>
-                                Block syncing in progress {this.state.blockHighet} / {this.state.highestBlock} ...
+                                Block syncing in progress {this.state.blockHeight} / {this.state.highestBlock} ...
 			    </p>
                         </div>
                     </div>
