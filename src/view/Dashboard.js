@@ -155,7 +155,7 @@ class DashBoard extends Reflux.Component {
 	                    <div className="item list" style={{ background: "none" }}>
 	                        <div style={{ border: "2px solid white", padding: "40px", textAlign: "center" }}>
 				    <div className="loader"></div><br/>
-	                            <p style={{ alignSelf: "flex-end", fontSize: "24px" }}>
+	                            <p style={{ alignSelf: "flex-end", fontSize: "24px", marginTop: "10px" }}>
 	                                Block syncing in progress {this.state.blockHeight} / {this.state.highestBlock} ...
 				    </p>
 	                        </div>
