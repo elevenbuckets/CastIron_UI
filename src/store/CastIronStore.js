@@ -483,7 +483,14 @@ class CastIronStore extends Reflux.Store {
             BlockTimer.initialize();
             this.wallet.hotGroups(this.state.tokenList);
 	    let syncInProgress = false;
-	    if (BlockTimer.state.blockHeight !== BlockTimer.state.highestBlock || BlockTimer.state.highestBlock == 0) syncInProgress = true;
+	    if (
+		  BlockTimer.state.blockHeight !== BlockTimer.state.highestBlock 
+	       || BlockTimer.state.highestBlock == 0
+	       || (this.wallet.web3.net.peerCount == 0 && this.wallet.web3.eth.mining === false)
+	    )
+	    {
+		    syncInProgress = true;
+	    }
 	    return this.setState({ blockHeight: BlockTimer.state.blockHeight, highestBlock: BlockTimer.state.highestBlock, blockTime: BlockTimer.state.blockTime, syncInProgress });
         })
             .then(() => { return this.getAccounts(); })
