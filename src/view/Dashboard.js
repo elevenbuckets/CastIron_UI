@@ -40,7 +40,21 @@ class DashBoard extends Reflux.Component {
             gethDataDir: "",
             ipfsRepoDir: ""
         }
-        this.storeKeys = ["unlocked", "currentView", "modalIsOpen", "scheduleModalIsOpen", "accounts", "retrying", "rpcfailed", "configured", "userCfgDone"];
+
+        this.storeKeys = [
+		"unlocked", 
+		"currentView", 
+		"modalIsOpen", 
+		"scheduleModalIsOpen", 
+		"accounts", 
+		"retrying", 
+		"rpcfailed", 
+		"configured", 
+		"userCfgDone", 
+		"syncInProgress",
+	        "blockHeight",
+		"highestBlock"	
+	];
     }
 
     confirmTX = () => { CastIronActions.confirmTx(); }
@@ -50,25 +64,30 @@ class DashBoard extends Reflux.Component {
     reinit = () => { CastIronActions.initPlatform(); };
     relaunch = () => { ipcRenderer.send('reload', true); };
     setupdone = () => {
+	// confine config fields
         const mainFields = ["configDir"];
-        let mainWriter = ConfigWriterService.getFileWriter(".local/bootstrap_config.json", mainFields);
-        const castIronFields = ["datadir", "rpcAddr", "ipcPath", "defaultGasPrice", "gasOracleAPI", "condition", "networkID",
-            "watchTokens", "passVault"];
-        let castIronWriter = ConfigWriterService.getFileWriter(path.join(this.state.configFolder + "/config.json"), castIronFields);
+        const castIronFields = ["datadir", "rpcAddr", "ipcPath", "defaultGasPrice", "gasOracleAPI", "condition", "networkID", "watchTokens", "passVault"];
         const ipfsFields = ["lockerpathjs", "repoPathJs", "lockerpathgo", "repoPathGo", "ipfsBinary"];
+
+	// ConfigWriter instances
+        let mainWriter = ConfigWriterService.getFileWriter(".local/bootstrap_config.json", mainFields);
+        let castIronWriter = ConfigWriterService.getFileWriter(path.join(this.state.configFolder + "/config.json"), castIronFields);
         let ipfsWriter = ConfigWriterService.getFileWriter(path.join(this.state.configFolder, "/ipfsserv.json"), ipfsFields);
+
+	// internal config update
         let mainJson = { "configDir": this.state.configFolder };
         mainWriter.writeJSON(mainJson);
 
+	// castiron config update
         let castIronJson = {
             "datadir": this.state.gethDataDir,
             "rpcAddr": "http://127.0.0.1:8545",
-            "ipcPath": "/home/liang/.ethereum/net1100/geth.ipc",
+            "ipcPath": path.join(this.state.gethDataDir, "geth.ipc"),
             "defaultGasPrice": "20000000000",
             "gasOracleAPI": "https://ethgasstation.info/json/ethgasAPI.json",
             "condition": "sanity",
             "networkID": "1100",
-            "passVault": "/home/liang/Liang_Learn/git_hub/CastIron_UI/.local/myArchive.bcup",
+            "passVault": path.join(this.state.configFolder, "myArchive.bcup"),
             "watchTokens": [
                 "TKA",
                 "TKB",
@@ -95,16 +114,14 @@ class DashBoard extends Reflux.Component {
 
         castIronWriter.writeJSON(castIronJson);
 
+	// ipfs config update
         let ipfsJson = {
-            "lockerpathjs": "/home/liang/Liang_Learn/git_hub/CastIron_UI/.local/.ipfslock",
-            "repoPathJs": "/home/liang/ipfs_repo",
-            "lockerpathgo": "/home/liang/Liang_Learn/git_hub/CastIron_UI/.local/.ipfslock_go",
-            "repoPathGo": this.state.ipfsRepoDir,
-            "ipfsBinary": "/home/liang/Liang_Learn/git_hub/CastIron_UI/node_modules/go-ipfs-dep/go-ipfs/ipfs"
+            "lockerpathjs": path.join(this.state.configFolder, ".ipfslock"),
+            "lockerpathgo": path.join(this.state.configFolder, ".ipfslock_go"),
+            "repoPathGo": this.state.ipfsRepoDir
         }
 
         ipfsWriter.writeJSON(ipfsJson);
-
 
         this.setState({ userCfgDone: true })
     };
@@ -116,12 +133,42 @@ class DashBoard extends Reflux.Component {
     render() {
         console.log("in Dashboard render()")
 
-        if (this.state.configured === false) {
+	if (this.state.configured === true && this.state.retrying == 0 && this.state.rpcfailed === false && this.state.syncInProgress === true) {
+	    if (this.state.highestBlock === 0) {
+	            document.body.style.background = "rgb(17, 31, 47)";
+		    return (
+	                <div className="container locked" style={{ background: "rgb(17, 31, 47)"}}>
+	                    <div className="item list" style={{ background: "none" }}>
+	                        <div style={{ border: "2px solid white", padding: "40px", textAlign: "center" }}>
+				    <div className="loader syncpage"></div><br/>
+	                            <p style={{ alignSelf: "flex-end", fontSize: "24px", marginTop: "10px" }}>
+	                                Awaiting incomming blocks from peers ...
+				    </p>
+	                        </div>
+	                    </div>
+	                </div>
+		    );
+	    } else {
+	            document.body.style.background = "linear-gradient(-180deg, rgb(17, 31, 47), rgb(24, 156, 195))";
+		    return (
+	                <div className="container locked" style={{ background: "none"}}>
+	                    <div className="item list" style={{ background: "none" }}>
+	                        <div style={{ border: "2px solid white", padding: "40px", textAlign: "center" }}>
+				    <div className="loader"></div><br/>
+	                            <p style={{ alignSelf: "flex-end", fontSize: "24px" }}>
+	                                Block syncing in progress {this.state.blockHeight} / {this.state.highestBlock} ...
+				    </p>
+	                        </div>
+	                    </div>
+	                </div>
+		    );
+	    }
+	} else if (this.state.configured === false) {
             document.body.style.background = "linear-gradient(-120deg, rgb(17, 31, 47), rgb(24, 156, 195))";
             return (
-                <div className="container locked">
+                <div className="container locked" style={{ background: "none"}}>
                     <div className="item list" style={{ background: "none" }}>
-                        <div style={{ border: "2px solid white", padding: "40px", textAlign: "center" }}>
+                        <div style={{ border: "2px solid white", padding: "40px", textAlign: "center", background: "none" }}>
                             <p style={{ alignSelf: "flex-end", fontSize: "24px" }}>
                                 Welcome! Thank you for choosing CastIron Wallet!
 				</p><br />
@@ -142,7 +189,7 @@ class DashBoard extends Reflux.Component {
         } else if (this.state.retrying > 0 && this.state.rpcfailed === false) {
             document.body.style.background = "linear-gradient(100deg, rgb(17, 31, 47), rgb(24, 156, 195))";
             return (
-                <div className="container locked">
+                <div className="container locked" style={{ background: "none"}}>
                     <div className="item list" style={{ background: "none" }}>
                         <div style={{ border: "2px solid white", padding: "44px", textAlign: "center" }}>
                             <p style={{ fontSize: "22px" }}>Connecting to local geth RPC ({this.state.retrying + ' / 3'})</p>
@@ -153,7 +200,7 @@ class DashBoard extends Reflux.Component {
         } else if (this.state.retrying == 3 && this.state.rpcfailed === true) {
             document.body.style.background = "linear-gradient(100deg, rgb(17, 31, 47), rgb(24, 156, 195))";
             return (
-                <div className="container locked">
+                <div className="container locked" style={{ background: "none"}}>
                     <div className="item list" style={{ background: "none" }}>
                         <div style={{ border: "2px solid white", padding: "40px", textAlign: "center" }}>
                             <p style={{ alignSelf: "flex-end", fontSize: "22px" }}>
@@ -165,7 +212,7 @@ class DashBoard extends Reflux.Component {
                     </div>
                 </div>
             );
-        } else if (this.state.configured === true && this.state.retrying == 0 && this.state.rpcfailed === false && this.state.unlocked === false) {
+        } else if (this.state.syncInProgress === false && this.state.configured === true && this.state.retrying == 0 && this.state.rpcfailed === false && this.state.unlocked === false) {
             document.body.style.background = "url(./assets/blockwall.png)";
             return (
                 <div className="container locked">

@@ -159,7 +159,7 @@ class Login extends AlertModalUser {
 			// create new buttercup archive using one time password input
 			return (
 				<div className="item list">
-						<table style={{ border: "2px solid white", backgroundColor: "rgba(255,255,255,0.11)" }}>
+						<table style={{ border: "2px solid white", backgroundColor: "rgba(255,255,255,0.31)" }}>
 							<tbody>
 								<tr>
 									<td style={{ padding: "25px" }}>
@@ -170,7 +170,7 @@ class Login extends AlertModalUser {
 											<legend style={{ fontWeight: 'bold', marginBottom: '3px' }}>Please Enter New Master Password:</legend>
 											<input autoFocus type={this.state.reveal ? "text" : "password"} style={{
 												width: "250px",
-												backgroundColor: "rgba(255,255,255,0.11)",
+												backgroundColor: "rgba(5,5,5,0.41)",
 												border: "2px solid white",
 												fontSize: "24px",
 												color: "white",

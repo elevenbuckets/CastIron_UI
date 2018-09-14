@@ -19,9 +19,6 @@ import CastIronActions from '../action/CastIronActions';
 // Reflux store
 import CastIronStore from '../store/CastIronStore';
 
-// View
-import AppSettings from './AppSettings';
-
 class Settings extends AlertModalUser {
 	constructor(props) {
 		super(props);
@@ -302,7 +299,7 @@ class Settings extends AlertModalUser {
 									: this.setState({ currentSettings: 'gas' })
 						}
 					</div>
-				  : <div className="item SettingInner"><div className="waiter">Please Wait...<br/><div className="loader"></div></div></div>
+				  : <div className="item SettingInner"><div className="waiter"><p style={{fontSize: "26px"}}>Processing, please wait...</p><br/><div className="loader"></div></div></div>
 				}	
 				<AlertModal content={this.state.alertContent} isAlertModalOpen={this.state.isAlertModalOpen} close={this.closeModal} />
 			</fieldset>

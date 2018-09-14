@@ -10,12 +10,16 @@ class BlockTimer {
         this.state = {
             blockHeight : null,
             observers : [],
-            blockTime : null
+            blockTime : null,
+	    highestBlock : 0,
+	    initialized : false 
         }
         //this.initialize();
     }
 
     initialize = () => {
+	if (this.state.initialized) return;
+
         let netStatus = this.wallet.ethNetStatus();
         this.state.blockHeight = netStatus.blockHeight;
         this.state.blockTime = netStatus.blockTime;
@@ -23,6 +27,7 @@ class BlockTimer {
         this.timer = setInterval(this.watchAndNotify, 1000);
 
         this.register(this.reportNewBlock);
+	this.state.initialized = true;
     }
 
     watchAndNotify = () => {
@@ -32,11 +37,12 @@ class BlockTimer {
 	}
 
         let netStatus = this.wallet.ethNetStatus();
-        if (this.state.highestBlock == this.state.blockHeight && netStatus.blockHeight != this.state.blockHeight) {
+        if (netStatus.highestBlock != this.state.highestBlock || netStatus.blockHeight != this.state.blockHeight) {
+	    this.state.highestBlock = netStatus.highestBlock;
             this.state.blockHeight = netStatus.blockHeight;
             this.state.blockTime = netStatus.blockTime;
             this.notifyObservers()
-        }
+	}
        
     }
 

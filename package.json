@@ -39,6 +39,7 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
     "browser-sync": "^2.24.6",
+    "electron-builder": "^20.28.4",
     "ipfs_base": "git+ssh://git@github.com/elevenbuckets/ipfs_go.git",
     "react": "15.6.1",
     "react-bootstrap": "^0.32.1",
