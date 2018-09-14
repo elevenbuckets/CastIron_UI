@@ -140,7 +140,7 @@ class DashBoard extends Reflux.Component {
 	                <div className="container locked" style={{ background: "rgb(17, 31, 47)"}}>
 	                    <div className="item list" style={{ background: "none" }}>
 	                        <div style={{ border: "2px solid white", padding: "40px", textAlign: "center" }}>
-				    <div className="loader"></div><br/>
+				    <div className="loader syncpage"></div><br/>
 	                            <p style={{ alignSelf: "flex-end", fontSize: "24px", marginTop: "10px" }}>
 	                                Awaiting incomming blocks from peers ...
 				    </p>
