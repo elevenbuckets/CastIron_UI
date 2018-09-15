@@ -153,6 +153,10 @@ h6 {
   "tblockheight blockheight tblockstamp blockstamp tlocaltime localtime tgasprice gasprice";
 }
 
+.configTable {
+	margin: 15px;
+}
+
 .tblockheight {
   border: 2px solid white;
   border-right: 0px;

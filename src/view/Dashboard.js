@@ -39,7 +39,8 @@ class DashBoard extends Reflux.Component {
             drawerOut: false,
             configFolder: "",
             gethDataDir: "",
-            ipfsRepoDir: ""
+            ipfsRepoDir: "",
+	    networkID: ""
         }
 
         this.storeKeys = [
@@ -87,7 +88,7 @@ class DashBoard extends Reflux.Component {
             "defaultGasPrice": "20000000000",
             "gasOracleAPI": "https://ethgasstation.info/json/ethgasAPI.json",
             "condition": "sanity",
-            "networkID": "1100",
+            "networkID": this.state.networkID,
             "passVault": path.join(this.state.configFolder, "myArchive.bcup"),
             "watchTokens": [
                 "TKA",
