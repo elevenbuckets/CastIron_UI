@@ -29,7 +29,37 @@ class Settings extends AlertModalUser {
 			reveal2: false,
 			waiting: false,
 			currentSettings: 'gas',
-			currentAccSettings: 'old'
+			currentAccSettings: 'old',
+			avalableTokens: {
+				"ETH": {
+					"addr": "0x0000000000000000000000000000000000000000",
+					"name": "ETH",
+					"decimals": 18,
+					"category": "default",
+					"watched": true
+				},
+				"TKA": {
+					"name": "Trade Token A",
+					"decimals": "18",
+					"addr": "0xf87ad704bd60d6cf22849a0c8f9697157b5c5f51",
+					"category": "default",
+					"watched": true
+				},
+				"TKB": {
+					"name": "Trade Token B",
+					"decimals": "18",
+					"addr": "0xc04b4e1ee8af16244ea03684e4b510733769c783",
+					"category": "default",
+					"watched": true
+				},
+				"TKC": {
+					"name": "Trade Token C",
+					"decimals": "18",
+					"addr": "0xa288826d08e8dc7049687a733cc0eaab23f8f868",
+					"category": "default",
+					"watched": true
+				}
+			}
 		}
 
 		this.wallet = CastIronService.wallet;
@@ -115,7 +145,7 @@ class Settings extends AlertModalUser {
 
 	handleImport = (event) => {
 		// sanity check
-		if (!fs.existsSync(this.keypath) || typeof(this.keypath) === 'undefined') {
+		if (!fs.existsSync(this.keypath) || typeof (this.keypath) === 'undefined') {
 			this.keypath = undefined;
 			this.variable = undefined;
 			this.setState({ waiting: false });
@@ -218,52 +248,108 @@ class Settings extends AlertModalUser {
 	gasSettings = () => {
 		return (
 			<form style={{ fontSize: "18px", textAlign: 'center' }} onSubmit={(e) => { e.preventDefault() }} >
-				<table style={{border: "0px"}}><tbody>
-						<tr>
-							<td>
-								<label><input type="radio"
-									onChange={this.handleGasPriceSelect} name="gasprice" value="low" 
-									checked={this.state.gasPriceOption === 'low' ? "checked" : false}/>{"Slow (" + this.wallet.toEth(this.state.gasPriceInfo.low, 9).toString() +  ")" }</label><br />
-							</td>
-							<td>
-								<label><input type="radio"
-									onChange={this.handleGasPriceSelect} name="gasprice" value="mid"
-									checked={this.state.gasPriceOption === 'mid' ? "checked" : false} />{"Mid (" + this.wallet.toEth(this.state.gasPriceInfo.mid, 9).toString() +  ")" }</label><br />
-							</td>
-							<td>
-								<label><input type="radio"
-									onChange={this.handleGasPriceSelect} name="gasprice" value="high" 
-									checked={this.state.gasPriceOption === 'high' ? "checked" : false} />{"Normal (" + this.wallet.toEth(this.state.gasPriceInfo.high, 9).toString() +  ")" }</label><br />
-							</td>
-							<td>
-								<label><input type="radio"
-									onChange={this.handleGasPriceSelect} name="gasprice" value="fast" 
-									checked={this.state.gasPriceOption === 'fast' ? "checked" : false}/>{"Fast (" + this.wallet.toEth(this.state.gasPriceInfo.fast, 9).toString() +  ")" }</label><br />
-							</td>
-							<td>
-								<label><input type="radio"
-									onChange={this.handleGasPriceSelect} name="gasprice" value="custom"
-									checked={this.state.gasPriceOption === 'custom' ? "checked" : false}/>Custom
+				<table style={{ border: "0px" }}><tbody>
+					<tr>
+						<td>
+							<label><input type="radio"
+								onChange={this.handleGasPriceSelect} name="gasprice" value="low"
+								checked={this.state.gasPriceOption === 'low' ? "checked" : false} />{"Slow (" + this.wallet.toEth(this.state.gasPriceInfo.low, 9).toString() + ")"}</label><br />
+						</td>
+						<td>
+							<label><input type="radio"
+								onChange={this.handleGasPriceSelect} name="gasprice" value="mid"
+								checked={this.state.gasPriceOption === 'mid' ? "checked" : false} />{"Mid (" + this.wallet.toEth(this.state.gasPriceInfo.mid, 9).toString() + ")"}</label><br />
+						</td>
+						<td>
+							<label><input type="radio"
+								onChange={this.handleGasPriceSelect} name="gasprice" value="high"
+								checked={this.state.gasPriceOption === 'high' ? "checked" : false} />{"Normal (" + this.wallet.toEth(this.state.gasPriceInfo.high, 9).toString() + ")"}</label><br />
+						</td>
+						<td>
+							<label><input type="radio"
+								onChange={this.handleGasPriceSelect} name="gasprice" value="fast"
+								checked={this.state.gasPriceOption === 'fast' ? "checked" : false} />{"Fast (" + this.wallet.toEth(this.state.gasPriceInfo.fast, 9).toString() + ")"}</label><br />
+						</td>
+						<td>
+							<label><input type="radio"
+								onChange={this.handleGasPriceSelect} name="gasprice" value="custom"
+								checked={this.state.gasPriceOption === 'custom' ? "checked" : false} />Custom
 						<input type="text" style=
-						{{  
-							marginLeft: "15px",
-							width: "120px", 
-							backgroundColor: "rgba(0,0,0,0)", 
-							border: "2px solid white",
-							fontSize: "18px",
-							color: "white",
-							textAlign: "right",
-							paddingRight: "4px"
-						}} name="custom_gasprice"
-										value={this.state.gasPriceOption === 'custom' ? (this.state.customGasPrice? this.state.customGasPrice : undefined) :""}
-										disabled={!this.isCustomGasPrice} onChange={this.handleCustomGasPriceUpdate} placeholder="Unit: gwei" />
-								</label>
-							</td></tr>
-                    
-                </tbody></table>
-				</form>
+									{{
+										marginLeft: "15px",
+										width: "120px",
+										backgroundColor: "rgba(0,0,0,0)",
+										border: "2px solid white",
+										fontSize: "18px",
+										color: "white",
+										textAlign: "right",
+										paddingRight: "4px"
+									}} name="custom_gasprice"
+									value={this.state.gasPriceOption === 'custom' ? (this.state.customGasPrice ? this.state.customGasPrice : undefined) : ""}
+									disabled={!this.isCustomGasPrice} onChange={this.handleCustomGasPriceUpdate} placeholder="Unit: gwei" />
+							</label>
+						</td></tr>
+
+				</tbody></table>
+			</form>
 		);
 	}
+
+	tokensSettings = () => {
+		return (
+			<div className="TQList">
+				<table className="balance-sheet">
+					<tbody>
+						<tr className="balance-sheet">
+							<td className="txform" style={{ border: '0', textAlign: "left" }}>
+								<input type="button" className="button" value='New'  />
+								<input type="button" className="button" value='Edit'/>
+								<input type="button" className="button" value='Search'  />
+								<input type="button" className="button" value='Delete' />
+								<input type="button" className="button" value='Watch' />
+								<input type="button" className="button" value='UnWatch' />
+							</td>
+						</tr>
+
+					</tbody>
+				</table>
+				<table style={{ width: "100%" }}>
+					<tbody>
+						<tr>
+							<td cwidth='5%'>Select</td>
+							<td width='3%'>Symbol</td>
+							<td width='32%'>Address</td>
+							<td width='10%'>Name</td>
+							<td width='10%'>Decimals</td>
+							<td width='10%'>Catgory</td>
+							<td width='10%'>Watched</td>
+						</tr>
+						{Object.keys(this.state.avalableTokens).map((key) => {
+							let token = this.state.avalableTokens[key];
+							return (
+								<tr>
+									<td className="balance-sheet"
+										width='5%'><input
+											name="check"
+											type="checkbox"
+											checked="false"
+											style={{ width: "25px", height: "25px" }} /></td>
+									<td width='3%'>{key}</td>
+									<td width='32%'>{token.addr}</td>
+									<td width='10%'>{token.name}</td>
+									<td width='10%'>{token.decimals}</td>
+									<td width='10%'>{token.category}</td>
+									<td width='10%'>{token.watched ? "Yes" : "No"}</td>
+
+								</tr>
+							);
+						})}
+					</tbody>
+				</table>
+			</div>
+		);
+	}
+
 
 	handleChange = (tabName) => {
 		this.setState({ currentSettings: tabName });
@@ -289,18 +375,23 @@ class Settings extends AlertModalUser {
 							backgroundColor: this.state.currentSettings === 'acc' ? "white" : "rgba(0,0,0,0)",
 							color: this.state.currentSettings === 'acc' ? "black" : "white"
 						}} value="Accounts" onClick={this.handleChange.bind(this, "acc")} />
+					<input type="button" className="button tabset" style=
+						{{
+							backgroundColor: this.state.currentSettings === 'tokens' ? "white" : "rgba(0,0,0,0)",
+							color: this.state.currentSettings === 'tokens' ? "black" : "white"
+						}} value="Tokens" onClick={this.handleChange.bind(this, "tokens")} />
 				</legend>
-				{ 
-				  this.state.waiting === false ?
-					<div className="item SettingInner">
-						{
-							this.state.currentSettings === "gas" ? this.gasSettings()
-								: this.state.currentSettings === "acc" ? this.accountMgr()
-									: this.setState({ currentSettings: 'gas' })
-						}
-					</div>
-				  : <div className="item SettingInner"><div className="waiter"><p style={{fontSize: "26px"}}>Processing, please wait...</p><br/><div className="loader"></div></div></div>
-				}	
+				{
+					this.state.waiting === false ?
+						<div className="item SettingInner">
+							{
+								this.state.currentSettings === "gas" ? this.gasSettings()
+									: this.state.currentSettings === "acc" ? this.accountMgr() :
+										this.state.currentSettings === "tokens" ? this.tokensSettings() : this.setState({ currentSettings: 'gas' })
+							}
+						</div>
+						: <div className="item SettingInner"><div className="waiter"><p style={{ fontSize: "26px" }}>Processing, please wait...</p><br /><div className="loader"></div></div></div>
+				}
 				<AlertModal content={this.state.alertContent} isAlertModalOpen={this.state.isAlertModalOpen} close={this.closeModal} />
 			</fieldset>
 		);
