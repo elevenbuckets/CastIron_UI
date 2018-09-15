@@ -32,7 +32,7 @@ class MainView extends Reflux.Component {
 			<div className="mainView">
 				{  this.state.currentView == "Transfer" ? <Transfer /> 
 				 : this.state.currentView == "Receipts" ? <ReceiptsView /> 
-				 : this.state.currentView == "Settings" ? <Settings />
+				 : this.state.currentView == "Settings" ? <Settings canvas={this.props.canvas}/>
 				 : this.state.currentView == "AppView" ? <AppView />
 				 : DappViewService.getView(this.state.currentView)  }
 			</div>

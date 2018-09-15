@@ -2,6 +2,7 @@
 
 // Major third-party modules
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import Reflux from 'reflux';
 import Modal from 'react-modal';
 import path from 'path';
@@ -130,6 +131,10 @@ class DashBoard extends Reflux.Component {
         this.setState({ [key]: e.target.value });
     }
 
+    passAccRef = () => {
+	return ReactDOM.findDOMNode(this.refs.Accounts).firstChild;
+    }
+
     render() {
         console.log("in Dashboard render()")
 
@@ -245,8 +250,8 @@ class DashBoard extends Reflux.Component {
             return (
                 <div className="container unlocked">
                     <States />
-                    <Accounts />
-                    <MainView />
+                    <Accounts ref="Accounts"/>
+                    <MainView canvas={this.passAccRef}/>
                     <Sidebar />
                     <Modal ariaHideApp={false} isOpen={this.state.modalIsOpen && this.state.unlocked} style=
                         {{
