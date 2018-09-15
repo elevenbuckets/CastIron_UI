@@ -47,6 +47,7 @@ public/view/
 public/util/
 public/app.js
 public/.old/
+public/local/
 
 # Do not ignore these files
 !public/index.html
