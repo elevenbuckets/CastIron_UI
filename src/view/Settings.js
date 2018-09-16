@@ -21,7 +21,6 @@ import CastIronActions from '../action/CastIronActions';
 
 // Reflux store
 import CastIronStore from '../store/CastIronStore';
-import castIronService from '../service/CastIronService';
 
 class Settings extends AlertModalUser {
 	constructor(props) {
