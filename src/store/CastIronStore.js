@@ -25,7 +25,7 @@ class CastIronStore extends Reflux.Store {
             balances: { 'ETH': 0 },
             blockHeight: null,
             blockTime: null,
-	    highestBlock: 0,
+            highestBlock: 0,
             gasPrice: null,
             selected_token_name: '',
             currentView: 'Transfer',
@@ -33,7 +33,7 @@ class CastIronStore extends Reflux.Store {
             rpcfailed: false,
             configured: false,
             userCfgDone: false,
-	    syncInProgress: false,
+            syncInProgress: false,
             modalIsOpen: false,
             scheduleModalIsOpen: false,
             unlocked: false,
@@ -56,10 +56,10 @@ class CastIronStore extends Reflux.Store {
     }
 
     onInitPlatform() {
-	    console.log('Re-init platform');
-	    this.setState({retrying: 1, rpcfailed: false, configured: false});
-	    BlockTimer.state.initialized = false;
-	    this.updateInfo();
+        console.log('Re-init platform');
+        this.setState({ retrying: 1, rpcfailed: false, configured: false });
+        BlockTimer.state.initialized = false;
+        this.updateInfo();
     }
 
     onEnqueue(tx) {
@@ -325,13 +325,34 @@ class CastIronStore extends Reflux.Store {
         let stage = Promise.resolve(this.setState({ customGasPrice: price }))
         stage.then(() => {
             if (this.state.customGasPrice) {
-                let gasPrice = this.wallet.toWei(parseFloat(this.state.customGasPrice).toString(),9);
+                let gasPrice = this.wallet.toWei(parseFloat(this.state.customGasPrice).toString(), 9);
                 this.setGasPrice(gasPrice);
             }
         }
 
         );
 
+    }
+
+    onWatchedTokenUpdate(action, tokenSymbol){
+        let watchedTokens = this.state.tokenList;   
+        if(action === "Add"){
+            if(watchedTokens.includes(tokenSymbol)){
+                return;
+            }else{
+                watchedTokens = [...watchedTokens, tokenSymbol];
+                this.setState({tokenList : watchedTokens});
+                this.wallet.hotGroups(watchedTokens);
+            }
+        }else if(action ==="Remove"){
+            if(!watchedTokens.includes(tokenSymbol)){
+                return;
+            }else{
+                watchedTokens.splice(watchedTokens.indexOf(tokenSymbol), 1);
+                this.setState({tokenList : watchedTokens});
+                this.wallet.hotGroups(watchedTokens);
+            }
+        }
     }
 
     processQPromise = (qPromise) => {
@@ -423,11 +444,11 @@ class CastIronStore extends Reflux.Store {
     updateInfo = () => {
         let stage = Promise.resolve();
 
-	if (!this.wallet.configured()) {
-		return this.setState({configured: false});
-	} else {
-		this.setState({configured: true});
-	}
+        if (!this.wallet.configured()) {
+            return this.setState({ configured: false });
+        } else {
+            this.setState({ configured: true });
+        }
 
         const __delay = (t, v) => { return new Promise((resolve) => { setTimeout(resolve.bind(null, v), t) }); }
         const __reconnect = (p, trial, retries) => { // p: promise, trial: current retry, retries: max retry times
@@ -603,9 +624,9 @@ class CastIronStore extends Reflux.Store {
     }
 
     // Set gas price for both wallet and state, arg gagPrice is with unit Wei, 
-    setGasPrice = gasPrice =>{
+    setGasPrice = gasPrice => {
         this.wallet.gasPrice = gasPrice;
-        this.setState({gasPrice : gasPrice}) ;
+        this.setState({ gasPrice: gasPrice });
     }
 
 }

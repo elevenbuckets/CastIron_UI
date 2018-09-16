@@ -6,5 +6,5 @@ let CastIronActions = Reflux.createActions(['enqueue', 'dequeue', 'clearQueue', 
 'addQ', 'changeView', 'updateReceipts', 'sendTk','masterUpdate', 'confirmTx', 'cancelTx', 'sendTks', 
 'addressUpdate', 'gasPriceOptionSelect', 'customGasPriceUpdate', "schedule", "confirmScheduleTx", "cancelScheduleTx",
 'enqueueSchedule', 'dequeueSchedule', 'clearQueueSchedule','batchSchedule', 'scheduleTxInQueue', 'deleteScheduledQ',
-'deleteScheduledQs', 'initPlatform']);
+'deleteScheduledQs', 'initPlatform', "watchedTokenUpdate"]);
 export default CastIronActions

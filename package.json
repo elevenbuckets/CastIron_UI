@@ -24,6 +24,7 @@
   },
   "scripts": {
     "watch": "node_modules/.bin/browser-sync start --localOnly --files 'public/**/*.css, public/**/*.html, public/**/*.js, !node_modules/**/*' --directory",
+    "compileRelease": "./node_modules/.bin/babel src --out-dir public && cp -rvf .local public/",
     "compile": "./node_modules/.bin/babel src --out-dir public"
   },
   "dependencies": {

@@ -16,7 +16,9 @@ class CastIronService {
     constructor() {
         this.cfgobj = remote.getGlobal('cfgobj');
         this.wallet = new Wallet(path.join(this.cfgobj.configDir, "config.json"));
-        this.state = { currentQs: [] }
+        this.state = { currentQs: [] };
+        this.wallet.defaultTokenList = {...this.wallet.TokenList};
+        this.wallet.TokenList = {...this.wallet.TokenList, ...this.wallet.configs.tokens};
     }
 
     getAccounts = () => { return this.wallet.allAccounts(); }

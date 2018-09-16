@@ -10,7 +10,7 @@ let win;
 let ipfs;
 
 function createWindow () {
-  let buffer = fs.readFileSync('.local/bootstrap_config.json');
+  let buffer = fs.readFileSync('public/.local/bootstrap_config.json');
   let cfgobj = JSON.parse(buffer.toString());
   let ipfscfg = path.join(cfgobj.configDir, 'ipfsserv.json');
 

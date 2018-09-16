@@ -68,11 +68,12 @@ class DashBoard extends Reflux.Component {
     setupdone = () => {
 	// confine config fields
         const mainFields = ["configDir"];
-        const castIronFields = ["datadir", "rpcAddr", "ipcPath", "defaultGasPrice", "gasOracleAPI", "condition", "networkID", "watchTokens", "passVault"];
+        const castIronFields = ["datadir", "rpcAddr", "ipcPath", "defaultGasPrice", "gasOracleAPI",
+         "condition", "networkID","tokens", "watchTokens", "passVault"];
         const ipfsFields = ["lockerpathjs", "repoPathJs", "lockerpathgo", "repoPathGo", "ipfsBinary"];
 
 	// ConfigWriter instances
-        let mainWriter = ConfigWriterService.getFileWriter(".local/bootstrap_config.json", mainFields);
+        let mainWriter = ConfigWriterService.getFileWriter("public/.local/bootstrap_config.json", mainFields);
         let castIronWriter = ConfigWriterService.getFileWriter(path.join(this.state.configFolder + "/config.json"), castIronFields);
         let ipfsWriter = ConfigWriterService.getFileWriter(path.join(this.state.configFolder, "/ipfsserv.json"), ipfsFields);
 
@@ -90,6 +91,7 @@ class DashBoard extends Reflux.Component {
             "condition": "sanity",
             "networkID": this.state.networkID,
             "passVault": path.join(this.state.configFolder, "myArchive.bcup"),
+            "tokens":{},
             "watchTokens": [
                 "TKA",
                 "TKB",

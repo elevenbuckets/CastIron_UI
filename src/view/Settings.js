@@ -4,6 +4,8 @@
 import Reflux from 'reflux';
 import React from 'react';
 import fs from 'fs';
+import path from 'path';
+const remote = require('electron').remote;
 
 // Modals
 import AlertModal from '../components/AlertModal';
@@ -12,6 +14,7 @@ import AlertModalUser from '../common/AlertModalUser'
 // Singleton services
 import CastIronService from '../service/CastIronService';
 import AcctMgrService from '../service/AcctMgrService';
+import ConfigWriterService from '../service/ConfigWriterService';
 
 // Reflux actions
 import CastIronActions from '../action/CastIronActions';
@@ -29,8 +32,21 @@ class Settings extends AlertModalUser {
 			reveal2: false,
 			waiting: false,
 			currentSettings: 'gas',
-			currentAccSettings: 'old'
+			currentAccSettings: 'old',
+			tokenAction: "",
+			tokenToAdd: {
+				symbol: '',
+				token: {
+					addr: 'default',
+					name: '',
+					decimals: "",
+					category: 'Customized',
+					watched: false
+				}
+			},
+			selectedTokens: []
 		}
+
 
 		this.wallet = CastIronService.wallet;
 		this.accMgr = AcctMgrService.accMgr;
@@ -38,7 +54,31 @@ class Settings extends AlertModalUser {
 		this.variable = undefined;
 	}
 
+
+	initializeAvaibleTokens = () => {
+		let availableTokensFromCastIron = { ...CastIronService.wallet.defaultTokenList };
+		Object.keys(availableTokensFromCastIron).map((key) => {
+			availableTokensFromCastIron[key] = {
+				...availableTokensFromCastIron[key],
+				category: "default", watched: this.state.tokenList.includes(key)
+			}
+		})
+
+
+		// Now the custom tokens info is in config.json, may refactor it to its own file in future
+		this.cfgobj = remote.getGlobal('cfgobj');
+		let availableTokensFromCustomer = require(path.join(this.cfgobj.configDir, "config.json")).tokens;
+		Object.keys(availableTokensFromCustomer).map((key) => {
+			availableTokensFromCustomer[key] = {
+				...availableTokensFromCustomer[key],
+				category: "Customized", watched: this.state.tokenList.includes(key)
+			}
+		})
+		this.state.availableTokens = { ...availableTokensFromCastIron, ...availableTokensFromCustomer };
+	}
+
 	componentDidMount = () => {
+		this.initializeAvaibleTokens();
 		this.accCanvas = this.props.canvas();
 	}
 
@@ -119,7 +159,7 @@ class Settings extends AlertModalUser {
 
 	handleImport = (event) => {
 		// sanity check
-		if (!fs.existsSync(this.keypath) || typeof(this.keypath) === 'undefined') {
+		if (!fs.existsSync(this.keypath) || typeof (this.keypath) === 'undefined') {
 			this.keypath = undefined;
 			this.variable = undefined;
 			this.setState({ waiting: false });
@@ -223,52 +263,300 @@ class Settings extends AlertModalUser {
 	gasSettings = () => {
 		return (
 			<form style={{ fontSize: "18px", textAlign: 'center' }} onSubmit={(e) => { e.preventDefault() }} >
-				<table style={{border: "0px"}}><tbody>
-						<tr>
-							<td>
-								<label><input type="radio"
-									onChange={this.handleGasPriceSelect} name="gasprice" value="low" 
-									checked={this.state.gasPriceOption === 'low' ? "checked" : false}/>{"Slow (" + this.wallet.toEth(this.state.gasPriceInfo.low, 9).toString() +  ")" }</label><br />
-							</td>
-							<td>
-								<label><input type="radio"
-									onChange={this.handleGasPriceSelect} name="gasprice" value="mid"
-									checked={this.state.gasPriceOption === 'mid' ? "checked" : false} />{"Mid (" + this.wallet.toEth(this.state.gasPriceInfo.mid, 9).toString() +  ")" }</label><br />
-							</td>
-							<td>
-								<label><input type="radio"
-									onChange={this.handleGasPriceSelect} name="gasprice" value="high" 
-									checked={this.state.gasPriceOption === 'high' ? "checked" : false} />{"Normal (" + this.wallet.toEth(this.state.gasPriceInfo.high, 9).toString() +  ")" }</label><br />
-							</td>
-							<td>
-								<label><input type="radio"
-									onChange={this.handleGasPriceSelect} name="gasprice" value="fast" 
-									checked={this.state.gasPriceOption === 'fast' ? "checked" : false}/>{"Fast (" + this.wallet.toEth(this.state.gasPriceInfo.fast, 9).toString() +  ")" }</label><br />
-							</td>
-							<td>
-								<label><input type="radio"
-									onChange={this.handleGasPriceSelect} name="gasprice" value="custom"
-									checked={this.state.gasPriceOption === 'custom' ? "checked" : false}/>Custom
+				<table style={{ border: "0px" }}><tbody>
+					<tr>
+						<td>
+							<label><input type="radio"
+								onChange={this.handleGasPriceSelect} name="gasprice" value="low"
+								checked={this.state.gasPriceOption === 'low' ? "checked" : false} />{"Slow (" + this.wallet.toEth(this.state.gasPriceInfo.low, 9).toString() + ")"}</label><br />
+						</td>
+						<td>
+							<label><input type="radio"
+								onChange={this.handleGasPriceSelect} name="gasprice" value="mid"
+								checked={this.state.gasPriceOption === 'mid' ? "checked" : false} />{"Mid (" + this.wallet.toEth(this.state.gasPriceInfo.mid, 9).toString() + ")"}</label><br />
+						</td>
+						<td>
+							<label><input type="radio"
+								onChange={this.handleGasPriceSelect} name="gasprice" value="high"
+								checked={this.state.gasPriceOption === 'high' ? "checked" : false} />{"Normal (" + this.wallet.toEth(this.state.gasPriceInfo.high, 9).toString() + ")"}</label><br />
+						</td>
+						<td>
+							<label><input type="radio"
+								onChange={this.handleGasPriceSelect} name="gasprice" value="fast"
+								checked={this.state.gasPriceOption === 'fast' ? "checked" : false} />{"Fast (" + this.wallet.toEth(this.state.gasPriceInfo.fast, 9).toString() + ")"}</label><br />
+						</td>
+						<td>
+							<label><input type="radio"
+								onChange={this.handleGasPriceSelect} name="gasprice" value="custom"
+								checked={this.state.gasPriceOption === 'custom' ? "checked" : false} />Custom
 						<input type="text" style=
-						{{  
-							marginLeft: "15px",
-							width: "120px", 
-							backgroundColor: "rgba(0,0,0,0)", 
-							border: "2px solid white",
-							fontSize: "18px",
-							color: "white",
-							textAlign: "right",
-							paddingRight: "4px"
-						}} name="custom_gasprice"
-										value={this.state.gasPriceOption === 'custom' ? (this.state.customGasPrice? this.state.customGasPrice : undefined) :""}
-										disabled={!this.isCustomGasPrice} onChange={this.handleCustomGasPriceUpdate} placeholder="Unit: gwei" />
-								</label>
-							</td></tr>
-                    
-                </tbody></table>
-				</form>
+									{{
+										marginLeft: "15px",
+										width: "120px",
+										backgroundColor: "rgba(0,0,0,0)",
+										border: "2px solid white",
+										fontSize: "18px",
+										color: "white",
+										textAlign: "right",
+										paddingRight: "4px"
+									}} name="custom_gasprice"
+									value={this.state.gasPriceOption === 'custom' ? (this.state.customGasPrice ? this.state.customGasPrice : undefined) : ""}
+									disabled={!this.isCustomGasPrice} onChange={this.handleCustomGasPriceUpdate} placeholder="Unit: gwei" />
+							</label>
+						</td></tr>
+
+				</tbody></table>
+			</form>
 		);
 	}
+
+	tokensSettings = () => {
+		return (
+			<div className="TQList">
+				<table className="balance-sheet">
+					<tbody>
+						<tr className="balance-sheet">
+							<td className="txform" style={{ border: '0', textAlign: "left" }}>
+								<input type="button" className="button" value='New' onClick={this.newToken} />
+								<input type="button" className="button" value='Edit' disabled={true}/>
+								<input type="button" className="button" value='Search' disabled={true}/>
+								<input type="button" className="button" value='Delete' disabled={true}/>
+								<input type="button" className="button" value='Watch' onClick={this.handleClickWatchToken} />
+								<input type="button" className="button" value='UnWatch' onClick={this.handleClickUnWatchToken} />
+							</td>
+						</tr>
+
+					</tbody>
+				</table>
+				<table style={{ width: "100%" }}>
+					<tbody>
+						<tr>
+							<td width='5%'>Select</td>
+							<td width='3%'>Symbol</td>
+							<td width='32%'>Address</td>
+							<td width='10%'>Name</td>
+							<td width='10%'>Decimals</td>
+							<td width='10%'>Catgory</td>
+							<td width='10%'>Watched</td>
+						</tr>
+						<tr hidden={!(this.state.tokenAction === "New")}>
+							<td width='5%'></td>
+							<td width='3%'><input type='text' size='3'
+								onChange={this.changeNewTokenField.bind(this, "symbol")}
+							/></td>
+							<td width='32%'><input type='text' size='20'
+								onChange={this.changeNewTokenField.bind(this, "addr")}
+							/></td>
+							<td width='10%'><input type='text' size='10'
+								onChange={this.changeNewTokenField.bind(this, "name")}
+							/></td>
+							<td width='10%'><input type='text' size='10'
+								onChange={this.changeNewTokenField.bind(this, "decimals")}
+							/></td>
+							<td width='10%'></td>
+							<td width='10%'><input type='button' className="button" value='Add'
+								onClick={this.handleClickAddToken}
+							/></td>
+
+						</tr>
+						<tr hidden={!(this.state.tokenAction === "Search")}>
+							<td width='5%'></td>
+							<td width='3%'><input type='text' size='3'
+								onChange={this.changeTokenFilter.bind(this, "symbol")}
+							/></td>
+							<td width='32%'><input type='text' size='20'
+								onChange={this.changeTokenFilter.bind(this, "addr")}
+							/></td>
+							<td width='10%'><input type='text' size='10'
+								onChange={this.changeTokenFilter.bind(this, "name")}
+							/></td>
+							<td width='10%'><input type='text' size='10'
+								onChange={this.changeTokenFilter.bind(this, "decimals")}
+							/></td>
+							<td width='10%'><input type='text' size='5'
+								onChange={this.changeTokenFilter.bind(this, "category")}
+							/></td>
+							<td width='10%'><input type='text' size='10'
+								onChange={this.changeTokenFilter.bind(this, "watched")}
+							/></td>
+
+						</tr>
+						{Object.keys(this.state.availableTokens).map((key) => {
+							let token = this.state.availableTokens[key];
+							return (
+								<tr>
+									<td className="balance-sheet"
+										width='5%'><input
+											name="check"
+											type="checkbox"
+											checked={this.state.selectedTokens.includes(key)}
+											onChange={this.checkToken.bind(this, key)}
+											style={{ width: "25px", height: "25px" }} /></td>
+									<td width='3%'>{key}</td>
+									<td width='32%'>{token.addr}</td>
+									<td width='10%'>{token.name}</td>
+									<td width='10%'>{token.decimals}</td>
+									<td width='10%'>{token.category}</td>
+									<td width='10%'>{token.watched ? "Yes" : "No"}</td>
+
+								</tr>
+							);
+						})}
+					</tbody>
+				</table>
+			</div>
+		);
+	}
+
+	changeTokenFilter = (field, event) => {
+		// let filter =  {...this.tokenFilter, [field] : event.target.value}
+        // if(event.target.value == ""){
+        //     delete filter[field];
+        // }
+        // let filteredQs = this.state.scheduledQs;
+        // filteredQs = filteredQs.filter(q => {
+        //     return Object.keys(filter).reduce((match, key) =>{
+        //        return match && q[key].includes(filter[key]);
+        //     }, true)
+        //     // return JSON.stringify(q) == JSON.stringify({ ...q, ...filter });
+        // })
+        // setDappLocalState(this, {filter: filter, filteredQs : filteredQs })
+	}
+	newToken = () => {
+		if (this.state.tokenAction === "New") {
+			this.setState({ tokenAction: "" })
+		} else {
+			this.setState({ tokenAction: "New" })
+		}
+
+	}
+
+	addToken = tokenToAdd => {
+		this.setState({ availableTokens: { ...this.state.availableTokens, [tokenToAdd.symbol]: tokenToAdd.token } });
+
+
+
+		// udpate the tokens in configuration file
+		const castIronFields = ["datadir", "rpcAddr", "ipcPath", "defaultGasPrice", "gasOracleAPI",
+			"condition", "networkID", "tokens", "watchTokens", "passVault"];
+		this.cfgobj = remote.getGlobal('cfgobj');
+		let json = require(path.join(this.cfgobj.configDir, "config.json"))
+		let availableTokensFromCustomer = json.tokens;
+		let castIronWriter = ConfigWriterService.getFileWriter(path.join(this.cfgobj.configDir, "config.json"), castIronFields);
+		availableTokensFromCustomer = {
+			...availableTokensFromCustomer, [tokenToAdd.symbol]:
+				{ addr: tokenToAdd.token.addr, name: tokenToAdd.token.name, decimals: tokenToAdd.token.decimals }
+		};
+
+		//TODO: change it to use addKeyValue in future
+		json.tokens = availableTokensFromCustomer;
+		castIronWriter.writeJSON(json);
+
+
+		// udpate the tokenList in wallet
+		this.wallet.TokenList = {
+			...this.wallet.TokenList, [tokenToAdd.symbol]:
+				{ addr: tokenToAdd.token.addr, name: tokenToAdd.token.name, decimals: tokenToAdd.token.decimals }
+		}
+	}
+
+	handleClickAddToken = () => {
+		this.addToken(this.state.tokenToAdd)
+	}
+
+	checkToken = (token, event) => {
+		if (event.target.checked) {
+			if (!this.state.selectedTokens.includes(token)) {
+				this.setState({ selectedTokens: [...this.state.selectedTokens, token] })
+			}
+		} else {
+			if (this.state.selectedTokens.includes(token)) {
+				let selectedTokens = [...this.state.selectedTokens];
+				selectedTokens.splice(selectedTokens.indexOf(token), 1);
+				this.setState({ selectedTokens: selectedTokens })
+			}
+
+		}
+	}
+
+	handleClickWatchToken = () => {
+		let selectedTokens = this.state.selectedTokens;
+		selectedTokens.map((token) => {
+			let availableTokens = this.state.availableTokens;
+			if (!availableTokens[token].watched) {
+				CastIronActions.watchedTokenUpdate("Add", token);
+				availableTokens[token].watched = true;
+			}
+			this.setState({ availableTokens: availableTokens });
+		})
+
+		this.setState({ selectedTokens: [] });
+
+		// udpate the tokens in configuration file
+		const castIronFields = ["datadir", "rpcAddr", "ipcPath", "defaultGasPrice", "gasOracleAPI",
+			"condition", "networkID", "tokens", "watchTokens", "passVault"];
+		this.cfgobj = remote.getGlobal('cfgobj');
+		let json = require(path.join(this.cfgobj.configDir, "config.json"))
+		let watchTokens = json.watchTokens;
+		let castIronWriter = ConfigWriterService.getFileWriter(path.join(this.cfgobj.configDir, "config.json"), castIronFields);
+		watchTokens = [...watchTokens, ...selectedTokens]
+
+		//TODO: change it to use addKeyValue in future
+		json.watchTokens = watchTokens;
+		castIronWriter.writeJSON(json);
+
+
+	}
+
+	handleClickUnWatchToken = () => {
+		this.cfgobj = remote.getGlobal('cfgobj');
+		let json = require(path.join(this.cfgobj.configDir, "config.json"))
+		let watchTokens = json.watchTokens;
+		let selectedTokens = this.state.selectedTokens;
+		selectedTokens.map((token) => {
+			let availableTokens = this.state.availableTokens;
+			if (availableTokens[token].watched) {
+				CastIronActions.watchedTokenUpdate("Remove", token);
+				availableTokens[token].watched = false;
+				if(watchTokens.includes(token)){
+					watchTokens.splice(watchTokens.indexOf(token), 1);
+				}
+			}
+			this.setState({ availableTokens: availableTokens });
+		})
+		this.setState({ selectedTokens: [] });
+
+		// udpate the tokens in configuration file
+		const castIronFields = ["datadir", "rpcAddr", "ipcPath", "defaultGasPrice", "gasOracleAPI",
+			"condition", "networkID", "tokens", "watchTokens", "passVault"];
+		let castIronWriter = ConfigWriterService.getFileWriter(path.join(this.cfgobj.configDir, "config.json"), castIronFields);
+
+		//TODO: change it to use addKeyValue in future
+		json.watchTokens = watchTokens;
+		castIronWriter.writeJSON(json);
+	}
+
+	changeNewTokenField = (field, e) => {
+		let tokenToAdd = this.state.tokenToAdd;
+		if (field === "symbol") {
+			tokenToAdd[field] = e.target.value;
+		} else {
+			tokenToAdd.token[field] = e.target.value;
+		}
+
+		this.setState({ tokenToAdd: tokenToAdd })
+	}
+
+	searchToken = () =>{
+		if (this.state.tokenAction === "Search") {
+			this.setState({ tokenAction: "" })
+		} else {
+			this.setState({ tokenAction: "Search" })
+		}
+
+	}
+
+
 
 	handleChange = (tabName) => {
 		this.setState({ currentSettings: tabName });
@@ -294,18 +582,23 @@ class Settings extends AlertModalUser {
 							backgroundColor: this.state.currentSettings === 'acc' ? "white" : "rgba(0,0,0,0)",
 							color: this.state.currentSettings === 'acc' ? "black" : "white"
 						}} value="Accounts" onClick={this.handleChange.bind(this, "acc")} />
+					<input type="button" className="button tabset" style=
+						{{
+							backgroundColor: this.state.currentSettings === 'tokens' ? "white" : "rgba(0,0,0,0)",
+							color: this.state.currentSettings === 'tokens' ? "black" : "white"
+						}} value="Tokens" onClick={this.handleChange.bind(this, "tokens")} />
 				</legend>
-				{ 
-				  this.state.waiting === false ?
-					<div className="item SettingInner">
-						{
-							this.state.currentSettings === "gas" ? this.gasSettings()
-								: this.state.currentSettings === "acc" ? this.accountMgr()
-									: this.setState({ currentSettings: 'gas' })
-						}
-					</div>
-				  : <div className="item SettingInner"><div className="waiter"><p style={{fontSize: "26px"}}>Processing, please wait...</p><br/><div className="loader"></div></div></div>
-				}	
+				{
+					this.state.waiting === false ?
+						<div className="item SettingInner">
+							{
+								this.state.currentSettings === "gas" ? this.gasSettings()
+									: this.state.currentSettings === "acc" ? this.accountMgr() :
+										this.state.currentSettings === "tokens" ? this.tokensSettings() : this.setState({ currentSettings: 'gas' })
+							}
+						</div>
+						: <div className="item SettingInner"><div className="waiter"><p style={{ fontSize: "26px" }}>Processing, please wait...</p><br /><div className="loader"></div></div></div>
+				}
 				<AlertModal content={this.state.alertContent} isAlertModalOpen={this.state.isAlertModalOpen} close={this.closeModal} />
 			</fieldset>
 		);
