@@ -66,7 +66,8 @@ class DashBoard extends Reflux.Component {
     setupdone = () => {
 	// confine config fields
         const mainFields = ["configDir"];
-        const castIronFields = ["datadir", "rpcAddr", "ipcPath", "defaultGasPrice", "gasOracleAPI", "condition", "networkID", "watchTokens", "passVault"];
+        const castIronFields = ["datadir", "rpcAddr", "ipcPath", "defaultGasPrice", "gasOracleAPI",
+         "condition", "networkID","tokens", "watchTokens", "passVault"];
         const ipfsFields = ["lockerpathjs", "repoPathJs", "lockerpathgo", "repoPathGo", "ipfsBinary"];
 
 	// ConfigWriter instances
@@ -88,6 +89,7 @@ class DashBoard extends Reflux.Component {
             "condition": "sanity",
             "networkID": "1100",
             "passVault": path.join(this.state.configFolder, "myArchive.bcup"),
+            "tokens":{},
             "watchTokens": [
                 "TKA",
                 "TKB",

@@ -4,6 +4,8 @@
 import Reflux from 'reflux';
 import React from 'react';
 import fs from 'fs';
+import path from 'path';
+const remote = require('electron').remote;
 
 // Modals
 import AlertModal from '../components/AlertModal';
@@ -12,12 +14,14 @@ import AlertModalUser from '../common/AlertModalUser'
 // Singleton services
 import CastIronService from '../service/CastIronService';
 import AcctMgrService from '../service/AcctMgrService';
+import ConfigWriterService from '../service/ConfigWriterService';
 
 // Reflux actions
 import CastIronActions from '../action/CastIronActions';
 
 // Reflux store
 import CastIronStore from '../store/CastIronStore';
+import castIronService from '../service/CastIronService';
 
 class Settings extends AlertModalUser {
 	constructor(props) {
@@ -30,42 +34,52 @@ class Settings extends AlertModalUser {
 			waiting: false,
 			currentSettings: 'gas',
 			currentAccSettings: 'old',
-			avalableTokens: {
-				"ETH": {
-					"addr": "0x0000000000000000000000000000000000000000",
-					"name": "ETH",
-					"decimals": 18,
-					"category": "default",
-					"watched": true
-				},
-				"TKA": {
-					"name": "Trade Token A",
-					"decimals": "18",
-					"addr": "0xf87ad704bd60d6cf22849a0c8f9697157b5c5f51",
-					"category": "default",
-					"watched": true
-				},
-				"TKB": {
-					"name": "Trade Token B",
-					"decimals": "18",
-					"addr": "0xc04b4e1ee8af16244ea03684e4b510733769c783",
-					"category": "default",
-					"watched": true
-				},
-				"TKC": {
-					"name": "Trade Token C",
-					"decimals": "18",
-					"addr": "0xa288826d08e8dc7049687a733cc0eaab23f8f868",
-					"category": "default",
-					"watched": true
+			tokenAction: "",
+			tokenToAdd: {
+				symbol: '',
+				token: {
+					addr: 'default',
+					name: '',
+					decimals: "",
+					category: 'Customized',
+					watched: false
 				}
-			}
+			},
+			selectedTokens: []
 		}
+
 
 		this.wallet = CastIronService.wallet;
 		this.accMgr = AcctMgrService.accMgr;
 		this.keypath = undefined;
 		this.variable = undefined;
+	}
+
+
+	initializeAvaibleTokens = () => {
+		let availableTokensFromCastIron = { ...CastIronService.wallet.defaultTokenList };
+		Object.keys(availableTokensFromCastIron).map((key) => {
+			availableTokensFromCastIron[key] = {
+				...availableTokensFromCastIron[key],
+				category: "default", watched: this.state.tokenList.includes(key)
+			}
+		})
+
+
+		// Now the custom tokens info is in config.json, may refactor it to its own file in future
+		this.cfgobj = remote.getGlobal('cfgobj');
+		let availableTokensFromCustomer = require(path.join(this.cfgobj.configDir, "config.json")).tokens;
+		Object.keys(availableTokensFromCustomer).map((key) => {
+			availableTokensFromCustomer[key] = {
+				...availableTokensFromCustomer[key],
+				category: "Customized", watched: this.state.tokenList.includes(key)
+			}
+		})
+		this.state.availableTokens = { ...availableTokensFromCastIron, ...availableTokensFromCustomer };
+	}
+
+	componentDidMount = () => {
+		this.initializeAvaibleTokens();
 	}
 
 	// Gas related functions
@@ -302,12 +316,12 @@ class Settings extends AlertModalUser {
 					<tbody>
 						<tr className="balance-sheet">
 							<td className="txform" style={{ border: '0', textAlign: "left" }}>
-								<input type="button" className="button" value='New'  />
-								<input type="button" className="button" value='Edit'/>
-								<input type="button" className="button" value='Search'  />
-								<input type="button" className="button" value='Delete' />
-								<input type="button" className="button" value='Watch' />
-								<input type="button" className="button" value='UnWatch' />
+								<input type="button" className="button" value='New' onClick={this.newToken} />
+								<input type="button" className="button" value='Edit' disabled={true}/>
+								<input type="button" className="button" value='Search' disabled={true}/>
+								<input type="button" className="button" value='Delete' disabled={true}/>
+								<input type="button" className="button" value='Watch' onClick={this.handleClickWatchToken} />
+								<input type="button" className="button" value='UnWatch' onClick={this.handleClickUnWatchToken} />
 							</td>
 						</tr>
 
@@ -316,7 +330,7 @@ class Settings extends AlertModalUser {
 				<table style={{ width: "100%" }}>
 					<tbody>
 						<tr>
-							<td cwidth='5%'>Select</td>
+							<td width='5%'>Select</td>
 							<td width='3%'>Symbol</td>
 							<td width='32%'>Address</td>
 							<td width='10%'>Name</td>
@@ -324,15 +338,58 @@ class Settings extends AlertModalUser {
 							<td width='10%'>Catgory</td>
 							<td width='10%'>Watched</td>
 						</tr>
-						{Object.keys(this.state.avalableTokens).map((key) => {
-							let token = this.state.avalableTokens[key];
+						<tr hidden={!(this.state.tokenAction === "New")}>
+							<td width='5%'></td>
+							<td width='3%'><input type='text' size='3'
+								onChange={this.changeNewTokenField.bind(this, "symbol")}
+							/></td>
+							<td width='32%'><input type='text' size='20'
+								onChange={this.changeNewTokenField.bind(this, "addr")}
+							/></td>
+							<td width='10%'><input type='text' size='10'
+								onChange={this.changeNewTokenField.bind(this, "name")}
+							/></td>
+							<td width='10%'><input type='text' size='10'
+								onChange={this.changeNewTokenField.bind(this, "decimals")}
+							/></td>
+							<td width='10%'></td>
+							<td width='10%'><input type='button' className="button" value='Add'
+								onClick={this.handleClickAddToken}
+							/></td>
+
+						</tr>
+						<tr hidden={!(this.state.tokenAction === "Search")}>
+							<td width='5%'></td>
+							<td width='3%'><input type='text' size='3'
+								onChange={this.changeTokenFilter.bind(this, "symbol")}
+							/></td>
+							<td width='32%'><input type='text' size='20'
+								onChange={this.changeTokenFilter.bind(this, "addr")}
+							/></td>
+							<td width='10%'><input type='text' size='10'
+								onChange={this.changeTokenFilter.bind(this, "name")}
+							/></td>
+							<td width='10%'><input type='text' size='10'
+								onChange={this.changeTokenFilter.bind(this, "decimals")}
+							/></td>
+							<td width='10%'><input type='text' size='5'
+								onChange={this.changeTokenFilter.bind(this, "category")}
+							/></td>
+							<td width='10%'><input type='text' size='10'
+								onChange={this.changeTokenFilter.bind(this, "watched")}
+							/></td>
+
+						</tr>
+						{Object.keys(this.state.availableTokens).map((key) => {
+							let token = this.state.availableTokens[key];
 							return (
 								<tr>
 									<td className="balance-sheet"
 										width='5%'><input
 											name="check"
 											type="checkbox"
-											checked="false"
+											checked={this.state.selectedTokens.includes(key)}
+											onChange={this.checkToken.bind(this, key)}
 											style={{ width: "25px", height: "25px" }} /></td>
 									<td width='3%'>{key}</td>
 									<td width='32%'>{token.addr}</td>
@@ -349,6 +406,155 @@ class Settings extends AlertModalUser {
 			</div>
 		);
 	}
+
+	changeTokenFilter = (field, event) => {
+		// let filter =  {...this.tokenFilter, [field] : event.target.value}
+        // if(event.target.value == ""){
+        //     delete filter[field];
+        // }
+        // let filteredQs = this.state.scheduledQs;
+        // filteredQs = filteredQs.filter(q => {
+        //     return Object.keys(filter).reduce((match, key) =>{
+        //        return match && q[key].includes(filter[key]);
+        //     }, true)
+        //     // return JSON.stringify(q) == JSON.stringify({ ...q, ...filter });
+        // })
+        // setDappLocalState(this, {filter: filter, filteredQs : filteredQs })
+	}
+	newToken = () => {
+		if (this.state.tokenAction === "New") {
+			this.setState({ tokenAction: "" })
+		} else {
+			this.setState({ tokenAction: "New" })
+		}
+
+	}
+
+	addToken = tokenToAdd => {
+		this.setState({ availableTokens: { ...this.state.availableTokens, [tokenToAdd.symbol]: tokenToAdd.token } });
+
+
+
+		// udpate the tokens in configuration file
+		const castIronFields = ["datadir", "rpcAddr", "ipcPath", "defaultGasPrice", "gasOracleAPI",
+			"condition", "networkID", "tokens", "watchTokens", "passVault"];
+		this.cfgobj = remote.getGlobal('cfgobj');
+		let json = require(path.join(this.cfgobj.configDir, "config.json"))
+		let availableTokensFromCustomer = json.tokens;
+		let castIronWriter = ConfigWriterService.getFileWriter(path.join(this.cfgobj.configDir, "config.json"), castIronFields);
+		availableTokensFromCustomer = {
+			...availableTokensFromCustomer, [tokenToAdd.symbol]:
+				{ addr: tokenToAdd.token.addr, name: tokenToAdd.token.name, decimals: tokenToAdd.token.decimals }
+		};
+
+		//TODO: change it to use addKeyValue in future
+		json.tokens = availableTokensFromCustomer;
+		castIronWriter.writeJSON(json);
+
+
+		// udpate the tokenList in wallet
+		this.wallet.TokenList = {
+			...this.wallet.TokenList, [tokenToAdd.symbol]:
+				{ addr: tokenToAdd.token.addr, name: tokenToAdd.token.name, decimals: tokenToAdd.token.decimals }
+		}
+	}
+
+	handleClickAddToken = () => {
+		this.addToken(this.state.tokenToAdd)
+	}
+
+	checkToken = (token, event) => {
+		if (event.target.checked) {
+			if (!this.state.selectedTokens.includes(token)) {
+				this.setState({ selectedTokens: [...this.state.selectedTokens, token] })
+			}
+		} else {
+			if (this.state.selectedTokens.includes(token)) {
+				let selectedTokens = [...this.state.selectedTokens];
+				selectedTokens.splice(selectedTokens.indexOf(token), 1);
+				this.setState({ selectedTokens: selectedTokens })
+			}
+
+		}
+	}
+
+	handleClickWatchToken = () => {
+		let selectedTokens = this.state.selectedTokens;
+		selectedTokens.map((token) => {
+			let availableTokens = this.state.availableTokens;
+			if (!availableTokens[token].watched) {
+				CastIronActions.watchedTokenUpdate("Add", token);
+				availableTokens[token].watched = true;
+			}
+			this.setState({ availableTokens: availableTokens });
+		})
+
+		this.setState({ selectedTokens: [] });
+
+		// udpate the tokens in configuration file
+		const castIronFields = ["datadir", "rpcAddr", "ipcPath", "defaultGasPrice", "gasOracleAPI",
+			"condition", "networkID", "tokens", "watchTokens", "passVault"];
+		this.cfgobj = remote.getGlobal('cfgobj');
+		let json = require(path.join(this.cfgobj.configDir, "config.json"))
+		let watchTokens = json.watchTokens;
+		let castIronWriter = ConfigWriterService.getFileWriter(path.join(this.cfgobj.configDir, "config.json"), castIronFields);
+		watchTokens = [...watchTokens, ...selectedTokens]
+
+		//TODO: change it to use addKeyValue in future
+		json.watchTokens = watchTokens;
+		castIronWriter.writeJSON(json);
+
+
+	}
+
+	handleClickUnWatchToken = () => {
+		this.cfgobj = remote.getGlobal('cfgobj');
+		let json = require(path.join(this.cfgobj.configDir, "config.json"))
+		let watchTokens = json.watchTokens;
+		let selectedTokens = this.state.selectedTokens;
+		selectedTokens.map((token) => {
+			let availableTokens = this.state.availableTokens;
+			if (availableTokens[token].watched) {
+				CastIronActions.watchedTokenUpdate("Remove", token);
+				availableTokens[token].watched = false;
+				if(watchTokens.includes(token)){
+					watchTokens.splice(watchTokens.indexOf(token), 1);
+				}
+			}
+			this.setState({ availableTokens: availableTokens });
+		})
+		this.setState({ selectedTokens: [] });
+
+		// udpate the tokens in configuration file
+		const castIronFields = ["datadir", "rpcAddr", "ipcPath", "defaultGasPrice", "gasOracleAPI",
+			"condition", "networkID", "tokens", "watchTokens", "passVault"];
+		let castIronWriter = ConfigWriterService.getFileWriter(path.join(this.cfgobj.configDir, "config.json"), castIronFields);
+
+		//TODO: change it to use addKeyValue in future
+		json.watchTokens = watchTokens;
+		castIronWriter.writeJSON(json);
+	}
+
+	changeNewTokenField = (field, e) => {
+		let tokenToAdd = this.state.tokenToAdd;
+		if (field === "symbol") {
+			tokenToAdd[field] = e.target.value;
+		} else {
+			tokenToAdd.token[field] = e.target.value;
+		}
+
+		this.setState({ tokenToAdd: tokenToAdd })
+	}
+
+	searchToken = () =>{
+		if (this.state.tokenAction === "Search") {
+			this.setState({ tokenAction: "" })
+		} else {
+			this.setState({ tokenAction: "Search" })
+		}
+
+	}
+
 
 
 	handleChange = (tabName) => {
