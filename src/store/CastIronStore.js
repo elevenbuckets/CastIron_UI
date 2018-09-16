@@ -507,11 +507,6 @@ class CastIronStore extends Reflux.Store {
             // Since it is possible that CastIron cannot connect to RPC!
             BlockTimer.initialize();
             this.wallet.hotGroups(this.state.tokenList);
-<<<<<<< HEAD
-            let syncInProgress = false;
-            if (BlockTimer.state.blockHeight !== BlockTimer.state.highestBlock || BlockTimer.state.highestBlock == 0) syncInProgress = true;
-            return this.setState({ blockHeight: BlockTimer.state.blockHeight, highestBlock: BlockTimer.state.highestBlock, blockTime: BlockTimer.state.blockTime, syncInProgress });
-=======
 	    let syncInProgress = false;
 	    if (
 		  BlockTimer.state.blockHeight !== BlockTimer.state.highestBlock 
@@ -522,7 +517,6 @@ class CastIronStore extends Reflux.Store {
 		    syncInProgress = true;
 	    }
 	    return this.setState({ blockHeight: BlockTimer.state.blockHeight, highestBlock: BlockTimer.state.highestBlock, blockTime: BlockTimer.state.blockTime, syncInProgress });
->>>>>>> master
         })
             .then(() => { return this.getAccounts(); })
     }
