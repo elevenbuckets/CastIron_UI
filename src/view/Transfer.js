@@ -71,15 +71,16 @@ class Transfer extends Reflux.Component {
             color: "white",
             fontWeight: "bold",
             fontSize: "24px",
-            fontFamily: "monospace"
+            fontFamily: "monospace",
+	    textAlign: "center"
           }} onChange={this.handleChange} 
                 value={this.state.recipient} placeholder="Ethereum Address" />
         </label>
 
-        <canvas className="item ToAvatar" ref='canvas' width="100%" height="100%" style=
+        <canvas className="item ToAvatar" ref='canvas' width="96%" height="96%" style=
             {
               {
-                border: "3px solid #ccc",
+                border: "4px solid rgba(255,255,255,0.73)",
                 borderRadius: "25em"
               }
             }

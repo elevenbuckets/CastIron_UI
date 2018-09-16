@@ -38,6 +38,10 @@ class Settings extends AlertModalUser {
 		this.variable = undefined;
 	}
 
+	componentDidMount = () => {
+		this.accCanvas = this.props.canvas();
+	}
+
 	// Gas related functions
 	handleCustomGasPriceUpdate = (event) => {
 		let value = event.target.value;
@@ -132,6 +136,7 @@ class Settings extends AlertModalUser {
 				this.keypath = undefined;
 				this.variable = undefined;
 				this.setState({ waiting: false });
+				CastIronActions.startUpdate(address, this.accCanvas);
 				this.openModal("Imported Address: " + address);
 				CastIronActions.infoUpdate();
 			});

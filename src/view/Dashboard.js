@@ -2,6 +2,7 @@
 
 // Major third-party modules
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import Reflux from 'reflux';
 import Modal from 'react-modal';
 import path from 'path';
@@ -38,7 +39,8 @@ class DashBoard extends Reflux.Component {
             drawerOut: false,
             configFolder: "",
             gethDataDir: "",
-            ipfsRepoDir: ""
+            ipfsRepoDir: "",
+	    networkID: ""
         }
 
         this.storeKeys = [
@@ -86,7 +88,7 @@ class DashBoard extends Reflux.Component {
             "defaultGasPrice": "20000000000",
             "gasOracleAPI": "https://ethgasstation.info/json/ethgasAPI.json",
             "condition": "sanity",
-            "networkID": "1100",
+            "networkID": this.state.networkID,
             "passVault": path.join(this.state.configFolder, "myArchive.bcup"),
             "watchTokens": [
                 "TKA",
@@ -130,11 +132,23 @@ class DashBoard extends Reflux.Component {
         this.setState({ [key]: e.target.value });
     }
 
+    passAccRef = () => {
+	return ReactDOM.findDOMNode(this.refs.Accounts).firstChild;
+    }
+
     render() {
         console.log("in Dashboard render()")
 
-	if (this.state.configured === true && this.state.retrying == 0 && this.state.rpcfailed === false && this.state.syncInProgress === true) {
-	    if (this.state.highestBlock === 0) {
+	if (   
+             this.state.configured === true 
+          && this.state.retrying == 0 
+          && this.state.rpcfailed === false 
+          && this.state.syncInProgress === true ) 
+        {
+	    if (   
+                   this.state.highestBlock === 0 
+                || this.state.highestBlock === this.state.blockHeight ) 
+            {
 	            document.body.style.background = "rgb(17, 31, 47)";
 		    return (
 	                <div className="container locked" style={{ background: "rgb(17, 31, 47)"}}>
@@ -155,7 +169,7 @@ class DashBoard extends Reflux.Component {
 	                    <div className="item list" style={{ background: "none" }}>
 	                        <div style={{ border: "2px solid white", padding: "40px", textAlign: "center" }}>
 				    <div className="loader"></div><br/>
-	                            <p style={{ alignSelf: "flex-end", fontSize: "24px" }}>
+	                            <p style={{ alignSelf: "flex-end", fontSize: "24px", marginTop: "10px" }}>
 	                                Block syncing in progress {this.state.blockHeight} / {this.state.highestBlock} ...
 				    </p>
 	                        </div>
@@ -212,7 +226,13 @@ class DashBoard extends Reflux.Component {
                     </div>
                 </div>
             );
-        } else if (this.state.syncInProgress === false && this.state.configured === true && this.state.retrying == 0 && this.state.rpcfailed === false && this.state.unlocked === false) {
+        } else if (   
+		this.state.syncInProgress === false 
+             && this.state.configured === true 
+             && this.state.retrying == 0 
+             && this.state.rpcfailed === false 
+             && this.state.unlocked === false ) 
+	{
             document.body.style.background = "url(./assets/blockwall.png)";
             return (
                 <div className="container locked">
@@ -220,13 +240,19 @@ class DashBoard extends Reflux.Component {
                     <Login />
                 </div>
             );
-        } else if (this.state.configured === true && this.state.retrying == 0 && this.state.rpcfailed === false && this.state.unlocked === true) {
+        } else if ( 
+                this.state.syncInProgress === false 
+             && this.state.configured === true 
+             && this.state.retrying == 0 
+             && this.state.rpcfailed === false 
+             && this.state.unlocked === true ) 
+        {
             document.body.style.background = "linear-gradient(200deg, rgb(17, 31, 47), rgb(24, 156, 195))";
             return (
                 <div className="container unlocked">
                     <States />
-                    <Accounts />
-                    <MainView />
+                    <Accounts ref="Accounts"/>
+                    <MainView canvas={this.passAccRef}/>
                     <Sidebar />
                     <Modal ariaHideApp={false} isOpen={this.state.modalIsOpen && this.state.unlocked} style=
                         {{

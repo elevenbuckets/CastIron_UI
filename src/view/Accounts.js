@@ -73,7 +73,9 @@ class Accounts extends Reflux.Component {
   render = () => {
     return (
       <div className="address">
-         <canvas className="avatar" ref='canvas' width="90px" height="90px" />
+           <canvas className="avatar" ref='canvas' width="90px" height="90px" style={ 
+		this.state.address in this.state.passManaged ? this.state.passManaged[this.state.address] === true ? {border: '4px solid rgba(255,255,255,0.73)'} : {border: '4px solid rgba(255,0,0,0.73)'} : {border: '4px solid rgba(255,255,255,0.73)'}
+	   } />
            <Dropdown className="dropdown" options={Object.keys(this.state.accounts)} style={{fontSize:"16px", width: "100%"}} 
                 onChange={this.handleChange} value={this.state.address} 
                 placeholder={"You Have " + Object.keys(this.state.accounts).length + " Accounts"} />
