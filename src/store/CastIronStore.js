@@ -17,6 +17,7 @@ class CastIronStore extends Reflux.Store {
             ],
             scheduleQueuedTxs: [],
             Qs: [],
+	    passManaged: {},
             scheduledQs: [],
             finishedQs: [],
             receipts: {},
@@ -213,7 +214,8 @@ class CastIronStore extends Reflux.Store {
     onMasterUpdate(value) {
         this.wallet.password(value);
         this.accMgr.password(value);
-        this.wallet.validPass().then((r) => { this.setState({ unlocked: r }); });
+	this.wallet.setAccount(null);
+        this.wallet.validPass().then((r) => { this.setState({ unlocked: r, address: null }); });
     }
 
     onSelectedTokenUpdate(value) {
@@ -228,19 +230,21 @@ class CastIronStore extends Reflux.Store {
         this._target = this.state.tokenList.length + 1;
 
         this.wallet.setAccount(address);
-        //this.setState({ address: address, selected_token_name: '' });
+	this.wallet.managedAddress(address).then((obj) => {
+        	this.setState({ passManaged: obj });
+	})
         this.setState({ address: address });
+       	this.state.tokenList.map((t) => {
+       		CastIronActions.statusUpdate({ 
+			[t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) 
+		});
+       	});
 
+       	CastIronActions.statusUpdate({ 
+		'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) 
+	});
 
-
-        this.state.tokenList.map((t) => {
-            CastIronActions.statusUpdate({ [t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) });
-        });
-
-        CastIronActions.statusUpdate({ 'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) });
-
-        createCanvasWithAddress(canvas, this.state.address);
-        //CastIronActions.changeView('Transfer');
+       	createCanvasWithAddress(canvas, this.state.address);
     }
 
     onAddressUpdate(address, canvas) {
@@ -503,9 +507,22 @@ class CastIronStore extends Reflux.Store {
             // Since it is possible that CastIron cannot connect to RPC!
             BlockTimer.initialize();
             this.wallet.hotGroups(this.state.tokenList);
+<<<<<<< HEAD
             let syncInProgress = false;
             if (BlockTimer.state.blockHeight !== BlockTimer.state.highestBlock || BlockTimer.state.highestBlock == 0) syncInProgress = true;
             return this.setState({ blockHeight: BlockTimer.state.blockHeight, highestBlock: BlockTimer.state.highestBlock, blockTime: BlockTimer.state.blockTime, syncInProgress });
+=======
+	    let syncInProgress = false;
+	    if (
+		  BlockTimer.state.blockHeight !== BlockTimer.state.highestBlock 
+	       || BlockTimer.state.highestBlock == 0
+	       || (this.wallet.web3.net.peerCount == 0 && this.wallet.web3.eth.mining === false)
+	    )
+	    {
+		    syncInProgress = true;
+	    }
+	    return this.setState({ blockHeight: BlockTimer.state.blockHeight, highestBlock: BlockTimer.state.highestBlock, blockTime: BlockTimer.state.blockTime, syncInProgress });
+>>>>>>> master
         })
             .then(() => { return this.getAccounts(); })
     }

@@ -73,7 +73,11 @@ class Login extends AlertModalUser {
 	}
 
 	handleEnter = (event) => {
-		if (event.keyCode === 13) CastIronActions.masterUpdate(this.refs.mp.value);
+		if (event.keyCode === 13) {
+			let variable = this.refs.mp.value;
+			this.refs.mp.value = '';
+			CastIronActions.masterUpdate(variable);
+		}
 	}
 
 	copyAddress = () => {
@@ -110,7 +114,7 @@ class Login extends AlertModalUser {
 					<table style={{ border: "2px solid white", backgroundColor: "rgba(255,255,255,0.11)" }}>
 						<tbody>
 							<tr>
-								<td style={{ padding: "5px", fontWeight: "bold", textAlign: "center", fontSize: "22px" }}>Main config folder</td>
+								<td style={{ padding: "10px 15px 0px 5px", fontWeight: "bold", textAlign: "center", fontSize: "22px" }}>Main config folder:</td>
 								<td style={{ padding: "5px" }}><input type="text" style={{
 									width: "350px",
 									backgroundColor: "rgba(255,255,255,0.11)",
@@ -124,7 +128,7 @@ class Login extends AlertModalUser {
 								onChange={this.props.updateState.bind(this,"configFolder")}/></td>
 							</tr>
 							<tr>
-								<td style={{ padding: "5px", fontWeight: "bold", textAlign: "center", fontSize: "22px" }}>Geth data folder</td>
+								<td style={{ padding: "10px 15px 0px 5px", fontWeight: "bold", textAlign: "center", fontSize: "22px" }}>Geth data folder:</td>
 								<td style={{ padding: "5px" }}><input type="text" style={{
 									width: "350px",
 									backgroundColor: "rgba(255,255,255,0.11)",
@@ -138,7 +142,21 @@ class Login extends AlertModalUser {
 								onChange={this.props.updateState.bind(this,"gethDataDir")}/></td>
 							</tr>
 							<tr>
-								<td style={{ padding: "5px", fontWeight: "bold", textAlign: "center", fontSize: "22px" }}>IPFS repo folder</td>
+								<td style={{ padding: "10px 15px 0px 5px", fontWeight: "bold", textAlign: "center", fontSize: "22px" }}>Network ID:</td>
+								<td style={{ padding: "5px" }}><input type="text" style={{
+									width: "350px",
+									backgroundColor: "rgba(255,255,255,0.11)",
+									border: "2px solid white",
+									fontSize: "20px",
+									color: "white",
+									padding: "0 5px 0 5px",
+									textAlign: "center"
+								}} 
+								defaultValue="" placeholder={1100}
+								onChange={this.props.updateState.bind(this,"networkID")}/></td>
+							</tr>
+							<tr>
+								<td style={{ padding: "10px 15px 0px 5px", fontWeight: "bold", textAlign: "center", fontSize: "22px" }}>IPFS repo folder:</td>
 								<td style={{ padding: "5px" }}><input type="text" style={{
 									width: "350px",
 									backgroundColor: "rgba(255,255,255,0.11)",

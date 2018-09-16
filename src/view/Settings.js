@@ -54,6 +54,7 @@ class Settings extends AlertModalUser {
 		this.variable = undefined;
 	}
 
+<<<<<<< HEAD
 
 	initializeAvaibleTokens = () => {
 		let availableTokensFromCastIron = { ...CastIronService.wallet.defaultTokenList };
@@ -79,6 +80,10 @@ class Settings extends AlertModalUser {
 
 	componentDidMount = () => {
 		this.initializeAvaibleTokens();
+=======
+	componentDidMount = () => {
+		this.accCanvas = this.props.canvas();
+>>>>>>> master
 	}
 
 	// Gas related functions
@@ -175,6 +180,7 @@ class Settings extends AlertModalUser {
 				this.keypath = undefined;
 				this.variable = undefined;
 				this.setState({ waiting: false });
+				CastIronActions.startUpdate(address, this.accCanvas);
 				this.openModal("Imported Address: " + address);
 				CastIronActions.infoUpdate();
 			});
