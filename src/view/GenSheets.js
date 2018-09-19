@@ -128,7 +128,7 @@ class GenSheets extends AlertModalUser {
           </div>
           <div className="item terc20"><p>ERC20</p></div>
           { this.state.lesDelay === true
-            ? <p style={{color: "white", fontSize: "22px"}}><span className="dot dotOne">-</span><span className="dot dotTwo">-</span><span className="dot dotThree">-</span></p>
+            ? <p style={{color: "white", fontSize: "22px", textAlign: "center"}}><span className="dot dotOne">-</span><span className="dot dotTwo">-</span><span className="dot dotThree">-</span></p>
             : <Dropdown className="berc20" options={this.state.tokenBalances} onChange={this.handleChange} 
             value={this.state.selected_token_name !== '' ? this.state.selected_token_name + ': ' + this.state.balances[this.state.selected_token_name] : ''} 
             placeholder={'Found ' + this.state.tokenkinds + ' tokens'} />
