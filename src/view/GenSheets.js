@@ -59,8 +59,6 @@ class GenSheets extends AlertModalUser {
   }
 
   render = () => {
-    if (this.state.address == '') return (<p />);
-
     return (
       <div className="quickbalance">
           <div className="item teth"><p>ETHER</p></div>
