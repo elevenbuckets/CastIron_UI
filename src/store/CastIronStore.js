@@ -17,7 +17,7 @@ class CastIronStore extends Reflux.Store {
             ],
             scheduleQueuedTxs: [],
             Qs: [],
-	    passManaged: {},
+	        passManaged: {},
             scheduledQs: [],
             finishedQs: [],
             receipts: {},
@@ -39,7 +39,8 @@ class CastIronStore extends Reflux.Store {
             unlocked: false,
             gasPriceOption: "high",
             customGasPrice: null,
-            gasPriceInfo: null
+            gasPriceInfo: null,
+            lesDelay: false
         }
         this.funcToConfirm = null;
         this.listenables = CastIronActions;
@@ -50,6 +51,7 @@ class CastIronStore extends Reflux.Store {
 
         this._count;
         this._target;
+        this.delayTimer;
 
         BlockTimer.register(this.updateInfo);
         this.updateInfo()
@@ -234,16 +236,20 @@ class CastIronStore extends Reflux.Store {
         	this.setState({ passManaged: obj });
 	})
         this.setState({ address: address });
+        // Testing LES delay
+        this.delayTimer = setTimeout(() => {this.setState({lesDelay: true})}, 300);
        	this.state.tokenList.map((t) => {
        		CastIronActions.statusUpdate({ 
-			[t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) 
+			    [t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) 
 		});
        	});
 
        	CastIronActions.statusUpdate({ 
-		'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) 
-	});
-
+		    'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) 
+        });
+        
+        clearTimeout(this.delayTimer);
+        this.setState({lesDelay: false});
        	createCanvasWithAddress(canvas, this.state.address);
     }
 
