@@ -442,14 +442,16 @@ class CastIronStore extends Reflux.Store {
     }
 
     getAccounts() {
-        let addrs = CastIronService.getAccounts();
-        if (addrs.length !== this.state.accounts.length) this.setState({ accounts: addrs });
+	return Promise.resolve().then(() => {
+            let addrs = CastIronService.getAccounts();
+            if (addrs.length !== this.state.accounts.length) this.setState({ accounts: addrs });
 
-	if (this.state.address !== null) {
-		this.addressUpdate();
-	} else {
-		this.setState({balances: {'ETH': 0 }, selected_token_name: '' });
-	}
+	    if (this.state.address !== null) {
+		    this.addressUpdate();
+	    } else {
+		    this.setState({balances: {'ETH': 0 }, selected_token_name: '' });
+	    }
+        })
     }
 
     updateInfo = () => {
