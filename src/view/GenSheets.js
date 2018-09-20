@@ -56,7 +56,10 @@ class GenSheets extends AlertModalUser {
 
   handleChange = (event) => {
     console.log("event.value in GenSheets handleChange is " + event.value);
-    CastIronActions.selectedTokenUpdate(event.value.substring(0, event.value.indexOf(':')));
+    let symbol = event.value.substring(0, event.value.indexOf(':'));
+    if (symbol != this.state.selected_token_name) {
+	    CastIronActions.selectedTokenUpdate(symbol);
+    }
   }
 
   render = () => {
