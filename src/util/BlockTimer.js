@@ -24,7 +24,7 @@ class BlockTimer {
         this.state.blockHeight = netStatus.blockHeight;
         this.state.blockTime = netStatus.blockTime;
 	this.state.highestBlock = netStatus.highestBlock;
-        this.timer = setInterval(this.watchAndNotify, 1000);
+        this.timer = setInterval(this.watchAndNotify, 15000);
 
         this.register(this.reportNewBlock);
 	this.state.initialized = true;
