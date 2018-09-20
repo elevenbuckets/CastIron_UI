@@ -79,7 +79,7 @@ class GenSheets extends AlertModalUser {
             : <p style={{color: "white", fontSize: "22px"}}>{this.state.balances['ETH']}</p> }
           </div>
           <div className="item terc20">
-            <Dropdown 
+            <Dropdown disabled={this.state.lesDelay} 
 	    options={ this.state.selected_token_name != '' 
 		? this.ArrayRest(this.state.tokenBalance, `${this.state.selected_token_name}: ${this.state.balances[this.state.selected_token_name]}`) 
 	        : this.state.tokenBalance } onChange={this.handleChange} value={this.state.selected_token_name} placeholder='ERC20'/>

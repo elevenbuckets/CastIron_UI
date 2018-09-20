@@ -53,6 +53,7 @@ class CastIronStore extends Reflux.Store {
         this._count;
         this._target;
         this.delayTimer;
+	this.retryTimer = undefined;
 
         BlockTimer.register(this.updateInfo);
         this.updateInfo()
@@ -218,7 +219,7 @@ class CastIronStore extends Reflux.Store {
         this.wallet.password(value);
         this.accMgr.password(value);
 	this.wallet.setAccount(null);
-        this.wallet.validPass().then((r) => { this.setState({ unlocked: r, address: null }); });
+        this.wallet.validPass().then((r) => { this.setState({ unlocked: r, address: null, tokenBalance: [], balances: {'ETH': 0} }); });
     }
 
     onSelectedTokenUpdate(value) {
@@ -229,6 +230,18 @@ class CastIronStore extends Reflux.Store {
     }
 
     onStartUpdate(address, canvas) {
+	if (BlockTimer.state.blockHeight != this.state.blockHeight) {
+		if (this.retryTimer === undefined || this.retryTimer._called === true || this.retryTimer._idleTimeout === -1) {
+			console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!retrying status update soon...")
+        		this.setState({ address: address, lesDelay: true, tokenBalance: [] });
+       			createCanvasWithAddress(canvas, this.state.address);
+			this.retryTimer = setTimeout(() => { return CastIronActions.startUpdate(address, canvas) }, 1000);
+		}
+		return
+	}
+
+	clearTimeout(this.retryTimer); this.retryTimer = undefined;
+
         this._count = 0;
         this._target = this.state.tokenList.length + 1;
 
@@ -297,9 +310,9 @@ class CastIronStore extends Reflux.Store {
 
     onFinishUpdate() {
         this.setState({lesDelay: false});
-        console.log(`-|| Account: ${this.state.address} ||-`);
-        console.log(JSON.stringify(this.state.balances, 0, 2));
-        console.log(`--------------------`);
+        //console.log(`-|| Account: ${this.state.address} ||-`);
+        //console.log(JSON.stringify(this.state.balances, 0, 2));
+        //console.log(`--------------------`);
         // we can perhaps store a copy of the state o CastIronActions.clearQueue();n disk?
     }
 
@@ -447,7 +460,7 @@ class CastIronStore extends Reflux.Store {
             if (addrs.length !== this.state.accounts.length) this.setState({ accounts: addrs });
 
 	    if (this.state.address !== null) {
-		    this.addressUpdate();
+		    return this.addressUpdate();
 	    } else {
 		    this.setState({balances: {'ETH': 0 }, selected_token_name: '' });
 	    }
