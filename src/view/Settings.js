@@ -44,7 +44,9 @@ class Settings extends AlertModalUser {
 					watched: false
 				}
 			},
-			selectedTokens: []
+			selectedTokens: [],
+			tokenFilter: {},
+			filteredTokens: []
 		}
 
 
@@ -317,10 +319,10 @@ class Settings extends AlertModalUser {
 					<tbody>
 						<tr className="balance-sheet">
 							<td className="txform" style={{ border: '0', textAlign: "left" }}>
-								<input type="button" className="button" value='New' onClick={this.newToken} />
-								<input type="button" className="button" value='Edit' disabled={true}/>
-								<input type="button" className="button" value='Search' disabled={true}/>
-								<input type="button" className="button" value='Delete' disabled={true}/>
+								<input type="button" className="button" value='New' onClick={this.handleTokenActionUpdate.bind(this, "New")} />
+								<input type="button" className="button" value='Search' onClick={this.handleTokenActionUpdate.bind(this, "Search")} />
+								<input type="button" className="button" value='Delete' disabled={!this.selectedTokensCanBeDeleted()}
+								onClick={this.handleClickDeleteToken} />
 								<input type="button" className="button" value='Watch' onClick={this.handleClickWatchToken} />
 								<input type="button" className="button" value='UnWatch' onClick={this.handleClickUnWatchToken} />
 							</td>
@@ -362,26 +364,32 @@ class Settings extends AlertModalUser {
 						<tr hidden={!(this.state.tokenAction === "Search")}>
 							<td width='5%'></td>
 							<td width='3%'><input type='text' size='3'
+								value={this.state.tokenFilter.symbol === undefined ? "" : this.state.tokenFilter.symbol}
 								onChange={this.changeTokenFilter.bind(this, "symbol")}
 							/></td>
 							<td width='32%'><input type='text' size='20'
+								value={this.state.tokenFilter.addr === undefined ? "" : this.state.tokenFilter.addr}
 								onChange={this.changeTokenFilter.bind(this, "addr")}
 							/></td>
 							<td width='10%'><input type='text' size='10'
+								value={this.state.tokenFilter.name === undefined ? "" : this.state.tokenFilter.name}
 								onChange={this.changeTokenFilter.bind(this, "name")}
 							/></td>
 							<td width='10%'><input type='text' size='10'
+								value={this.state.tokenFilter.decimals === undefined ? "" : this.state.tokenFilter.decimals}
 								onChange={this.changeTokenFilter.bind(this, "decimals")}
 							/></td>
 							<td width='10%'><input type='text' size='5'
+								value={this.state.tokenFilter.category === undefined ? "" : this.state.tokenFilter.category}
 								onChange={this.changeTokenFilter.bind(this, "category")}
 							/></td>
 							<td width='10%'><input type='text' size='10'
+								value={this.state.tokenFilter.watched === undefined ? "" : this.state.tokenFilter.watched}
 								onChange={this.changeTokenFilter.bind(this, "watched")}
 							/></td>
 
 						</tr>
-						{Object.keys(this.state.availableTokens).map((key) => {
+						{this.state.filteredTokens.length === 0 ? Object.keys(this.state.availableTokens).map((key) => {
 							let token = this.state.availableTokens[key];
 							return (
 								<tr>
@@ -401,7 +409,27 @@ class Settings extends AlertModalUser {
 
 								</tr>
 							);
-						})}
+						}) : this.state.filteredTokens.map((token) => {
+							return (
+								<tr>
+									<td className="balance-sheet"
+										width='5%'><input
+											name="check"
+											type="checkbox"
+											checked={this.state.selectedTokens.includes(token.symbol)}
+											onChange={this.checkToken.bind(this, token.symbol)}
+											style={{ width: "25px", height: "25px" }} /></td>
+									<td width='3%'>{token.symbol}</td>
+									<td width='32%'>{token.addr}</td>
+									<td width='10%'>{token.name}</td>
+									<td width='10%'>{token.decimals}</td>
+									<td width='10%'>{token.category}</td>
+									<td width='10%'>{token.watched ? "Yes" : "No"}</td>
+
+								</tr>
+							);
+						})
+						}
 					</tbody>
 				</table>
 			</div>
@@ -409,24 +437,43 @@ class Settings extends AlertModalUser {
 	}
 
 	changeTokenFilter = (field, event) => {
-		// let filter =  {...this.tokenFilter, [field] : event.target.value}
-        // if(event.target.value == ""){
-        //     delete filter[field];
-        // }
-        // let filteredQs = this.state.scheduledQs;
-        // filteredQs = filteredQs.filter(q => {
-        //     return Object.keys(filter).reduce((match, key) =>{
-        //        return match && q[key].includes(filter[key]);
-        //     }, true)
-        //     // return JSON.stringify(q) == JSON.stringify({ ...q, ...filter });
-        // })
-        // setDappLocalState(this, {filter: filter, filteredQs : filteredQs })
+		let filter = { ...this.state.tokenFilter, [field]: event.target.value }
+		if (event.target.value == "") {
+			delete filter[field];
+		}
+		let filterTokens = Object.keys(this.state.availableTokens).map((key) => {
+			return { symbol: key, ...this.state.availableTokens[key] }
+		})
+		filterTokens = filterTokens.filter(q => {
+			return Object.keys(filter).reduce((match, key) => {
+				if (typeof (q[key]) === "boolean") {
+					return match && (q[key] ? "Yes" : "No").includes(filter[key]);
+				}
+				return match && q[key].includes(filter[key]);
+			}, true)
+		})
+		this.setState({ tokenFilter: filter, filteredTokens: filterTokens });
 	}
-	newToken = () => {
-		if (this.state.tokenAction === "New") {
+
+	selectedTokensCanBeDeleted = () => {
+		if (this.state.selectedTokens.length === 0) {
+			return false;
+		} else {
+			return this.state.selectedTokens.reduce((match, token) => {
+				return match && (this.state.availableTokens[token].category != "default")
+			}, true)
+		}
+	}
+
+
+	handleTokenActionUpdate = (action) => {
+		if(this.state.tokenAction === "Search"){
+			this.setState({ tokenFilter: {}, filteredTokens: [] })
+		}
+		if (this.state.tokenAction === action) {
 			this.setState({ tokenAction: "" })
 		} else {
-			this.setState({ tokenAction: "New" })
+			this.setState({ tokenAction: action })
 		}
 
 	}
@@ -434,7 +481,11 @@ class Settings extends AlertModalUser {
 	addToken = tokenToAdd => {
 		this.setState({ availableTokens: { ...this.state.availableTokens, [tokenToAdd.symbol]: tokenToAdd.token } });
 
-
+		// udpate the tokenList in wallet
+		this.wallet.TokenList = {
+			...this.wallet.TokenList, [tokenToAdd.symbol]:
+				{ addr: tokenToAdd.token.addr, name: tokenToAdd.token.name, decimals: tokenToAdd.token.decimals }
+		}
 
 		// udpate the tokens in configuration file
 		const castIronFields = ["datadir", "rpcAddr", "ipcPath", "defaultGasPrice", "gasOracleAPI",
@@ -453,11 +504,7 @@ class Settings extends AlertModalUser {
 		castIronWriter.writeJSON(json);
 
 
-		// udpate the tokenList in wallet
-		this.wallet.TokenList = {
-			...this.wallet.TokenList, [tokenToAdd.symbol]:
-				{ addr: tokenToAdd.token.addr, name: tokenToAdd.token.name, decimals: tokenToAdd.token.decimals }
-		}
+
 	}
 
 	handleClickAddToken = () => {
@@ -508,6 +555,44 @@ class Settings extends AlertModalUser {
 
 	}
 
+	handleClickDeleteToken = () => {
+
+		let selectedTokens = this.state.selectedTokens;
+		let availableTokens = this.state.availableTokens;
+		this.state.selectedTokens.map((tokenSymbol) => {
+			delete availableTokens[tokenSymbol];
+		})
+
+		// udpate the tokenList in wallet
+		let tokenList = { ...this.wallet.TokenList };
+		this.state.selectedTokens.map((tokenSymbol) => {
+			delete tokenList[tokenSymbol];
+		})
+
+		this.wallet.TokenList = tokenList;
+		this.setState({ availableTokens: availableTokens , selectedTokens: [] });
+
+
+
+		// udpate the tokens in configuration file
+		const castIronFields = ["datadir", "rpcAddr", "ipcPath", "defaultGasPrice", "gasOracleAPI",
+			"condition", "networkID", "tokens", "watchTokens", "passVault"];
+		this.cfgobj = remote.getGlobal('cfgobj');
+		let json = require(path.join(this.cfgobj.configDir, "config.json"))
+		let availableTokensFromCustomer = json.tokens;
+		let castIronWriter = ConfigWriterService.getFileWriter(path.join(this.cfgobj.configDir, "config.json"), castIronFields);
+		selectedTokens.map((tokenSymbol) => {
+			delete availableTokensFromCustomer[tokenSymbol];
+		})
+
+		//TODO: change it to use addKeyValue in future
+		json.tokens = availableTokensFromCustomer;
+		castIronWriter.writeJSON(json);
+
+
+
+	}
+
 	handleClickUnWatchToken = () => {
 		this.cfgobj = remote.getGlobal('cfgobj');
 		let json = require(path.join(this.cfgobj.configDir, "config.json"))
@@ -518,7 +603,7 @@ class Settings extends AlertModalUser {
 			if (availableTokens[token].watched) {
 				CastIronActions.watchedTokenUpdate("Remove", token);
 				availableTokens[token].watched = false;
-				if(watchTokens.includes(token)){
+				if (watchTokens.includes(token)) {
 					watchTokens.splice(watchTokens.indexOf(token), 1);
 				}
 			}
@@ -547,14 +632,6 @@ class Settings extends AlertModalUser {
 		this.setState({ tokenToAdd: tokenToAdd })
 	}
 
-	searchToken = () =>{
-		if (this.state.tokenAction === "Search") {
-			this.setState({ tokenAction: "" })
-		} else {
-			this.setState({ tokenAction: "Search" })
-		}
-
-	}
 
 
 
