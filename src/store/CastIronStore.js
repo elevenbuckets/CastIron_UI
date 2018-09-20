@@ -11,13 +11,13 @@ class CastIronStore extends Reflux.Store {
     constructor() {
         super();
         this.state = {
-            accounts: {}
+            accounts: []
             ,
             queuedTxs: [
             ],
             scheduleQueuedTxs: [],
             Qs: [],
-	    passManaged: {},
+	        passManaged: {},
             scheduledQs: [],
             finishedQs: [],
             receipts: {},
@@ -39,7 +39,9 @@ class CastIronStore extends Reflux.Store {
             unlocked: false,
             gasPriceOption: "high",
             customGasPrice: null,
-            gasPriceInfo: null
+            gasPriceInfo: null,
+            lesDelay: false,
+	    tokenBalance: []
         }
         this.funcToConfirm = null;
         this.listenables = CastIronActions;
@@ -50,6 +52,7 @@ class CastIronStore extends Reflux.Store {
 
         this._count;
         this._target;
+        this.delayTimer;
 
         BlockTimer.register(this.updateInfo);
         this.updateInfo()
@@ -230,40 +233,44 @@ class CastIronStore extends Reflux.Store {
         this._target = this.state.tokenList.length + 1;
 
         this.wallet.setAccount(address);
-	this.wallet.managedAddress(address).then((obj) => {
-        	this.setState({ passManaged: obj });
-	})
-        this.setState({ address: address });
-       	this.state.tokenList.map((t) => {
-       		CastIronActions.statusUpdate({ 
-			[t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) 
-		});
-       	});
-
-       	CastIronActions.statusUpdate({ 
-		'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) 
-	});
-
+        this.setState({ address: address, lesDelay: true, tokenBalance: [] });
        	createCanvasWithAddress(canvas, this.state.address);
+
+	return this.wallet.managedAddress(address).then((obj) => {
+        	this.setState({ passManaged: obj });
+    	   	CastIronActions.statusUpdate({ 
+			    'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) 
+        	});
+        
+       		this.state.tokenList.map((t) => {
+       			CastIronActions.statusUpdate({ 
+			    [t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) 
+			});
+       		});
+	})
     }
 
-    onAddressUpdate(address, canvas) {
+    addressUpdate = () => {
         this._count = 0;
         this._target = this.state.tokenList.length + 1;
-        this.wallet.setAccount(address);
-        this.setState({ address: address });
+        this.wallet.setAccount(this.state.address);
         this.state.tokenList.map((t) => {
             CastIronActions.statusUpdate({ [t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) });
         });
 
         CastIronActions.statusUpdate({ 'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) });
-        createCanvasWithAddress(canvas, this.state.address);
     }
 
     onStatusUpdate(status) {
         this._count++;
+	let b = status[Object.keys(status)[0]];
+	let s = Object.keys(status)[0];
 
-        this.setState({ balances: { ...this.state.balances, ...status } });
+	if (b > 0 && s != 'ETH') {
+        	this.setState({ balances: { ...this.state.balances, ...status }, tokenBalance: [ ...this.state.tokenBalance, `${s}: ${b}` ] });
+	} else {
+        	this.setState({ balances: { ...this.state.balances, ...status } });
+	}
 
         if (this._count == this._target) CastIronActions.finishUpdate();
     }
@@ -273,6 +280,7 @@ class CastIronStore extends Reflux.Store {
     }
 
     onFinishUpdate() {
+        this.setState({lesDelay: false});
         console.log(`-|| Account: ${this.state.address} ||-`);
         console.log(JSON.stringify(this.state.balances, 0, 2));
         console.log(`--------------------`);
@@ -419,26 +427,11 @@ class CastIronStore extends Reflux.Store {
 
     getAccounts() {
         let addrs = CastIronService.getAccounts();
-        let accounts = {};
-        addrs.map((addr, index) => (
-            accounts[addr] = {
-                name: "account_" + index,
-                balance: this.wallet.toEth(this.wallet.addrEtherBalance(addr), this.wallet.TokenList['ETH'].decimals).toFixed(9)
-            }
-        ));
+        this.setState({ accounts: addrs });
 
-        if (this.state.address) {
-            this.setState(() => { return { accounts: accounts, balances: { 'ETH': accounts[this.state.address].balance } } })
-            this.state.tokenList.map((t) => {
-                CastIronActions.statusUpdate({ [t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) });
-            });
-
-            CastIronActions.statusUpdate({ 'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) });
-        } else {
-            this.setState({ accounts: accounts });
-        }
-
-        console.log(JSON.stringify(this.state, 0, 2));
+	if (this.state.address !== null) {
+		this.addressUpdate();
+	}
     }
 
     updateInfo = () => {

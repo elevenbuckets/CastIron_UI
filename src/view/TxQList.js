@@ -22,8 +22,6 @@ class TxQList extends Reflux.Component {
   }
 
   render = () => {
-    if (this.state.address == '') return (<p className="item TQList" />);
-
     let tokenBalances = [];
     let tokenkinds = 0;
     this.state.tokenList.map((t) => {
