@@ -18,46 +18,11 @@ class Accounts extends Reflux.Component {
   constructor(props) {
     super(props);
     this.store = CastIronStore;
-    this.state = {
-      ptoggle: true,
-      pfield: '28px',
-      visible: false,
-      sbutton: 'none'
-    };
-  }
-
-  handleClick = () => { this.toggleSettings(); }
-
-  isCustomGasPriceValid = () => {
-    return (this.state.gasPriceOption != "custom" || this.state.customGasPrice)
-  }
-
-  toggleSettings = () => {
-    this.setState({ visible: !this.state.visible });
+    this.storeKeys = ['accounts', 'address', 'passManaged', 'lesDelay', 'balances', 'selected_token_name', 'tokenBalance']
   }
 
   handleChange = (event) => {
     CastIronActions.startUpdate(event.value, this.refs.canvas);
-  }
-
-  handleToggle = (event) => {
-    let pt = !this.state.ptoggle;
-    let sb = pt ? 'none' : 'inline-block';
-    let pf = pt ? '100px' : '283px';
-    this.setState({ ptoggle: pt, pfield: pf, sbutton: sb });
-    CastIronActions.masterUpdate(this.refs.mp.value);
-  }
-
-  handleGasPriceSelect = (event) => {
-    CastIronActions.gasPriceOptionSelect(event.currentTarget.defaultValue);
-  }
-
-  handleCustomGasPriceUpdate = (price) => {
-    CastIronActions.customGasPriceUpdate(price);
-  }
-
-  handleEnter = (event) => {
-	  if (event.keyCode === 13) CastIronActions.masterUpdate(this.refs.mp.value);
   }
 
   copyAddress = () => {

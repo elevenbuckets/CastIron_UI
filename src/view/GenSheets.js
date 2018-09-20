@@ -17,7 +17,6 @@ import AlertModalUser from '../common/AlertModalUser';
 
 // Singleton services
 import CastIronService from '../service/CastIronService';
-import BMartService from '../service/BMartService';
 
 // Reflux components and Alert Modal user
 class GenSheets extends AlertModalUser {
@@ -29,6 +28,8 @@ class GenSheets extends AlertModalUser {
       tokenBalances: [],
       tokenkinds: 0
     }
+
+    this.storeKeys = ['passManaged', 'address', 'tokenBalance', 'lesDelay', 'selected_token_name', 'balances', 'isAlertModalOpen', 'alertContent']
   }
 
 

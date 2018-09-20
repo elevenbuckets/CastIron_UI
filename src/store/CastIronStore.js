@@ -282,7 +282,8 @@ class CastIronStore extends Reflux.Store {
 	let s = Object.keys(status)[0];
 
 	if (b > 0 && s != 'ETH') {
-        	this.setState({ balances: { ...this.state.balances, ...status }, tokenBalance: [ ...this.state.tokenBalance, `${s}: ${b}` ] });
+		let a = [ ...this.state.tokenBalance, `${s}: ${b}`];
+        	this.setState({ balances: { ...this.state.balances, ...status }, tokenBalance: [ ...new Set(a)] });
 	} else {
         	this.setState({ balances: { ...this.state.balances, ...status } });
 	}
@@ -442,7 +443,7 @@ class CastIronStore extends Reflux.Store {
 
     getAccounts() {
         let addrs = CastIronService.getAccounts();
-        this.setState({ accounts: addrs });
+        if (addrs.length !== this.state.accounts.length) this.setState({ accounts: addrs });
 
 	if (this.state.address !== null) {
 		this.addressUpdate();
