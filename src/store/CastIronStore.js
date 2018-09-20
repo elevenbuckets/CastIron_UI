@@ -431,6 +431,8 @@ class CastIronStore extends Reflux.Store {
 
 	if (this.state.address !== null) {
 		this.addressUpdate();
+	} else {
+		this.setState({balances: {'ETH': 0 } });
 	}
     }
 
