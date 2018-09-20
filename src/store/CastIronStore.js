@@ -230,17 +230,14 @@ class CastIronStore extends Reflux.Store {
     }
 
     onStartUpdate(address, canvas) {
+	clearTimeout(this.retryTimer); this.retryTimer = undefined;
 	if (BlockTimer.state.blockHeight != this.state.blockHeight) {
-		if (this.retryTimer === undefined || this.retryTimer._called === true || this.retryTimer._idleTimeout === -1) {
-			console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!retrying status update soon...")
-        		this.setState({ address: address, lesDelay: true, tokenBalance: [] });
-       			createCanvasWithAddress(canvas, this.state.address);
-			this.retryTimer = setTimeout(() => { return CastIronActions.startUpdate(address, canvas) }, 1000);
-		}
+		console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!retrying status update soon...")
+        	this.setState({ address: address, lesDelay: true, tokenBalance: [] });
+       		createCanvasWithAddress(canvas, this.state.address);
+		this.retryTimer = setTimeout(() => { return CastIronActions.startUpdate(address, canvas) }, 1000);
 		return
 	}
-
-	clearTimeout(this.retryTimer); this.retryTimer = undefined;
 
         this._count = 0;
         this._target = this.state.tokenList.length + 1;
