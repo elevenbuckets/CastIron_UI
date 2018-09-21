@@ -80,8 +80,6 @@ class TxObjects extends AlertModalUser {
 
 
   render = () => {
-    if (this.state.address == '') return (<p />);
-
     let sendkind = this.state.selected_token_name !== '' ? this.state.selected_token_name : 'ETH';
 
     return (

@@ -48,7 +48,6 @@ class DashBoard extends Reflux.Component {
 		"currentView", 
 		"modalIsOpen", 
 		"scheduleModalIsOpen", 
-		"accounts", 
 		"retrying", 
 		"rpcfailed", 
 		"configured", 

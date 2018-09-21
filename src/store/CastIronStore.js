@@ -6,18 +6,19 @@ import { createCanvasWithAddress } from "../util/Utils"
 import BlockTimer from '../util/BlockTimer';
 import Scheduler from '../util/Scheduler';
 import uuid from 'uuid/v4';
+import loopasync from 'loopasync';
 
 class CastIronStore extends Reflux.Store {
     constructor() {
         super();
         this.state = {
-            accounts: {}
+            accounts: []
             ,
             queuedTxs: [
             ],
             scheduleQueuedTxs: [],
             Qs: [],
-	    passManaged: {},
+	        passManaged: {},
             scheduledQs: [],
             finishedQs: [],
             receipts: {},
@@ -39,7 +40,9 @@ class CastIronStore extends Reflux.Store {
             unlocked: false,
             gasPriceOption: "high",
             customGasPrice: null,
-            gasPriceInfo: null
+            gasPriceInfo: null,
+            lesDelay: false,
+	    tokenBalance: []
         }
         this.funcToConfirm = null;
         this.listenables = CastIronActions;
@@ -50,6 +53,12 @@ class CastIronStore extends Reflux.Store {
 
         this._count;
         this._target;
+        this.delayTimer;
+	this.retryTimer = undefined;
+
+	//speed boost
+	this._balances = { 'ETH': 0 };
+	this._tokenBalance = [];
 
         BlockTimer.register(this.updateInfo);
         this.updateInfo()
@@ -215,7 +224,7 @@ class CastIronStore extends Reflux.Store {
         this.wallet.password(value);
         this.accMgr.password(value);
 	this.wallet.setAccount(null);
-        this.wallet.validPass().then((r) => { this.setState({ unlocked: r, address: null }); });
+        this.wallet.validPass().then((r) => { this.setState({ unlocked: r, address: null, tokenBalance: [], balances: {'ETH': 0} }); });
     }
 
     onSelectedTokenUpdate(value) {
@@ -226,44 +235,99 @@ class CastIronStore extends Reflux.Store {
     }
 
     onStartUpdate(address, canvas) {
+	clearTimeout(this.retryTimer); this.retryTimer = undefined;
+	if (BlockTimer.state.blockHeight != this.state.blockHeight) {
+		console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!retrying status update soon...")
+        	this.setState({ address: address, lesDelay: true, tokenBalance: [] });
+       		createCanvasWithAddress(canvas, this.state.address);
+		this.retryTimer = setTimeout(() => { return CastIronActions.startUpdate(address, canvas) }, 997);
+		return
+	}
+
         this._count = 0;
         this._target = this.state.tokenList.length + 1;
+	this._balances = {'ETH': 0 };
+	this._tokenBalance = [];
 
-        this.wallet.setAccount(address);
-	this.wallet.managedAddress(address).then((obj) => {
-        	this.setState({ passManaged: obj });
+	let stage = Promise.resolve();
+
+	stage = stage.then(() => {
+        	this.setState({ address: address, lesDelay: true, tokenBalance: [] });
+       		createCanvasWithAddress(canvas, this.state.address);
 	})
-        this.setState({ address: address });
-       	this.state.tokenList.map((t) => {
-       		CastIronActions.statusUpdate({ 
-			[t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) 
-		});
-       	});
+	.then(() => { return this.wallet.managedAddress(address) })
+	.then((obj) => {
+        	this.wallet.setAccount(address);
+        	this.setState({ passManaged: obj });
+       
 
-       	CastIronActions.statusUpdate({ 
-		'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) 
-	});
+		/*
+    	   	CastIronActions.statusUpdate({ 
+			    'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) 
+        	});
+       		this.state.tokenList.map((t) => {
+       			CastIronActions.statusUpdate({ 
+			    [t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) 
+			});
+       		});
+		*/
+		loopasync(['ETH', ...this.state.tokenList], CastIronActions.statusUpdate);
+	})
 
-       	createCanvasWithAddress(canvas, this.state.address);
+	return stage;
     }
 
-    onAddressUpdate(address, canvas) {
+    addressUpdate = () => {
+	if (this.state.lesDelay === true) return; // do nothing, since statusUpdate is doing it already
         this._count = 0;
         this._target = this.state.tokenList.length + 1;
-        this.wallet.setAccount(address);
-        this.setState({ address: address });
-        this.state.tokenList.map((t) => {
-            CastIronActions.statusUpdate({ [t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) });
-        });
+	this._balances = {'ETH': 0 };
+	this._tokenBalance = [];
 
-        CastIronActions.statusUpdate({ 'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) });
-        createCanvasWithAddress(canvas, this.state.address);
+	let stage = Promise.resolve();
+
+	stage = stage.then(() => {return this.wallet.managedAddress(this.state.address) })
+		.then((obj) => {
+        		this.wallet.setAccount(this.state.address);
+			this.setState({passManaged: obj});
+			loopasync(['ETH', ...this.state.tokenList], CastIronActions.statusUpdate);
+			/*
+        		CastIronActions.statusUpdate({ 
+				'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) 
+			});
+
+        		this.state.tokenList.map((t) => {
+            			CastIronActions.statusUpdate({ 
+		    	    	    [t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) 
+	    			});
+        		});
+			*/
+		});
+
+	return stage;
     }
 
-    onStatusUpdate(status) {
+    onStatusUpdate(symbol) {
         this._count++;
+	let b;
 
-        this.setState({ balances: { ...this.state.balances, ...status } });
+	if (symbol != 'ETH') {
+	   b = Number(this.wallet.toEth(this.wallet.addrTokenBalance(symbol)(this.wallet.userWallet), this.wallet.TokenList[symbol].decimals).toFixed(9));
+	} else {
+	   b = Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9));
+	}
+
+	let status = {[symbol]: b};
+
+	if (b > 0 && symbol != 'ETH') {
+		let a = [ ...this._tokenBalance, `${symbol}: ${b}`];
+		this._balances = { ...this._balances, ...status };
+		this._tokenBalance = [ ...new Set(a)];
+        	//this.setState({ balances: { ...this.state.balances, ...status }, tokenBalance: [ ...new Set(a)] });
+	} else {
+		this._balances = { ...this._balances, ...status };
+        	//this.setState({ balances: { ...this.state.balances, ...status } });
+	}
 
         if (this._count == this._target) CastIronActions.finishUpdate();
     }
@@ -273,9 +337,12 @@ class CastIronStore extends Reflux.Store {
     }
 
     onFinishUpdate() {
-        console.log(`-|| Account: ${this.state.address} ||-`);
-        console.log(JSON.stringify(this.state.balances, 0, 2));
-        console.log(`--------------------`);
+        this.setState({lesDelay: false, balances: this._balances, tokenBalance: this._tokenBalance });
+	this._balances = {'ETH': 0 };
+	this._tokenBalance = [];
+        //console.log(`-|| Account: ${this.state.address} ||-`);
+        //console.log(JSON.stringify(this.state.balances, 0, 2));
+        //console.log(`--------------------`);
         // we can perhaps store a copy of the state o CastIronActions.clearQueue();n disk?
     }
 
@@ -418,27 +485,16 @@ class CastIronStore extends Reflux.Store {
     }
 
     getAccounts() {
-        let addrs = CastIronService.getAccounts();
-        let accounts = {};
-        addrs.map((addr, index) => (
-            accounts[addr] = {
-                name: "account_" + index,
-                balance: this.wallet.toEth(this.wallet.addrEtherBalance(addr), this.wallet.TokenList['ETH'].decimals).toFixed(9)
-            }
-        ));
+	return Promise.resolve().then(() => {
+            let addrs = CastIronService.getAccounts();
+            if (addrs.length !== this.state.accounts.length) this.setState({ accounts: addrs });
 
-        if (this.state.address) {
-            this.setState(() => { return { accounts: accounts, balances: { 'ETH': accounts[this.state.address].balance } } })
-            this.state.tokenList.map((t) => {
-                CastIronActions.statusUpdate({ [t]: Number(this.wallet.toEth(this.wallet.addrTokenBalance(t)(this.wallet.userWallet), this.wallet.TokenList[t].decimals).toFixed(9)) });
-            });
-
-            CastIronActions.statusUpdate({ 'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) });
-        } else {
-            this.setState({ accounts: accounts });
-        }
-
-        console.log(JSON.stringify(this.state, 0, 2));
+	    if (this.state.address !== null) {
+		    return this.addressUpdate();
+	    } else {
+		    this.setState({balances: {'ETH': 0 }, selected_token_name: '' });
+	    }
+        })
     }
 
     updateInfo = () => {
@@ -446,7 +502,7 @@ class CastIronStore extends Reflux.Store {
 
         if (!this.wallet.configured()) {
             return this.setState({ configured: false });
-        } else {
+        } else if (!this.state.configured) {
             this.setState({ configured: true });
         }
 
@@ -463,7 +519,9 @@ class CastIronStore extends Reflux.Store {
                     } else if (!rc && trial >= retries) {
                         throw ("Please check your geth connection");
                     } else if (rc) {
-                        this.setState({ retrying: 0, rpcfailed: false });
+			if (this.state.retrying !== 0 || this.state.rpcfailed !== false) {
+                        	this.setState({ retrying: 0, rpcfailed: false });
+			}
                         return p;
                     }
                 })
@@ -491,7 +549,7 @@ class CastIronStore extends Reflux.Store {
         }
 
         // Actual function logic of updateInfo
-        stage = __gasPriceQuery(stage);
+        if (this.state.gasPriceOption !== "custom") stage = __gasPriceQuery(stage);
         stage.then(() => {
             if (this.state.gasPriceOption !== "custom") {
                 let gasPrice = this.state.gasPriceInfo[this.state.gasPriceOption]

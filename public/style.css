@@ -944,3 +944,37 @@ h6 {
   align-items: center;
   text-align: center;
 }
+
+/* les delay loading animation */
+.dot {
+  opacity: 0;
+  -webkit-animation: dot 1.3s infinite;
+  animation: dot 1.3s infinite;
+}
+
+.dotOne {
+  -webkit-animation-delay: 0.0s;
+  animation-delay: 0.0s;
+}
+
+.dottwo {
+  -webkit-animation-delay: 0.2s;
+  animation-delay: 0.2s;
+}
+
+.dotThree {
+  -webkit-animation-delay: 0.3s;
+  animation-delay: 0.3s;
+}
+
+@-webkit-keyframes dot {
+    0% { opacity: 0; }
+   50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes dot {
+    0% { opacity: 0; }
+   50% { opacity: 0; }
+  100% { opacity: 1; }
+}
