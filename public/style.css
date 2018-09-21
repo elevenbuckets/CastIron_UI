@@ -852,6 +852,7 @@ h6 {
 .button:disabled {
   border: 2px solid black;
   color: black;
+  pointer-events: none;
 }
 
 .button:hover {
@@ -943,6 +944,41 @@ h6 {
   justify-items: center;
   align-items: center;
   text-align: center;
+}
+
+.tokenAction {
+  width: 100%;
+  height: 36px;
+  padding: 2px;
+  background-color: rgba(0,0,0,0);
+  text-align: center;
+  color: #FFF;
+  position: relative;
+  display: grid;
+  grid-template-columns:   50px 65px 65px 1fr 65px 80px;
+  grid-template-areas: "tokenActionButtonNew tokenActionButtonSearch tokenActionButtonDelete . tokenActionButtonWatch tokenActionButtonUnWatch";
+  grid-gap: 4px;
+  border: 2px solid white;
+  border-radius: 0px;
+  font-size: 18px;
+}
+
+.tokenActionButtonNew{
+  grid-area: tokenActionButtonNew;
+}
+
+.tokenActionButtonSearch{
+  grid-area: tokenActionButtonSearch;
+}
+
+.tokenActionButtonDelete{
+  grid-area: tokenActionButtonDelete;
+}
+.tokenActionButtonWatch{
+  grid-area: tokenActionButtonWatch;
+}
+.tokenActionButtonUnWatch{
+  grid-area: tokenActionButtonUnWatch;
 }
 
 /* les delay loading animation */
