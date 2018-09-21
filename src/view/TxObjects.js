@@ -53,8 +53,6 @@ class TxObjects extends AlertModalUser {
       console.log('got gas: ' + gas);
       this.setState(() => { return { gas: gas } });
     }
-
-
   }
 
   handleSend(event) {
@@ -65,7 +63,13 @@ class TxObjects extends AlertModalUser {
 
   handleClick() {
     console.log("in handle click change token name function ....");
-    this.setState({selected_token_name: ''});
+    if (this.state.address === null) return this.setState({selected_token_name: ''});
+
+    let list = Object.keys(this.state.balances).sort().filter((i) => {if (this.state.balances[i] > 0) return i});
+    let symbol = this.state.selected_token_name === '' ? 'ETH' : this.state.selected_token_name;
+    let index = list.indexOf(symbol);
+    let ans = index === (list.length - 1) ? list[0] : list[index+1];
+    this.setState({selected_token_name: ans});
   }
 
   handleEnqueue() {
