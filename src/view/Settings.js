@@ -47,7 +47,14 @@ class Settings extends AlertModalUser {
 			selectedTokens: []
 		}
 
-
+		this.storeKeys = [
+			"tokenList",
+			"gasPriceOption",
+			"gasPriceInfo",
+			"customGasPrice",
+			"alertContent",
+			"isAlertModalOpen"
+		];
 		this.wallet = CastIronService.wallet;
 		this.accMgr = AcctMgrService.accMgr;
 		this.keypath = undefined;
