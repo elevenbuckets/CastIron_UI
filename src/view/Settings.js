@@ -322,9 +322,11 @@ class Settings extends AlertModalUser {
 								<input type="button" className="button" value='New' onClick={this.handleTokenActionUpdate.bind(this, "New")} />
 								<input type="button" className="button" value='Search' onClick={this.handleTokenActionUpdate.bind(this, "Search")} />
 								<input type="button" className="button" value='Delete' disabled={!this.selectedTokensCanBeDeleted()}
-								onClick={this.handleClickDeleteToken} />
-								<input type="button" className="button" value='Watch' onClick={this.handleClickWatchToken} />
-								<input type="button" className="button" value='UnWatch' onClick={this.handleClickUnWatchToken} />
+									onClick={this.handleClickDeleteToken} />
+								<input type="button" className="button" value='Watch'
+									disabled={this.state.selectedTokens.length === 0} onClick={this.handleClickWatchToken} />
+								<input type="button" className="button" value='UnWatch'
+									disabled={this.state.selectedTokens.length === 0} onClick={this.handleClickUnWatchToken} />
 							</td>
 						</tr>
 
@@ -441,6 +443,16 @@ class Settings extends AlertModalUser {
 		if (event.target.value == "") {
 			delete filter[field];
 		}
+
+		this.filterTokens(filter);
+		this.setState({ tokenFilter: filter });
+
+	}
+
+	filterTokens = (filter) => {
+		if (Object.keys(filter).length === 0) {
+			return;
+		}
 		let filterTokens = Object.keys(this.state.availableTokens).map((key) => {
 			return { symbol: key, ...this.state.availableTokens[key] }
 		})
@@ -452,7 +464,7 @@ class Settings extends AlertModalUser {
 				return match && q[key].includes(filter[key]);
 			}, true)
 		})
-		this.setState({ tokenFilter: filter, filteredTokens: filterTokens });
+		this.setState({ filteredTokens: filterTokens });
 	}
 
 	selectedTokensCanBeDeleted = () => {
@@ -467,7 +479,7 @@ class Settings extends AlertModalUser {
 
 
 	handleTokenActionUpdate = (action) => {
-		if(this.state.tokenAction === "Search"){
+		if (this.state.tokenAction === "Search") {
 			this.setState({ tokenFilter: {}, filteredTokens: [] })
 		}
 		if (this.state.tokenAction === action) {
@@ -498,6 +510,8 @@ class Settings extends AlertModalUser {
 			...availableTokensFromCustomer, [tokenToAdd.symbol]:
 				{ addr: tokenToAdd.token.addr, name: tokenToAdd.token.name, decimals: tokenToAdd.token.decimals }
 		};
+
+		this.filterTokens(this.state.tokenFilter);
 
 		//TODO: change it to use addKeyValue in future
 		json.tokens = availableTokensFromCustomer;
@@ -546,7 +560,9 @@ class Settings extends AlertModalUser {
 		let json = require(path.join(this.cfgobj.configDir, "config.json"))
 		let watchTokens = json.watchTokens;
 		let castIronWriter = ConfigWriterService.getFileWriter(path.join(this.cfgobj.configDir, "config.json"), castIronFields);
-		watchTokens = [...watchTokens, ...selectedTokens]
+		watchTokens = [...watchTokens, ...selectedTokens];
+
+		this.filterTokens(this.state.tokenFilter);
 
 		//TODO: change it to use addKeyValue in future
 		json.watchTokens = watchTokens;
@@ -570,7 +586,7 @@ class Settings extends AlertModalUser {
 		})
 
 		this.wallet.TokenList = tokenList;
-		this.setState({ availableTokens: availableTokens , selectedTokens: [] });
+		this.setState({ availableTokens: availableTokens, selectedTokens: [] });
 
 
 
@@ -584,6 +600,8 @@ class Settings extends AlertModalUser {
 		selectedTokens.map((tokenSymbol) => {
 			delete availableTokensFromCustomer[tokenSymbol];
 		})
+
+		this.filterTokens(this.state.tokenFilter);
 
 		//TODO: change it to use addKeyValue in future
 		json.tokens = availableTokensFromCustomer;
@@ -615,6 +633,8 @@ class Settings extends AlertModalUser {
 		const castIronFields = ["datadir", "rpcAddr", "ipcPath", "defaultGasPrice", "gasOracleAPI",
 			"condition", "networkID", "tokens", "watchTokens", "passVault"];
 		let castIronWriter = ConfigWriterService.getFileWriter(path.join(this.cfgobj.configDir, "config.json"), castIronFields);
+
+		this.filterTokens(this.state.tokenFilter);
 
 		//TODO: change it to use addKeyValue in future
 		json.watchTokens = watchTokens;
