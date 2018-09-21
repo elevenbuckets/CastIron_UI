@@ -37,7 +37,7 @@ class Settings extends AlertModalUser {
 			tokenToAdd: {
 				symbol: '',
 				token: {
-					addr: 'default',
+					addr: '',
 					name: '',
 					decimals: "",
 					category: 'Customized',
@@ -313,25 +313,20 @@ class Settings extends AlertModalUser {
 	}
 
 	tokensSettings = () => {
-		return (
-			<div className="TQList">
-				<table className="balance-sheet">
-					<tbody>
-						<tr className="balance-sheet">
-							<td className="txform" style={{ border: '0', textAlign: "left" }}>
-								<input type="button" className="button" value='New' onClick={this.handleTokenActionUpdate.bind(this, "New")} />
-								<input type="button" className="button" value='Search' onClick={this.handleTokenActionUpdate.bind(this, "Search")} />
-								<input type="button" className="button" value='Delete' disabled={!this.selectedTokensCanBeDeleted()}
-									onClick={this.handleClickDeleteToken} />
-								<input type="button" className="button" value='Watch'
-									disabled={this.state.selectedTokens.length === 0} onClick={this.handleClickWatchToken} />
-								<input type="button" className="button" value='UnWatch'
-									disabled={this.state.selectedTokens.length === 0} onClick={this.handleClickUnWatchToken} />
-							</td>
-						</tr>
+		return (<div >
+			<div className="tokenAction">
 
-					</tbody>
-				</table>
+				<input type="button" className="button tokenActionButtonNew" value='New' onClick={this.handleTokenActionUpdate.bind(this, "New")} />
+				<input type="button" className="button tokenActionButtonSearch" value='Search' onClick={this.handleTokenActionUpdate.bind(this, "Search")} />
+				<input type="button" className="button tokenActionButtonDelete" value='Delete' disabled={!this.selectedTokensCanBeDeleted()}
+					onClick={this.handleClickDeleteToken} />
+				<input type="button" className="button tokenActionButtonWatch" value='Watch'
+					disabled={this.state.selectedTokens.length === 0} onClick={this.handleClickWatchToken} />
+				<input type="button" className="button tokenActionButtonUnWatch" value='UnWatch'
+					disabled={this.state.selectedTokens.length === 0} onClick={this.handleClickUnWatchToken} />
+			</div>
+
+			<div className="TQList">
 				<table style={{ width: "100%" }}>
 					<tbody>
 						<tr>
@@ -346,15 +341,19 @@ class Settings extends AlertModalUser {
 						<tr hidden={!(this.state.tokenAction === "New")}>
 							<td width='5%'></td>
 							<td width='3%'><input type='text' size='3'
+								value={this.state.tokenToAdd.symbol === undefined ? "" : this.state.tokenToAdd.symbol}
 								onChange={this.changeNewTokenField.bind(this, "symbol")}
 							/></td>
 							<td width='32%'><input type='text' size='20'
+								value={this.state.tokenToAdd.token === undefined ? "" : this.state.tokenToAdd.token.addr}
 								onChange={this.changeNewTokenField.bind(this, "addr")}
 							/></td>
 							<td width='10%'><input type='text' size='10'
+								value={this.state.tokenToAdd.token === undefined ? "" : this.state.tokenToAdd.token.name}
 								onChange={this.changeNewTokenField.bind(this, "name")}
 							/></td>
 							<td width='10%'><input type='text' size='10'
+								value={this.state.tokenToAdd.token === undefined ? "" : this.state.tokenToAdd.token.decimals}
 								onChange={this.changeNewTokenField.bind(this, "decimals")}
 							/></td>
 							<td width='10%'></td>
@@ -435,6 +434,8 @@ class Settings extends AlertModalUser {
 					</tbody>
 				</table>
 			</div>
+		</div>
+
 		);
 	}
 
@@ -522,7 +523,19 @@ class Settings extends AlertModalUser {
 	}
 
 	handleClickAddToken = () => {
-		this.addToken(this.state.tokenToAdd)
+		this.addToken(this.state.tokenToAdd);
+		this.setState({
+			tokenToAdd: {
+				symbol: '',
+				token: {
+					addr: '',
+					name: '',
+					decimals: "",
+					category: 'Customized',
+					watched: false
+				}
+			}
+		});
 	}
 
 	checkToken = (token, event) => {
@@ -563,6 +576,7 @@ class Settings extends AlertModalUser {
 		watchTokens = [...watchTokens, ...selectedTokens];
 
 		this.filterTokens(this.state.tokenFilter);
+		CastIronActions.infoUpdate();
 
 		//TODO: change it to use addKeyValue in future
 		json.watchTokens = watchTokens;
@@ -635,6 +649,7 @@ class Settings extends AlertModalUser {
 		let castIronWriter = ConfigWriterService.getFileWriter(path.join(this.cfgobj.configDir, "config.json"), castIronFields);
 
 		this.filterTokens(this.state.tokenFilter);
+		CastIronActions.infoUpdate();
 
 		//TODO: change it to use addKeyValue in future
 		json.watchTokens = watchTokens;
