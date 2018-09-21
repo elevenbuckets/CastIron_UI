@@ -320,7 +320,7 @@ class CastIronStore extends Reflux.Store {
 	let status = {[symbol]: b};
 
 	if (b > 0 && symbol != 'ETH') {
-		let a = [ ...this.state.tokenBalance, `${symbol}: ${b}`];
+		let a = [ ...this._tokenBalance, `${symbol}: ${b}`];
 		this._balances = { ...this._balances, ...status };
 		this._tokenBalance = [ ...new Set(a)];
         	//this.setState({ balances: { ...this.state.balances, ...status }, tokenBalance: [ ...new Set(a)] });
