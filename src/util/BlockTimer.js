@@ -2,6 +2,7 @@ import Reflux from 'reflux';
 import CastIronActions from '../action/CastIronActions'
 import CastIronService from '../service/CastIronService';
 import React, { Component } from 'react';
+import loopasync from 'loopasync';
 
 class BlockTimer {
 
@@ -47,9 +48,12 @@ class BlockTimer {
     }
 
     notifyObservers = () =>{
+	loopasync([...this.state.observers], (f) => { return f(); });
+	/*
         this.state.observers.map((observer) => {
             observer();
         })
+	*/
     }
 
     register = (observer) =>{

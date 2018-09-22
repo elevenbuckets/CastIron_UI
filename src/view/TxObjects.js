@@ -66,6 +66,9 @@ class TxObjects extends AlertModalUser {
     if (this.state.address === null) return this.setState({selected_token_name: ''});
 
     let list = Object.keys(this.state.balances).sort().filter((i) => {if (this.state.balances[i] > 0) return i});
+
+    if (list.length === 0) return this.setState({selected_token_name: ''});
+
     let symbol = this.state.selected_token_name === '' ? 'ETH' : this.state.selected_token_name;
     let index = list.indexOf(symbol);
     let ans = index === (list.length - 1) ? list[0] : list[index+1];
