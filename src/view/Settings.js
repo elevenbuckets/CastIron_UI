@@ -59,24 +59,28 @@ class Settings extends AlertModalUser {
 			"isAlertModalOpen"
 		];
 
+		this.cfgobj = remote.getGlobal('cfgobj');
 		this.wallet = CastIronService.wallet;
 		this.accMgr = AcctMgrService.accMgr;
 		this.keypath = undefined;
 		this.variable = undefined;
-		this.tokenTable = '';
+		this.tokensCastIron  = { ...CastIronService.wallet.defaultTokenList };
+		this.tokensCustomer  = require(path.join(this.cfgobj.configDir, "config.json")).tokens;
+		this.state.availableTokens = { ...this.tokensCastIron, ...this.tokensCustomer };
+		this.tokenTable = [];
+		this.filteredTable = [];
 	}
 
-
+/*
 	initializeAvaibleTokens = () => {
-		this.tokenTable = '';
 		let availableTokensFromCastIron = { ...CastIronService.wallet.defaultTokenList };
+
 		Object.keys(availableTokensFromCastIron).map((key) => {
 			availableTokensFromCastIron[key] = {
 				...availableTokensFromCastIron[key],
 				category: "default", watched: this.state.tokenList.includes(key)
 			}
 		})
-
 
 		// Now the custom tokens info is in config.json, may refactor it to its own file in future
 		this.cfgobj = remote.getGlobal('cfgobj');
@@ -87,11 +91,12 @@ class Settings extends AlertModalUser {
 				category: "Customized", watched: this.state.tokenList.includes(key)
 			}
 		})
+
 		this.state.availableTokens = { ...availableTokensFromCastIron, ...availableTokensFromCustomer };
 	}
+*/
 
 	componentDidMount = () => {
-		this.initializeAvaibleTokens();
 		this.accCanvas = this.props.canvas();
 	}
 
@@ -324,10 +329,13 @@ class Settings extends AlertModalUser {
 	}
 
 	tokenDisplay = (element) => {
-		console.log("calling tokenDisplay for " + element);
-
 		let token = this.state.availableTokens[element];
-		this.tokenTable = this.tokenTable.concat(
+		let category = this.tokensCustomer[element] === undefined ? 'default' : 'Customized';
+		let watched = this.state.tokenList.includes(element);
+		this.state.availableTokens[element]['category'] = category;
+		this.state.availableTokens[element]['watched'] = watched;
+
+		this.tokenTable.push(
 			<tr>
 				<td className="balance-sheet"
 					width='5%'><input
@@ -340,15 +348,45 @@ class Settings extends AlertModalUser {
 				<td width='32%'>{token.addr}</td>
 				<td width='10%'>{token.name}</td>
 				<td width='10%'>{token.decimals}</td>
-				<td width='10%'>{token.category}</td>
-				<td width='10%'>{token.watched ? "Yes" : "No"}</td>
-
+				<td width='10%'>{category}</td>
+				<td width='10%'>{watched ? "Yes" : "No"}</td>
 			</tr>
 		);
 	}
 
+	tokenFiltered = (token) => {
+		this.filteredTable.push(
+					<tr>
+						<td className="balance-sheet"
+							width='5%'><input
+							name="check"
+							type="checkbox"
+							checked={this.state.selectedTokens.includes(token.symbol)}
+							onChange={this.checkToken.bind(this, token.symbol)}
+						style={{ width: "25px", height: "25px" }} /></td>
+					<td width='3%'>{token.symbol}</td>
+					<td width='32%'>{token.addr}</td>
+					<td width='10%'>{token.name}</td>
+					<td width='10%'>{token.decimals}</td>
+					<td width='10%'>{token.category}</td>
+					<td width='10%'>{token.watched ? "Yes" : "No"}</td>
+					</tr>
+				);
+	}
+
+	tokenInfoDump = () => {
+		if ( this.state.filteredTokens.length === 0 ) {
+			this.filteredTable = [];
+			loopasync(Object.keys(this.state.availableTokens), this.tokenDisplay) 
+		} else {
+			this.tokenTable = [];
+			loopasync(this.state.filteredTokens, this.tokenFiltered);
+		}
+	}
+
 	tokensSettings = () => {
-		return (<div >
+		this.tokenInfoDump();
+		return (<div>
 			<div className="tokenAction">
 
 				<input type="button" className="button tokenActionButtonNew" value='New' onClick={this.handleTokenActionUpdate.bind(this, "New")} />
@@ -425,47 +463,11 @@ class Settings extends AlertModalUser {
 							/></td>
 
 						</tr>
-						{this.state.filteredTokens.length === 0 ? Object.keys(this.state.availableTokens).map((key) => {
-							let token = this.state.availableTokens[key];
-							return (
-								<tr>
-									<td className="balance-sheet"
-										width='5%'><input
-											name="check"
-											type="checkbox"
-											checked={this.state.selectedTokens.includes(key)}
-											onChange={this.checkToken.bind(this, key)}
-											style={{ width: "25px", height: "25px" }} /></td>
-									<td width='3%'>{key}</td>
-									<td width='32%'>{token.addr}</td>
-									<td width='10%'>{token.name}</td>
-									<td width='10%'>{token.decimals}</td>
-									<td width='10%'>{token.category}</td>
-									<td width='10%'>{token.watched ? "Yes" : "No"}</td>
-
-								</tr>
-							);
-						}) : this.state.filteredTokens.map((token) => {
-							return (
-								<tr>
-									<td className="balance-sheet"
-										width='5%'><input
-											name="check"
-											type="checkbox"
-											checked={this.state.selectedTokens.includes(token.symbol)}
-											onChange={this.checkToken.bind(this, token.symbol)}
-											style={{ width: "25px", height: "25px" }} /></td>
-									<td width='3%'>{token.symbol}</td>
-									<td width='32%'>{token.addr}</td>
-									<td width='10%'>{token.name}</td>
-									<td width='10%'>{token.decimals}</td>
-									<td width='10%'>{token.category}</td>
-									<td width='10%'>{token.watched ? "Yes" : "No"}</td>
-
-								</tr>
-							);
-						})
-						}
+					{
+						this.state.filteredTokens.length === 0 
+						? (this.tokenTable)
+						: (this.filteredTable)
+					}
 					</tbody>
 				</table>
 			</div>
