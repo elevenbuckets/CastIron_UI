@@ -5,6 +5,7 @@ import Reflux from 'reflux';
 import React from 'react';
 import fs from 'fs';
 import path from 'path';
+import loopasync from 'loopasync';
 const remote = require('electron').remote;
 
 // Modals
@@ -55,14 +56,17 @@ class Settings extends AlertModalUser {
 			"alertContent",
 			"isAlertModalOpen"
 		];
+
 		this.wallet = CastIronService.wallet;
 		this.accMgr = AcctMgrService.accMgr;
 		this.keypath = undefined;
 		this.variable = undefined;
+		this.tokenTable = '';
 	}
 
 
 	initializeAvaibleTokens = () => {
+		this.tokenTable = '';
 		let availableTokensFromCastIron = { ...CastIronService.wallet.defaultTokenList };
 		Object.keys(availableTokensFromCastIron).map((key) => {
 			availableTokensFromCastIron[key] = {
@@ -317,6 +321,30 @@ class Settings extends AlertModalUser {
 		);
 	}
 
+	tokenDisplay = (element) => {
+		console.log("calling tokenDisplay for " + element);
+
+		let token = this.state.availableTokens[element];
+		this.tokenTable = this.tokenTable.concat(
+			<tr>
+				<td className="balance-sheet"
+					width='5%'><input
+						name="check"
+						type="checkbox"
+						checked={this.state.selectedTokens.includes(element)}
+						onChange={this.checkToken.bind(this, element)}
+						style={{ width: "25px", height: "25px" }} /></td>
+				<td width='3%'>{element}</td>
+				<td width='32%'>{token.addr}</td>
+				<td width='10%'>{token.name}</td>
+				<td width='10%'>{token.decimals}</td>
+				<td width='10%'>{token.category}</td>
+				<td width='10%'>{token.watched ? "Yes" : "No"}</td>
+
+			</tr>
+		);
+	}
+
 	tokensSettings = () => {
 		return (
 			<div className="TQList">
@@ -388,27 +416,9 @@ class Settings extends AlertModalUser {
 							/></td>
 
 						</tr>
-						{Object.keys(this.state.availableTokens).map((key) => {
-							let token = this.state.availableTokens[key];
-							return (
-								<tr>
-									<td className="balance-sheet"
-										width='5%'><input
-											name="check"
-											type="checkbox"
-											checked={this.state.selectedTokens.includes(key)}
-											onChange={this.checkToken.bind(this, key)}
-											style={{ width: "25px", height: "25px" }} /></td>
-									<td width='3%'>{key}</td>
-									<td width='32%'>{token.addr}</td>
-									<td width='10%'>{token.name}</td>
-									<td width='10%'>{token.decimals}</td>
-									<td width='10%'>{token.category}</td>
-									<td width='10%'>{token.watched ? "Yes" : "No"}</td>
-
-								</tr>
-							);
-						})}
+						{
+						  loopasync(Object.keys(this.state.availableTokens), this.tokenDisplay)
+						}
 					</tbody>
 				</table>
 			</div>
