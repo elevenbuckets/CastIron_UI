@@ -948,7 +948,7 @@ h6 {
 
 .tokenAction {
   width: 100%;
-  height: 36px;
+  height: 100px;
   padding: 2px;
   background-color: rgba(0,0,0,0);
   text-align: center;
@@ -956,8 +956,11 @@ h6 {
   position: relative;
   display: grid;
   grid-template-columns:   50px 65px 65px 1fr 65px 80px;
-  grid-template-areas: "tokenActionButtonNew tokenActionButtonSearch tokenActionButtonDelete . tokenActionButtonWatch tokenActionButtonUnWatch";
-  grid-gap: 4px;
+  grid-auto-rows: minmax(100px, auto);
+  grid-template-areas:
+   "tokenActionButtonNew tokenActionButtonSearch tokenActionButtonDelete notUsed tokenActionButtonWatch tokenActionButtonUnWatch"
+   "tokenTitleTable tokenTitleTable tokenTitleTable tokenTitleTable tokenTitleTable tokenTitleTable";
+   grid-gap: 4px;
   border: 2px solid white;
   border-radius: 0px;
   font-size: 18px;
@@ -979,6 +982,10 @@ h6 {
 }
 .tokenActionButtonUnWatch{
   grid-area: tokenActionButtonUnWatch;
+}
+
+.tokenTitleTable{
+  grid-area: tokenTitleTable;
 }
 
 /* les delay loading animation */
