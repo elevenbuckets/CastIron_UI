@@ -338,24 +338,24 @@ class Settings extends AlertModalUser {
 				<input type="button" className="button tokenActionButtonUnWatch" value='UnWatch'
 					disabled={this.state.selectedTokens.length === 0} onClick={this.handleClickUnWatchToken} />
 
-					<table type="tokenTitleTable" style={{ width: "100%" }}>
+					<table className="tokenTitleTable" style={{ width: "100%", paddingLeft:"4px", paddingRight:"4px"}}>
 					<tbody>
 						<tr>
-							<td width='5%'>Select</td>
-							<td width='3%'>Symbol</td>
-							<td width='32%'>Address</td>
+							<td width='10%'>Select</td>
+							<td width='10%'>Symbol</td>
+							<td width='40%'>Address</td>
 							<td width='10%'>Name</td>
 							<td width='10%'>Decimals</td>
 							<td width='10%'>Catgory</td>
 							<td width='10%'>Watched</td>
 						</tr>
 						<tr hidden={!(this.state.tokenAction === "New")}>
-							<td width='5%'></td>
-							<td width='3%'><input type='text' size='3'
+							<td width='10%'></td>
+							<td width='10%'><input type='text' size='3'
 								value={this.state.tokenToAdd.symbol === undefined ? "" : this.state.tokenToAdd.symbol}
 								onChange={this.changeNewTokenField.bind(this, "symbol")}
 							/></td>
-							<td width='32%'><input type='text' size='20'
+							<td width='40%'><input type='text' size='20'
 								value={this.state.tokenToAdd.token === undefined ? "" : this.state.tokenToAdd.token.addr}
 								onChange={this.changeNewTokenField.bind(this, "addr")}
 							/></td>
@@ -374,12 +374,12 @@ class Settings extends AlertModalUser {
 
 						</tr>
 						<tr hidden={!(this.state.tokenAction === "Search")}>
-							<td width='5%'></td>
-							<td width='3%'><input type='text' size='3'
+							<td width='10%'></td>
+							<td width='10%'><input type='text' size='3'
 								value={this.state.tokenFilter.symbol === undefined ? "" : this.state.tokenFilter.symbol}
 								onChange={this.changeTokenFilter.bind(this, "symbol")}
 							/></td>
-							<td width='32%'><input type='text' size='20'
+							<td width='40%'><input type='text' size='20'
 								value={this.state.tokenFilter.addr === undefined ? "" : this.state.tokenFilter.addr}
 								onChange={this.changeTokenFilter.bind(this, "addr")}
 							/></td>
@@ -405,7 +405,7 @@ class Settings extends AlertModalUser {
 				</table>	
 			</div>
 
-			<div className="TQList">
+			<div className="TKList">
 				<table style={{ width: "100%" }}>
 					<tbody>
 						
@@ -428,14 +428,14 @@ class Settings extends AlertModalUser {
 				return (
 					<tr>
 						<td className="balance-sheet"
-							width='5%'><input
+							width='10%'><input
 								name="check"
 								type="checkbox"
 								checked={this.state.selectedTokens.includes(key)}
 								onChange={this.checkToken.bind(this, key)}
 								style={{ width: "25px", height: "25px" }} /></td>
-						<td width='3%'>{key}</td>
-						<td width='32%'>{token.addr}</td>
+						<td width='10%'>{key}</td>
+						<td width='40%'>{token.addr}</td>
 						<td width='10%'>{token.name}</td>
 						<td width='10%'>{token.decimals}</td>
 						<td width='10%'>{token.category}</td>
@@ -447,14 +447,14 @@ class Settings extends AlertModalUser {
 				return (
 					<tr>
 						<td className="balance-sheet"
-							width='5%'><input
+							width='10%'><input
 								name="check"
 								type="checkbox"
 								checked={this.state.selectedTokens.includes(token.symbol)}
 								onChange={this.checkToken.bind(this, token.symbol)}
 								style={{ width: "25px", height: "25px" }} /></td>
-						<td width='3%'>{token.symbol}</td>
-						<td width='32%'>{token.addr}</td>
+						<td width='10%'>{token.symbol}</td>
+						<td width='40%'>{token.addr}</td>
 						<td width='10%'>{token.name}</td>
 						<td width='10%'>{token.decimals}</td>
 						<td width='10%'>{token.category}</td>
