@@ -948,7 +948,7 @@ h6 {
 
 .tokenAction {
   width: 100%;
-  height: 36px;
+  height: auto;
   padding: 2px;
   background-color: rgba(0,0,0,0);
   text-align: center;
@@ -956,13 +956,20 @@ h6 {
   position: relative;
   display: grid;
   grid-template-columns:   50px 65px 65px 1fr 65px 80px;
-  grid-template-areas: "tokenActionButtonNew tokenActionButtonSearch tokenActionButtonDelete . tokenActionButtonWatch tokenActionButtonUnWatch";
-  grid-gap: 4px;
+  grid-template-rows: 30px 1fr;
+  grid-template-areas:
+   "tokenActionButtonNew tokenActionButtonSearch tokenActionButtonDelete notUsed tokenActionButtonWatch tokenActionButtonUnWatch"
+   "tokenTitleTable tokenTitleTable tokenTitleTable tokenTitleTable tokenTitleTable tokenTitleTable";
+   grid-gap: 4px;
   border: 2px solid white;
+  border-bottom: none;
   border-radius: 0px;
   font-size: 18px;
 }
 
+.notUsed{
+  grid-area: notUsed;
+}
 .tokenActionButtonNew{
   grid-area: tokenActionButtonNew;
 }
@@ -981,6 +988,41 @@ h6 {
   grid-area: tokenActionButtonUnWatch;
 }
 
+.tokenTitleTable{
+  grid-area: tokenTitleTable;
+}
+
+.tokenTitleTable tr:nth-child(odd) {
+  background-color: rgb(34, 169, 202);
+}
+
+.tokenTitleTable tr:nth-child(even) {
+  background-color: rgb(12, 96, 117);
+}
+
+
+.TKList {
+  overflow-y: scroll;
+  padding-left: 6px;
+  border: 2px solid white;
+  border-top: none;
+  width: 100%;
+  min-height: calc(100vh - 400px);
+  max-height: calc(100vh - 400px);
+  font-size: 18px;
+  font-family: digits;
+  grid-area: TxList;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.11);
+}
+
+.TKList tr:nth-child(odd) {
+  background-color: rgb(34, 169, 202);
+}
+
+.TKList tr:nth-child(even) {
+  background-color: rgb(12, 96, 117);
+}
 /* les delay loading animation */
 .dot {
   opacity: 0;
