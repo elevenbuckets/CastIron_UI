@@ -5,6 +5,7 @@ import Reflux from 'reflux';
 import React from 'react';
 import fs from 'fs';
 import path from 'path';
+import loopasync from 'loopasync';
 const remote = require('electron').remote;
 
 // Modals
@@ -50,25 +51,31 @@ class Settings extends AlertModalUser {
 			tokenDisplay: []
 		}
 
+		this.storeKeys = [
+			"tokenList",
+			"gasPriceOption",
+			"gasPriceInfo",
+			"customGasPrice",
+			"alertContent",
+			"isAlertModalOpen"
+		];
 
+		this.cfgobj = remote.getGlobal('cfgobj');
 		this.wallet = CastIronService.wallet;
 		this.accMgr = AcctMgrService.accMgr;
 		this.keypath = undefined;
 		this.variable = undefined;
 	}
 
-
 	initializeAvaibleTokens = () => {
 		let availableTokensFromCastIron = { ...CastIronService.wallet.defaultTokenList };
+
 		Object.keys(availableTokensFromCastIron).map((key) => {
 			availableTokensFromCastIron[key] = {
 				...availableTokensFromCastIron[key],
 				category: "default", watched: this.state.tokenList.includes(key)
 			}
 		})
-
-		console.log("Settings : In the middle of initialing token")
-
 
 		// Now the custom tokens info is in config.json, may refactor it to its own file in future
 		this.cfgobj = remote.getGlobal('cfgobj');
@@ -79,6 +86,7 @@ class Settings extends AlertModalUser {
 				category: "Customized", watched: this.state.tokenList.includes(key)
 			}
 		})
+
 		this.state.availableTokens = { ...availableTokensFromCastIron, ...availableTokensFromCustomer };
 	}
 
@@ -89,6 +97,7 @@ class Settings extends AlertModalUser {
 		}
 		return true;
 	}
+
 	componentDidMount = () => {
 		console.log("Settings: Starting initializing token...");
 		setTimeout(this.initializeAvaibleTokens);
@@ -326,7 +335,8 @@ class Settings extends AlertModalUser {
 	}
 
 	tokensSettings = () => {
-		return (<div >
+		this.tokenInfoDump();
+		return (<div>
 			<div className="tokenAction">
 
 				<input type="button" className="button tokenActionButtonNew" value='New' onClick={this.handleTokenActionUpdate.bind(this, "New")} />
