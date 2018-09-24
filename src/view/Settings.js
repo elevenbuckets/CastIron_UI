@@ -47,7 +47,8 @@ class Settings extends AlertModalUser {
 			},
 			selectedTokens: [],
 			tokenFilter: {},
-			filteredTokens: []
+			filteredTokens: [],
+			tokenDisplay: []
 		}
 
 		this.storeKeys = [
@@ -64,14 +65,8 @@ class Settings extends AlertModalUser {
 		this.accMgr = AcctMgrService.accMgr;
 		this.keypath = undefined;
 		this.variable = undefined;
-		this.tokensCastIron  = { ...CastIronService.wallet.defaultTokenList };
-		this.tokensCustomer  = require(path.join(this.cfgobj.configDir, "config.json")).tokens;
-		this.state.availableTokens = { ...this.tokensCastIron, ...this.tokensCustomer };
-		this.tokenTable = [];
-		this.filteredTable = [];
 	}
 
-/*
 	initializeAvaibleTokens = () => {
 		let availableTokensFromCastIron = { ...CastIronService.wallet.defaultTokenList };
 
@@ -94,9 +89,20 @@ class Settings extends AlertModalUser {
 
 		this.state.availableTokens = { ...availableTokensFromCastIron, ...availableTokensFromCustomer };
 	}
-*/
+
+	componentDidUpdate = (prevProps, prevState) => {
+		if (prevState.availableTokens != this.state.availableTokens || prevState.filteredTokens != this.state.filteredTokens ||
+			prevState.selectedTokens != this.state.selectedTokens) {
+			this.setTokenDisplayAsyc();
+		}
+		return true;
+	}
 
 	componentDidMount = () => {
+		console.log("Settings: Starting initializing token...");
+		setTimeout(this.initializeAvaibleTokens);
+		this.setTokenDisplayAsyc();
+		console.log("Settings: Finished initializing token.")
 		this.accCanvas = this.props.canvas();
 	}
 
@@ -328,62 +334,6 @@ class Settings extends AlertModalUser {
 		);
 	}
 
-	tokenDisplay = (element) => {
-		let token = this.state.availableTokens[element];
-		let category = this.tokensCustomer[element] === undefined ? 'default' : 'Customized';
-		let watched = this.state.tokenList.includes(element);
-		this.state.availableTokens[element]['category'] = category;
-		this.state.availableTokens[element]['watched'] = watched;
-
-		this.tokenTable.push(
-			<tr>
-				<td className="balance-sheet"
-					width='5%'><input
-						name="check"
-						type="checkbox"
-						checked={this.state.selectedTokens.includes(element)}
-						onChange={this.checkToken.bind(this, element)}
-						style={{ width: "25px", height: "25px" }} /></td>
-				<td width='3%'>{element}</td>
-				<td width='32%'>{token.addr}</td>
-				<td width='10%'>{token.name}</td>
-				<td width='10%'>{token.decimals}</td>
-				<td width='10%'>{category}</td>
-				<td width='10%'>{watched ? "Yes" : "No"}</td>
-			</tr>
-		);
-	}
-
-	tokenFiltered = (token) => {
-		this.filteredTable.push(
-					<tr>
-						<td className="balance-sheet"
-							width='5%'><input
-							name="check"
-							type="checkbox"
-							checked={this.state.selectedTokens.includes(token.symbol)}
-							onChange={this.checkToken.bind(this, token.symbol)}
-						style={{ width: "25px", height: "25px" }} /></td>
-					<td width='3%'>{token.symbol}</td>
-					<td width='32%'>{token.addr}</td>
-					<td width='10%'>{token.name}</td>
-					<td width='10%'>{token.decimals}</td>
-					<td width='10%'>{token.category}</td>
-					<td width='10%'>{token.watched ? "Yes" : "No"}</td>
-					</tr>
-				);
-	}
-
-	tokenInfoDump = () => {
-		if ( this.state.filteredTokens.length === 0 ) {
-			this.filteredTable = [];
-			loopasync(Object.keys(this.state.availableTokens), this.tokenDisplay) 
-		} else {
-			this.tokenTable = [];
-			loopasync(this.state.filteredTokens, this.tokenFiltered);
-		}
-	}
-
 	tokensSettings = () => {
 		this.tokenInfoDump();
 		return (<div>
@@ -397,27 +347,25 @@ class Settings extends AlertModalUser {
 					disabled={this.state.selectedTokens.length === 0} onClick={this.handleClickWatchToken} />
 				<input type="button" className="button tokenActionButtonUnWatch" value='UnWatch'
 					disabled={this.state.selectedTokens.length === 0} onClick={this.handleClickUnWatchToken} />
-			</div>
 
-			<div className="TQList">
-				<table style={{ width: "100%" }}>
+					<table className="tokenTitleTable" style={{ width: "100%", paddingLeft:"4px", paddingRight:"4px"}}>
 					<tbody>
 						<tr>
-							<td width='5%'>Select</td>
-							<td width='3%'>Symbol</td>
-							<td width='32%'>Address</td>
+							<td width='10%'>Select</td>
+							<td width='10%'>Symbol</td>
+							<td width='40%'>Address</td>
 							<td width='10%'>Name</td>
 							<td width='10%'>Decimals</td>
 							<td width='10%'>Catgory</td>
 							<td width='10%'>Watched</td>
 						</tr>
 						<tr hidden={!(this.state.tokenAction === "New")}>
-							<td width='5%'></td>
-							<td width='3%'><input type='text' size='3'
+							<td width='10%'></td>
+							<td width='10%'><input type='text' size='3'
 								value={this.state.tokenToAdd.symbol === undefined ? "" : this.state.tokenToAdd.symbol}
 								onChange={this.changeNewTokenField.bind(this, "symbol")}
 							/></td>
-							<td width='32%'><input type='text' size='20'
+							<td width='40%'><input type='text' size='20'
 								value={this.state.tokenToAdd.token === undefined ? "" : this.state.tokenToAdd.token.addr}
 								onChange={this.changeNewTokenField.bind(this, "addr")}
 							/></td>
@@ -436,12 +384,12 @@ class Settings extends AlertModalUser {
 
 						</tr>
 						<tr hidden={!(this.state.tokenAction === "Search")}>
-							<td width='5%'></td>
-							<td width='3%'><input type='text' size='3'
+							<td width='10%'></td>
+							<td width='10%'><input type='text' size='3'
 								value={this.state.tokenFilter.symbol === undefined ? "" : this.state.tokenFilter.symbol}
 								onChange={this.changeTokenFilter.bind(this, "symbol")}
 							/></td>
-							<td width='32%'><input type='text' size='20'
+							<td width='40%'><input type='text' size='20'
 								value={this.state.tokenFilter.addr === undefined ? "" : this.state.tokenFilter.addr}
 								onChange={this.changeTokenFilter.bind(this, "addr")}
 							/></td>
@@ -463,17 +411,76 @@ class Settings extends AlertModalUser {
 							/></td>
 
 						</tr>
-					{
-						this.state.filteredTokens.length === 0 
-						? (this.tokenTable)
-						: (this.filteredTable)
-					}
+					</tbody>
+				</table>	
+			</div>
+
+			<div className="TKList">
+				<table style={{ width: "100%" }}>
+					<tbody>
+						
+						{this.getTokenDisplay()
+
+						}
 					</tbody>
 				</table>
 			</div>
 		</div>
 
 		);
+	}
+
+	setTokenDisplayAsyc = () => {
+
+		setTimeout(() => {
+			let tokenDisplay = this.state.filteredTokens.length === 0 ? Object.keys(this.state.availableTokens).map((key) => {
+				let token = this.state.availableTokens[key];
+				return (
+					<tr>
+						<td className="balance-sheet"
+							width='10%'><input
+								name="check"
+								type="checkbox"
+								checked={this.state.selectedTokens.includes(key)}
+								onChange={this.checkToken.bind(this, key)}
+								style={{ width: "25px", height: "25px" }} /></td>
+						<td width='10%'>{key}</td>
+						<td width='40%'>{token.addr}</td>
+						<td width='10%'>{token.name}</td>
+						<td width='10%'>{token.decimals}</td>
+						<td width='10%'>{token.category}</td>
+						<td width='10%'>{token.watched ? "Yes" : "No"}</td>
+
+					</tr>
+				);
+			}) : this.state.filteredTokens.map((token) => {
+				return (
+					<tr>
+						<td className="balance-sheet"
+							width='10%'><input
+								name="check"
+								type="checkbox"
+								checked={this.state.selectedTokens.includes(token.symbol)}
+								onChange={this.checkToken.bind(this, token.symbol)}
+								style={{ width: "25px", height: "25px" }} /></td>
+						<td width='10%'>{token.symbol}</td>
+						<td width='40%'>{token.addr}</td>
+						<td width='10%'>{token.name}</td>
+						<td width='10%'>{token.decimals}</td>
+						<td width='10%'>{token.category}</td>
+						<td width='10%'>{token.watched ? "Yes" : "No"}</td>
+
+					</tr>
+				);
+			})
+
+			this.setState({ tokenDisplay: tokenDisplay })
+		})
+
+	}
+
+	getTokenDisplay = () => {
+		return this.state.tokenDisplay;
 	}
 
 	changeTokenFilter = (field, event) => {
@@ -488,21 +495,25 @@ class Settings extends AlertModalUser {
 	}
 
 	filterTokens = (filter) => {
-		if (Object.keys(filter).length === 0) {
-			return;
-		}
-		let filterTokens = Object.keys(this.state.availableTokens).map((key) => {
-			return { symbol: key, ...this.state.availableTokens[key] }
+		setTimeout(()=>{
+			if (Object.keys(filter).length === 0) {
+				this.setState({ filteredTokens: [] });
+				return;
+			}
+			let filterTokens = Object.keys(this.state.availableTokens).map((key) => {
+				return { symbol: key, ...this.state.availableTokens[key] }
+			})
+			filterTokens = filterTokens.filter(q => {
+				return Object.keys(filter).reduce((match, key) => {
+					if (typeof (q[key]) === "boolean") {
+						return match && (q[key] ? "Yes" : "No").includes(filter[key]);
+					}
+					return match && q[key].toString().toLowerCase().includes(filter[key].toLowerCase());
+				}, true)
+			})
+			this.setState({ filteredTokens: filterTokens });
 		})
-		filterTokens = filterTokens.filter(q => {
-			return Object.keys(filter).reduce((match, key) => {
-				if (typeof (q[key]) === "boolean") {
-					return match && (q[key] ? "Yes" : "No").includes(filter[key]);
-				}
-				return match && q[key].includes(filter[key]);
-			}, true)
-		})
-		this.setState({ filteredTokens: filterTokens });
+		
 	}
 
 	selectedTokensCanBeDeleted = () => {
