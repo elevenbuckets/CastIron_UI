@@ -626,6 +626,7 @@ class Settings extends AlertModalUser {
 		watchTokens = [...watchTokens, ...selectedTokens];
 
 		this.filterTokens(this.state.tokenFilter);
+		CastIronActions.selectedTokenUpdate('');
 		CastIronActions.infoUpdate();
 
 		//TODO: change it to use addKeyValue in future
@@ -651,8 +652,7 @@ class Settings extends AlertModalUser {
 
 		this.wallet.TokenList = tokenList;
 		this.setState({ availableTokens: availableTokens, selectedTokens: [] });
-
-
+		CastIronActions.selectedTokenUpdate('');
 
 		// udpate the tokens in configuration file
 		const castIronFields = ["datadir", "rpcAddr", "ipcPath", "defaultGasPrice", "gasOracleAPI",
@@ -699,6 +699,7 @@ class Settings extends AlertModalUser {
 		let castIronWriter = ConfigWriterService.getFileWriter(path.join(this.cfgobj.configDir, "config.json"), castIronFields);
 
 		this.filterTokens(this.state.tokenFilter);
+		CastIronActions.selectedTokenUpdate('');
 		CastIronActions.infoUpdate();
 
 		//TODO: change it to use addKeyValue in future

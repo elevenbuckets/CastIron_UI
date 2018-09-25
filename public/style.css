@@ -1008,6 +1008,9 @@ h6 {
 	background-color: rgba(5,10,22,0.8);
 	font-size: 18px;
 	color: white;
+	height: 24px;
+	margin-top: 3px;
+	text-align: center;
 }
 
 .TKList {
