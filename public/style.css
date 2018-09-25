@@ -516,7 +516,7 @@ h6 {
   grid-template-areas: "settingInner";
   overflow: hidden;
   margin: 8px 5px 0px 5px;
-  height: 92%;
+  height: 95%;
   background-color: rgba(0, 0, 0, 0);
   border-radius: 0px;
 }
@@ -614,7 +614,7 @@ h6 {
   border: 2px solid white;
   border-radius: 0px;
   margin: 8px 5px 0px 5px;
-  height: 92%;
+  height: 93%;
 }
 
 .dAppsViewInner {
@@ -851,8 +851,7 @@ h6 {
 }
 
 .button:disabled {
-  border: 2px solid black;
-  color: black;
+  color: grey;
   pointer-events: none;
 }
 
@@ -956,12 +955,12 @@ h6 {
   color: #FFF;
   position: relative;
   display: grid;
-  grid-template-columns:   50px 65px 65px 1fr 65px 80px;
+  grid-template-columns: 46px 64px 64px 1fr 57px 80px;
   grid-template-rows: 30px 1fr;
   grid-template-areas:
    "tokenActionButtonNew tokenActionButtonSearch tokenActionButtonDelete notUsed tokenActionButtonWatch tokenActionButtonUnWatch"
    "tokenTitleTable tokenTitleTable tokenTitleTable tokenTitleTable tokenTitleTable tokenTitleTable";
-   grid-gap: 4px;
+   grid-gap: 2px;
   border: 2px solid white;
   border-bottom: none;
   border-radius: 0px;
@@ -990,7 +989,10 @@ h6 {
 }
 
 .tokenTitleTable{
+  width: 100%;
   grid-area: tokenTitleTable;
+  border: 7px solid rgb(34, 169, 202);
+  border-spacing: 0px;
 }
 
 .tokenTitleTable tr:nth-child(odd) {
@@ -1001,6 +1003,12 @@ h6 {
   background-color: rgb(12, 96, 117);
 }
 
+.tokenTitleTable input {
+	width: 90%;
+	background-color: rgba(5,10,22,0.8);
+	font-size: 18px;
+	color: white;
+}
 
 .TKList {
   overflow-y: scroll;
