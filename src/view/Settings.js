@@ -439,7 +439,7 @@ class Settings extends AlertModalUser {
 				let token = this.state.availableTokens[key];
 				return (
 					<tr>
-						<td className="balance-sheet"
+						<td
 							width='10%'><input
 								name="check"
 								type="checkbox"
@@ -458,7 +458,7 @@ class Settings extends AlertModalUser {
 			}) : this.state.filteredTokens.map((token) => {
 				return (
 					<tr>
-						<td className="balance-sheet"
+						<td
 							width='10%'><input
 								name="check"
 								type="checkbox"

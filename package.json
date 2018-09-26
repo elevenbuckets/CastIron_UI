@@ -27,8 +27,8 @@
     "compileRelease": "./node_modules/.bin/babel src --out-dir public && cp -rvf .local public/",
     "compile": "./node_modules/.bin/babel src --out-dir public",
     "start": "./node_modules/electron/dist/electron .",
-    "postdist": "mkdir -p ./dist/linux-unpacked/{dapps,public} && cp -vrf ./dapps/installed.json ./dist/linux-unpacked/dapps/ && cp -vrf ./public/.local ./dist/linux-unpacked/public",
-    "buildasar": "./node_modules/.bin/electron-builder --linux --x64 --dir ./dist"
+    "postdist": "mkdir -p ./dist/linux-unpacked/{dapps,public} && cp -vrf ./start.sh ./dist && cp -vrf ./dapps/installed.json ./dist/linux-unpacked/dapps/ && cp -vrf ./public/.local ./dist/linux-unpacked/public",
+    "buildasar": "rm -fr ./dist && ./node_modules/.bin/electron-builder --linux --x64 --dir ./dist"
   },
   "dependencies": {
     "CastIron": "git+ssh://git@github.com/elevenbuckets/CastIron.git",
