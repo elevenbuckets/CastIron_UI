@@ -4,9 +4,18 @@ CWD=`pwd`;
 LOCALDIR="$CWD/linux-unpacked/public/.local";
 ANS=`jq .configDir $LOCALDIR/bootstrap_config.json`;
 
+# let nothing be really nothing
+[ $ANS == '""' ] && ANS='';
+
 function blocking() {
 	NewANS=`jq .configDir $LOCALDIR/bootstrap_config.json`;
-	[ $ANS != $NewANS ] && blocking || shutdown;
+	[ "$ANS" != "$NewANS" ] && holding || shutdown;
+}
+
+function holding() {
+	echo "Please press \"Enter\" to terminate geth container ..."
+	read ANS;
+	shutdown;
 }
 
 function shutdown() { 
