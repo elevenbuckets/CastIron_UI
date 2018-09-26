@@ -1,16 +1,19 @@
 #!/bin/bash
 
-ROUND=0;
+CWD=`pwd`;
+LOCALDIR="$CWD/linux-unpacked/public/.local";
+ANS=`jq .configDir $LOCALDIR/bootstrap_config.json`;
 
 function blocking() {
-	#echo "Please type \"RUN\" to launch CastIron Wallet, or";
-	#echo "Please type \"END\" to terminate geth docker container.";
-	#read -p "[Your Choice]: " ANS;
-	ANS=`jq .configDir ./linux-unpacked/public/.local/bootstrap_config.json`;
-	[ $ROUND -eq 0 ] && startUI || [ $ANS != '' ] && shutdown || blocking;
+	NewANS=`jq .configDir $LOCALDIR/bootstrap_config.json`;
+	[ $ANS != $NewANS ] && blocking || shutdown;
 }
 
-function shutdown() { docker stop geth_stunnel; }
+function shutdown() { 
+	echo "Shutting down, please wait ...";
+	docker stop geth_stunnel && exit 0; 
+}
+
 
 function dockerIP() { 
 	IP=`docker inspect geth_stunnel|grep -w IPAddress -m1|grep -oE [0-9.]+`;
@@ -23,7 +26,6 @@ function dockerInit() {
 }
 
 function startUI() {
-	ROUND=$(($ROUND+1));
 	cd ./linux-unpacked && \
 	./cast-iron-app
 }
@@ -31,4 +33,5 @@ function startUI() {
 # Main
 dockerInit && \
 dockerIP && \
-blocking	
+startUI && \
+blocking;

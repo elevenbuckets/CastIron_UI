@@ -271,7 +271,7 @@ class CastIronStore extends Reflux.Store {
 			});
        		});
 		*/
-		loopasync(['ETH', ...this.state.tokenList], CastIronActions.statusUpdate);
+		loopasync(['ETH', ...this.state.tokenList], CastIronActions.statusUpdate, 1);
 	})
 
 	return stage;
@@ -290,7 +290,7 @@ class CastIronStore extends Reflux.Store {
 		.then((obj) => {
         		this.wallet.setAccount(this.state.address);
 			this.setState({passManaged: obj});
-			loopasync(['ETH', ...this.state.tokenList], CastIronActions.statusUpdate);
+			loopasync(['ETH', ...this.state.tokenList], CastIronActions.statusUpdate, 1);
 			/*
         		CastIronActions.statusUpdate({ 
 				'ETH': Number(this.wallet.toEth(this.wallet.addrEtherBalance(this.wallet.userWallet), this.wallet.TokenList['ETH'].decimals).toFixed(9)) 
@@ -417,7 +417,7 @@ class CastIronStore extends Reflux.Store {
             }else{
                 watchedTokens.splice(watchedTokens.indexOf(tokenSymbol), 1);
                 this.setState({tokenList : watchedTokens});
-                this.wallet.hotGroups(watchedTokens);
+                //this.wallet.hotGroups(watchedTokens); //remove watch doesn't mean we need to unbind its ERC20 contract
             }
         }
     }
@@ -564,7 +564,7 @@ class CastIronStore extends Reflux.Store {
             // BlockTimer needs to *NOT* querying geth RPC in constructor, but in separated class function!!!
             // Since it is possible that CastIron cannot connect to RPC!
             BlockTimer.initialize();
-            this.wallet.hotGroups(this.state.tokenList);
+            if(this.state.tokenList.length > 0) this.wallet.hotGroups(this.state.tokenList);
 	    let syncInProgress = false;
 	    if (
 		  BlockTimer.state.blockHeight !== BlockTimer.state.highestBlock 
