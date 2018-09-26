@@ -993,6 +993,7 @@ h6 {
   grid-area: tokenTitleTable;
   border: 7px solid rgb(34, 169, 202);
   border-spacing: 0px;
+  border-collapse: collapse;
 }
 
 .tokenTitleTable tr:nth-child(odd) {
