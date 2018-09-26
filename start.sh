@@ -2,10 +2,14 @@
 
 CWD=`pwd`;
 LOCALDIR="$CWD/linux-unpacked/public/.local";
+DATADIR=`dirname $(dirname $CWD)`
 ANS=`jq .configDir $LOCALDIR/bootstrap_config.json`;
 
 # let nothing be really nothing
-[ $ANS == '""' ] && ANS='';
+if [ $ANS == '""' ]; then
+       	ANS='';
+	echo "Initialization expected, auto container termination disabled.";
+fi
 
 function blocking() {
 	NewANS=`jq .configDir $LOCALDIR/bootstrap_config.json`;
@@ -31,7 +35,7 @@ function dockerIP() {
 
 function dockerInit() {
 	docker start geth_stunnel || \
-	docker run --name geth_stunnel -td -v"/home/jasonlin/tmp:/data:z" geth_stunnel
+	docker run --name geth_stunnel -td -v"${DATADIR}:/data:z" geth_stunnel
 }
 
 function startUI() {
