@@ -91,28 +91,7 @@ class DashBoard extends Reflux.Component {
             "networkID": this.state.networkID,
             "passVault": path.join(this.state.configFolder, "myArchive.bcup"),
             "tokens":{},
-            "watchTokens": [
-                "TKA",
-                "TKB",
-                "TKC",
-                "TKD",
-                "TKE",
-                "TKF",
-                "TKG",
-                "TKH",
-                "TKI",
-                "TKJ",
-                "TKK",
-                "TKL",
-                "TKM",
-                "TKN",
-                "TKO",
-                "TKP",
-                "TKQ",
-                "TKR",
-                "TKS",
-                "TKU"
-            ]
+            "watchTokens": []
         }
 
         castIronWriter.writeJSON(castIronJson);

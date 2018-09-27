@@ -26,12 +26,16 @@
     "watch": "node_modules/.bin/browser-sync start --localOnly --files 'public/**/*.css, public/**/*.html, public/**/*.js, !node_modules/**/*' --directory",
     "compileRelease": "./node_modules/.bin/babel src --out-dir public && cp -rvf .local public/",
     "compile": "./node_modules/.bin/babel src --out-dir public",
-    "start": "./node_modules/electron/dist/electron ."
+    "start": "./node_modules/electron/dist/electron .",
+    "postdist": "mkdir -p ./dist/linux-unpacked/{dapps,public} && cp -vrf ./start.sh ./dist && cp -vrf ./dapps/installed.json ./dist/linux-unpacked/dapps/ && cp -vrf ./public/.local ./dist/linux-unpacked/public",
+    "buildasar": "rm -fr ./dist && ./node_modules/.bin/electron-builder --linux --x64 --dir ./dist",
+    "distRelease": "npm run compileRelease && npm run buildasar && npm run postdist"
   },
   "dependencies": {
     "CastIron": "git+ssh://git@github.com/elevenbuckets/CastIron.git",
-    "ConfigWriter": "git+ssh://git@github.com/elevenbuckets/ConfigWriter.git",
+    "ConfigWriter": "git+ssh://git@github.com/elevenbuckets/ConfigWriter.git#jason",
     "accMgr": "git+ssh://git@github.com/elevenbuckets/accmgr.git",
+    "asar": "^0.14.3",
     "async": "^2.6.1",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
@@ -40,9 +44,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
-    "browser-sync": "^2.24.6",
-    "electron": "^3.0.0",
-    "electron-builder": "^20.28.4",
+    "enzyme": "^3.6.0",
     "ipfs_base": "git+ssh://git@github.com/elevenbuckets/ipfs_go.git",
     "lodash": "^4.17.11",
     "loopasync": "^1.1.0",
@@ -57,5 +59,10 @@
     "tar": "^4.4.4",
     "uuid": "^3.2.1",
     "validator": "8.0.0"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.24.6",
+    "electron": "^3.0.0",
+    "electron-builder": "^20.28.4"
   }
 }
