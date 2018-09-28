@@ -141,9 +141,10 @@ class Settings extends AlertModalUser {
 
 	handleNewAcct = (event) => {
 		let stage = Promise.resolve();
+		let pw = this.variable;
+		this.variable = undefined;
 
-		if (typeof (this.variable) === 'undefined' || this.variable.length === 0) {
-			this.variable = undefined;
+		if (typeof (pw) === 'undefined' || pw.length === 0) {
 			this.setState({ waiting: false });
 			this.openModal("Creation Failed");
 			return false;
@@ -154,20 +155,18 @@ class Settings extends AlertModalUser {
 				return this.setState({ waiting: true })
 			})
 			.then(() => {
-				return this.updateNew();
+				return this.updateNew(pw);
 			});
 	}
 
-	updateNew = () => {
+	updateNew = (pw) => {
 		console.log("calling update now");
-		return this.accMgr.newAccount(this.variable).then((address) => {
-			this.variable = undefined;
+		return this.accMgr.newAccount(pw).then((address) => {
 			this.setState({ waiting: false });
 			this.openModal("New Address: " + address);
 			CastIronActions.infoUpdate();
 		})
 			.catch((err) => {
-				this.variable = undefined;
 				this.setState({ waiting: false });
 				this.openModal("Creation Failed");
 			});
@@ -182,23 +181,24 @@ class Settings extends AlertModalUser {
 	}
 
 	handleImport = (event) => {
+		let kp = this.keypath;
+		let pw = this.variable;
+		this.keypath = undefined;
+		this.variable = undefined;
+
 		// sanity check
-		if (!fs.existsSync(this.keypath) || typeof (this.keypath) === 'undefined') {
-			this.keypath = undefined;
-			this.variable = undefined;
+		if (!fs.existsSync(kp) || typeof (kp) === 'undefined') {
 			this.setState({ waiting: false });
 			this.openModal("Import Failed!");
 			return false;
 		} else {
-			console.log("Importing " + this.keypath);
+			console.log("Importing " + kp);
 			this.setState({ waiting: true });
 		}
 
-		this.accMgr.importFromJSON(this.keypath, this.variable).then((r) => {
+		this.accMgr.importFromJSON(kp, pw).then((r) => {
 			this.accMgr.update(r.keyObj, r.password).then((address) => {
 				r = {};
-				this.keypath = undefined;
-				this.variable = undefined;
 				this.setState({ waiting: false });
 				CastIronActions.startUpdate(address, this.accCanvas);
 				this.openModal("Imported Address: " + address);
@@ -206,8 +206,6 @@ class Settings extends AlertModalUser {
 			});
 		})
 			.catch((err) => {
-				this.keypath = undefined;
-				this.variable = undefined;
 				this.setState({ waiting: false });
 				this.openModal("Import Failed!");
 			})

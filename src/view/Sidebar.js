@@ -21,16 +21,7 @@ class Sidebar extends Reflux.Component {
   constructor(props) {
     super(props);
     this.store = CastIronStore;
-    this.state = {
-      ptoggle: true,
-      pfield: '28px',
-      visible: false,
-      sbutton: 'none',
-      rtoggle: 'Receipts',
-      stoggle: false,
-      sbefore: 'Settings'
-    };
-
+    this.state = {};
   }
 
   handleLogout = () => {
@@ -39,27 +30,33 @@ class Sidebar extends Reflux.Component {
 
   handleDrawerClick = () => {
     console.log("in handleDrawerClick");
-    if (this.state.stoggle === false) {
+    if (this.props.previousView === '') {
       console.log(`switch from ${this.state.currentView} to AppView`);
-      this.setState({ sbefore: this.state.currentView, stoggle: true });
+      //this.setState({ sbefore: this.state.currentView, stoggle: true });
+      this.props.updatePv(this.state.currentView)
       CastIronActions.changeView("AppView");
     } else {
       console.log(`switch from AppView back to previous view`);
-      CastIronActions.changeView(this.state.sbefore);
-      this.setState({ stoggle: false, sbefore: 'Settings' });
+      CastIronActions.changeView(this.props.previousView);
+      this.props.updatePv('');
+      //CastIronActions.changeView(this.state.sbefore);
+      //this.setState({ stoggle: false, sbefore: 'Settings' });
     }
   }
 
   handleReceiptClick = () => {
     console.log("in handleReceiptClick");
-    if (this.state.stoggle === false) {
+    if (this.props.previousView === '') {
       console.log(`switch from ${this.state.currentView} to Receipts`);
-      this.setState({ sbefore: this.state.currentView, stoggle: true });
+      //this.setState({ sbefore: this.state.currentView, stoggle: true });
+      this.props.updatePv(this.state.currentView)
       CastIronActions.changeView("Receipts");
     } else {
       console.log(`switch from Receipts back to previous view`);
-      CastIronActions.changeView(this.state.sbefore);
-      this.setState({ stoggle: false, sbefore: 'Settings' });
+      CastIronActions.changeView(this.props.previousView);
+      this.props.updatePv('');
+      //CastIronActions.changeView(this.state.sbefore);
+      //this.setState({ stoggle: false, sbefore: 'Settings' });
     }
   }
 
@@ -76,14 +73,16 @@ class Sidebar extends Reflux.Component {
 
   handleSettingClick = () => {
     console.log("in handleSettingClick");
-    if (this.state.stoggle === false) {
+    if (this.props.previousView === '') {
       console.log(`switch from ${this.state.currentView} to Settings`);
-      this.setState({ sbefore: this.state.currentView, stoggle: true });
+      //this.setState({ sbefore: this.state.currentView, stoggle: true });
+      this.props.updatePv(this.state.currentView)
       CastIronActions.changeView("Settings");
     } else {
       console.log(`switch from Settings back to previous view`);
-      CastIronActions.changeView(this.state.sbefore);
-      this.setState({ stoggle: false, sbefore: 'Settings' });
+      CastIronActions.changeView(this.props.previousView);
+      this.props.updatePv('');
+      //this.setState({ stoggle: false, sbefore: 'Settings' });
     }
   }
 
@@ -120,10 +119,10 @@ class Sidebar extends Reflux.Component {
 
     return (
       <div className="item action">
-        <input type="button" className="button sbutton logout" value="Log Out" style={{ display: this.state.stoggle ? 'none' : true }} onClick={this.handleLogout} />
-        <input type="button" className={this.state.stoggle ? "button sbutton logout" : "button sbutton settings"} value={this.state.stoggle ? 'Back' : 'Settings'} onClick={this.handleSettingClick} />
-        <input type="button" className="button sbutton drawer" value="Apps" style={{ display: this.state.stoggle ? 'none' : true }} onClick={this.handleDrawerClick} />
-        <input type="button" className="button sbutton receipts" value='Receipts' style={{ display: this.state.stoggle ? 'none' : true, animation: n > 0 ? "bgColor 1.1s infinite alternate" : "none" }} onClick={this.handleReceiptClick} />
+        <input type="button" className="button sbutton logout" value="Log Out" style={{ display: this.props.previousView !== '' ? 'none' : true }} onClick={this.handleLogout} />
+        <input type="button" className={this.props.previousView !== '' ? "button sbutton logout" : "button sbutton settings"} value={this.props.previousView !== '' ? 'Back' : 'Settings'} onClick={this.handleSettingClick} />
+        <input type="button" className="button sbutton drawer" value="Apps" style={{ display: this.props.previousView !== '' ? 'none' : true }} onClick={this.handleDrawerClick} />
+        <input type="button" className="button sbutton receipts" value='Receipts' style={{ display: this.props.previousView !== '' ? 'none' : true, animation: n > 0 ? "bgColor 1.1s infinite alternate" : "none" }} onClick={this.handleReceiptClick} />
       </div>
     );
   }
