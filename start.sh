@@ -34,7 +34,7 @@ function dockerIP() {
 }
 
 function dockerInit() {
-	docker start geth_stunnel || \
+	docker start geth_stunnel 2> /dev/null || \
 	docker run --name geth_stunnel -td -v"${DATADIR}:/data:z" geth_stunnel
 }
 

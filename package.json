@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "CastIron": "git+ssh://git@github.com/elevenbuckets/CastIron.git",
-    "ConfigWriter": "git+ssh://git@github.com/elevenbuckets/ConfigWriter.git#jason",
+    "ConfigWriter": "git+ssh://git@github.com/elevenbuckets/ConfigWriter.git",
     "accMgr": "git+ssh://git@github.com/elevenbuckets/accmgr.git",
     "asar": "^0.14.3",
     "async": "^2.6.1",
