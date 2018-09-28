@@ -4,7 +4,7 @@
   "main": "main.js",
   "author": "Jason and Leon",
   "license": "GPL-3.0",
-  "description": "",
+  "description": "Electron-based Ethereum Wallet & dApp platform from 11BE.",
   "babel": {
     "plugins": [
       "transform-class-properties",
