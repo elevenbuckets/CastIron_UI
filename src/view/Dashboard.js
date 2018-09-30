@@ -169,10 +169,13 @@ class DashBoard extends Reflux.Component {
                     <div className="item list" style={{ background: "none" }}>
                         <div style={{ border: "2px solid white", padding: "40px", textAlign: "center", background: "none" }}>
                             <p style={{ alignSelf: "flex-end", fontSize: "24px" }}>
-                                Welcome! Thank you for choosing CastIron Wallet!
+                                Welcome, dApp developers!
 				</p><br />
                             <p style={{ alignSelf: "flex-end", fontSize: "24px" }}>
-                                Please setup the following paths:
+                                Thank you for trying out ElevenBuckets Build Environment (11BE)!
+				</p><br />
+                            <p style={{ alignSelf: "flex-end", fontSize: "24px" }}>
+                                Please setup the following paths to continue:
 				</p><br />
                             <Login updateState={this.updateState}/>
                             {
