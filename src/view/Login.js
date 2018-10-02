@@ -124,7 +124,8 @@ class Login extends AlertModalUser {
 									padding: "0 5px 0 5px",
 									textAlign: "center"
 								}}
-								defaultValue="" placeholder={path.join( os.homedir(), ".castiron")} 
+								defaultValue={path.join( os.homedir(), ".castiron")} 
+								placeholder="Please choose 11BE top-level config folder"
 								onChange={this.props.updateState.bind(this,"configFolder")}/></td>
 							</tr>
 							<tr>
@@ -138,7 +139,8 @@ class Login extends AlertModalUser {
 									padding: "0 5px 0 5px",
 									textAlign: "center"
 								}} 
-								defaultValue="" placeholder={path.join( os.homedir(), ".ethereum")}
+								defaultValue={path.join( os.homedir(), ".ethereum")}
+								placeholder="Please enter geth datadir"
 								onChange={this.props.updateState.bind(this,"gethDataDir")}/></td>
 							</tr>
 							<tr>
@@ -152,7 +154,8 @@ class Login extends AlertModalUser {
 									padding: "0 5px 0 5px",
 									textAlign: "center"
 								}} 
-								defaultValue="" placeholder={1100}
+								defaultValue={4}
+								placeholder="Please enter Ethereum network ID"
 								onChange={this.props.updateState.bind(this,"networkID")}/></td>
 							</tr>
 							<tr>
@@ -166,7 +169,8 @@ class Login extends AlertModalUser {
 									padding: "0 5px 0 5px",
 									textAlign: "center"
 								}}
-								defaultValue="" placeholder={path.join( os.homedir(), "ipfs_repo")}
+								defaultValue={path.join( os.homedir(), "ipfs_repo")} 
+								placeholder="Please enter IPFS repo path (uninitialized)"
 								onChange={this.props.updateState.bind(this,"ipfsRepoDir")}/></td>
 							</tr>
 							</tbody>
