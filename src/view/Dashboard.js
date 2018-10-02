@@ -40,7 +40,8 @@ class DashBoard extends Reflux.Component {
             configFolder: "",
             gethDataDir: "",
             ipfsRepoDir: "",
-	    networkID: ""
+	    networkID: "",
+	    previousView: ""
         }
 
         this.storeKeys = [
@@ -116,6 +117,10 @@ class DashBoard extends Reflux.Component {
 	return ReactDOM.findDOMNode(this.refs.Accounts).firstChild;
     }
 
+    updatePv = (view) => {
+	    this.setState({previousView: view});
+    }
+
     render() {
         console.log("in Dashboard render()")
 
@@ -164,10 +169,13 @@ class DashBoard extends Reflux.Component {
                     <div className="item list" style={{ background: "none" }}>
                         <div style={{ border: "2px solid white", padding: "40px", textAlign: "center", background: "none" }}>
                             <p style={{ alignSelf: "flex-end", fontSize: "24px" }}>
-                                Welcome! Thank you for choosing CastIron Wallet!
+                                Welcome, dApp developers!
 				</p><br />
                             <p style={{ alignSelf: "flex-end", fontSize: "24px" }}>
-                                Please setup the following paths:
+                                Thank you for trying out ElevenBuckets Build Environment (11BE)!
+				</p><br />
+                            <p style={{ alignSelf: "flex-end", fontSize: "24px" }}>
+                                Please setup the following paths to continue:
 				</p><br />
                             <Login updateState={this.updateState}/>
                             {
@@ -232,8 +240,8 @@ class DashBoard extends Reflux.Component {
                 <div className="container unlocked">
                     <States />
                     <Accounts ref="Accounts"/>
-                    <MainView canvas={this.passAccRef}/>
-                    <Sidebar />
+                    <MainView canvas={this.passAccRef} updatePv={this.updatePv} />
+                    <Sidebar previousView={this.state.previousView} updatePv={this.updatePv} />
                     <Modal ariaHideApp={false} isOpen={this.state.modalIsOpen && this.state.unlocked} style=
                         {{
                             overlay: { width: '100%', maxHeight: '100%', zIndex: '5', backgroundColor: "rgba(0,12,20,0.75)" },
