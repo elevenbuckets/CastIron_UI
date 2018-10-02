@@ -157,7 +157,7 @@ class Login extends AlertModalUser {
 							</tr>
 							<tr>
 								<td style={{ padding: "10px 15px 0px 5px", fontWeight: "bold", textAlign: "center", fontSize: "22px" }}>IPFS repo folder:</td>
-								<td style={{ padding: "5px" }}><input type="text" style={{
+								<td style={{ padding: "5px 5px 15px 5px" }}><input type="text" style={{
 									width: "350px",
 									backgroundColor: "rgba(255,255,255,0.11)",
 									border: "2px solid white",
