@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom';
 import Reflux from 'reflux';
 import Modal from 'react-modal';
 import path from 'path';
+import os from 'os';
 const ipcRenderer = require('electron').ipcRenderer;
 
 // Singleton services
@@ -37,10 +38,10 @@ class DashBoard extends Reflux.Component {
         this.store = CastIronStore;
         this.state = {
             drawerOut: false,
-            configFolder: "",
-            gethDataDir: "",
-            ipfsRepoDir: "",
-	    networkID: "",
+            defaultCfgDir: path.join(os.homedir(), '.castiron'),    // init setup-only value
+            defaultDataDir: path.join(os.homedir(), '.ethereum'),   // init setup-only value
+            defaultRepoDir: path.join(os.homedir(), 'ipfs_repo'),   // init setup-only value
+	    defaultNetID: 4,     				    // init setup-only value
 	    previousView: ""
         }
 
@@ -74,23 +75,23 @@ class DashBoard extends Reflux.Component {
 
 	// ConfigWriter instances
         let mainWriter = ConfigWriterService.getFileWriter("public/.local/bootstrap_config.json", mainFields);
-        let castIronWriter = ConfigWriterService.getFileWriter(path.join(this.state.configFolder + "/config.json"), castIronFields);
-        let ipfsWriter = ConfigWriterService.getFileWriter(path.join(this.state.configFolder, "/ipfsserv.json"), ipfsFields);
+        let castIronWriter = ConfigWriterService.getFileWriter(path.join(this.state.defaultCfgDir + "/config.json"), castIronFields);
+        let ipfsWriter = ConfigWriterService.getFileWriter(path.join(this.state.defaultCfgDir, "/ipfsserv.json"), ipfsFields);
 
 	// internal config update
-        let mainJson = { "configDir": this.state.configFolder };
+        let mainJson = { "configDir": this.state.defaultCfgDir };
         mainWriter.writeJSON(mainJson);
 
 	// castiron config update
         let castIronJson = {
-            "datadir": this.state.gethDataDir,
+            "datadir": this.state.defaultDataDir,
             "rpcAddr": "http://127.0.0.1:8545",
-            "ipcPath": path.join(this.state.gethDataDir, "geth.ipc"),
+            "ipcPath": path.join(this.state.defaultDataDir, "geth.ipc"),
             "defaultGasPrice": "20000000000",
             "gasOracleAPI": "https://ethgasstation.info/json/ethgasAPI.json",
             "condition": "sanity",
-            "networkID": this.state.networkID,
-            "passVault": path.join(this.state.configFolder, "myArchive.bcup"),
+            "networkID": this.state.defaultNetID,
+            "passVault": path.join(this.state.defaultCfgDir, "myArchive.bcup"),
             "tokens":{},
             "watchTokens": []
         }
@@ -99,9 +100,9 @@ class DashBoard extends Reflux.Component {
 
 	// ipfs config update
         let ipfsJson = {
-            "lockerpathjs": path.join(this.state.configFolder, ".ipfslock"),
-            "lockerpathgo": path.join(this.state.configFolder, ".ipfslock_go"),
-            "repoPathGo": this.state.ipfsRepoDir
+            "lockerpathjs": path.join(this.state.defaultCfgDir, ".ipfslock"),
+            "lockerpathgo": path.join(this.state.defaultCfgDir, ".ipfslock_go"),
+            "repoPathGo": this.state.defaultRepoDir
         }
 
         ipfsWriter.writeJSON(ipfsJson);
@@ -177,7 +178,12 @@ class DashBoard extends Reflux.Component {
                             <p style={{ alignSelf: "flex-end", fontSize: "24px" }}>
                                 Please setup the following paths to continue:
 				</p><br />
-                            <Login updateState={this.updateState}/>
+                            <Login updateState={this.updateState} 
+			           defaultCfgDir={this.state.defaultCfgDir}
+			           defaultDataDir={this.state.defaultDataDir}
+			           defaultNetID={this.state.defaultNetID}
+				   defaultRepoDir={this.state.defaultRepoDir}
+				 />
                             {
                                 this.state.userCfgDone ? <input style={{ marginTop: "25px" }}
                                     type="button" className="button reload" value="restart" onClick={this.relaunch} />
