@@ -92,6 +92,10 @@ class AppDrawer extends React.Component {
 				<img src="assets/transfer-icon.png" className="cardicon"/>
 				<p className="cardtext">Wallet App</p>
 				</div>
+				<div className="card appcard">
+				<img src="assets/forum-icon.png" className="cardicon"/>
+                                <p className="cardtext">DLogs</p>
+				</div>
 			{this.getDappIcons()}
 			</div>
 		)
