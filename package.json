@@ -35,6 +35,7 @@
   "dependencies": {
     "CastIron": "git+ssh://git@github.com/elevenbuckets/CastIron.git",
     "ConfigWriter": "git+ssh://git@github.com/elevenbuckets/ConfigWriter.git",
+    "RPC": "git+ssh://git@github.com/elevenbuckets/CastIron-JSONRPC.git",
     "accMgr": "git+ssh://git@github.com/elevenbuckets/accmgr.git",
     "asar": "^0.14.3",
     "async": "^2.6.1",
@@ -45,6 +46,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
+    "bladeiron_api": "git+ssh://git@github.com/elevenbuckets/bladeiron_api.git",
     "enzyme": "^3.6.0",
     "ipfs_base": "git+ssh://git@github.com/elevenbuckets/ipfs_go.git",
     "level-js": "^3.0.0",
