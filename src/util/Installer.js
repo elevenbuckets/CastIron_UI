@@ -1,3 +1,4 @@
+/*
 import tar from 'tar';
 import DappViewService from '../service/DappViewService';
 import IPFSService from '../service/IPFSService'
@@ -65,3 +66,4 @@ const installer = new Installer()
 // runInstall();
 
 export default installer;
+*/

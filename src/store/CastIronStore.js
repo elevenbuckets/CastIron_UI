@@ -7,6 +7,7 @@ import BlockTimer from '../util/BlockTimer';
 import Scheduler from '../util/Scheduler';
 import uuid from 'uuid/v4';
 import loopasync from 'loopasync';
+const ipcRenderer = require('electron').ipcRenderer;
 
 class CastIronStore extends Reflux.Store {
     constructor() {
@@ -223,6 +224,7 @@ class CastIronStore extends Reflux.Store {
     onMasterUpdate(value) {
         this.wallet.password(value);
         this.accMgr.password(value);
+	ipcRenderer.send('awaken', value);
 	this.wallet.setAccount(null);
         this.wallet.validPass().then((r) => { this.setState({ unlocked: r, address: null, tokenBalance: [], balances: {'ETH': 0} }); });
     }
