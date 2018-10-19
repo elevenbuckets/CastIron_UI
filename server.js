@@ -1250,13 +1250,28 @@ const server = jayson.server(
 
 const httpServ = server.http();
 
+/*
+process.on('message', (msg) => {
+	if (msg === 'ipfs_close' && typeof(ipfsi.controller) !== 'undefined' && ipfsi.controller.started) {
+		ipfsi.stop().then(() => {
+	        	fs.unlinkSync(path.join(ipfsi.cfsrc.repoPathGo, 'api'));
+	        	fs.unlinkSync(path.join(ipfsi.cfsrc.repoPathGo, 'repo.lock'));
+		})
+	}
+})
+*/
+
 process.on('SIGINT', () => {
    console.log("\tRPC Server stopping ...");
    if (typeof(ipfsi.controller) !== 'undefined' && ipfsi.controller.started) {
 	console.log("\tIPFS Server stopping ...");
 	ipfsi.stop().then(() => {
-	        fs.unlinkSync(path.join(ipfsi.cfsrc.repoPathGo, 'api'));
-	        fs.unlinkSync(path.join(ipfsi.cfsrc.repoPathGo, 'repo.lock'));
+		try{
+	        	fs.unlinkSync(path.join(ipfsi.cfsrc.repoPathGo, 'api'));
+	        	fs.unlinkSync(path.join(ipfsi.cfsrc.repoPathGo, 'repo.lock'));
+		} catch(err) {
+			true;
+		}
    		httpServ.close();	
    		process.exit(0);
 	})

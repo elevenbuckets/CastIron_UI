@@ -4,6 +4,7 @@ import React from 'react';
 import DappViewService from '../service/DappViewService';
 import Installer from '../util/Installer';
 import AppInstallationModal from '../components/AppInstallationModal';
+
 // Reflux components
 
 class AppDrawer extends React.Component {
@@ -67,7 +68,24 @@ class AppDrawer extends React.Component {
 		return stage;
 	}
 
+	launchApp = (appName) => {
+		const spawn = require('child_process').spawn;
+		const path = require('path');
+		let cwd = process.cwd(); console.log(cwd);
 
+		let topdir = path.join(cwd, 'dapps', appName);
+		let configDir = require(path.join(cwd, 'public','.local', 'bootstrap_config.json')).configDir;
+
+		const subprocess = spawn(path.join(topdir,'node_modules','.bin','electron'), ['.'], {
+		  cwd: topdir,
+		  env: {DISPLAY: process.env.DISPLAY, XAUTHORITY: process.env.XAUTHORITY, configDir },
+		  detached: true,
+		  stdio: 'ignore'
+		});
+		
+		subprocess.unref();
+	
+	}
 
 	getDappIcons = () => {
 		console.log("getting Dapp Icons from Dapp view service:");
@@ -92,7 +110,7 @@ class AppDrawer extends React.Component {
 				<img src="assets/transfer-icon.png" className="cardicon"/>
 				<p className="cardtext">Wallet App</p>
 				</div>
-				<div className="card appcard">
+				<div className="card appcard" onClick={this.launchApp.bind(this, 'DLogs')}>
 				<img src="assets/forum-icon.png" className="cardicon"/>
                                 <p className="cardtext">DLogs</p>
 				</div>

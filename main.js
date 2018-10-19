@@ -39,6 +39,11 @@ if (cluster.isMaster) {
 			return biapi.client.request('fully_initialize', cfgObjs).then((rc) => { console.log("BladeIron: Initialized:"); console.log(rc); })		
 		})
 	})
+
+	process.on('exit', () => {
+		console.log("Shutting down, please wait ...");
+		worker.kill('SIGINT');
+	})
 	
 	function createWindow () {
 	    // Create the browser window.
