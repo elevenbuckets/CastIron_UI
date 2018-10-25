@@ -639,20 +639,21 @@ class BladeIron {
 	
 						this.enqueue({...job, Q})(this.userWallet);
 					})
-	
+
+					this.allocated = {};	
 					return Q;
 				})
 				.then( (Q) => { return this.processQ(Q); })
 				.catch( (err) => { console.error(err); throw "ProcessJob failed, skipping QID..."; } );
 		}
 
-		this.enqueueTx = tokenSymbol => (toAddress, amount, gasAmount) => 
+		this.enqueueTx = tokenSymbol => (fromWallet, toAddress, amount, gasAmount) => 
 		{
 			// txObj field checks.
 			// While CastIron has conditions to perform final checks before send, basic checks here will allow 
 			// caller to drop invalid txObj even before entering promise chain.
 			if (
-				this.web3.toAddress(this.userWallet) !== this.userWallet
+				this.web3.toAddress(fromWallet) !== fromWallet
 			     || this.web3.toAddress(toAddress) !== toAddress
 			     || Number(amount) <= 0
 			     || isNaN(Number(amount))
@@ -669,7 +670,7 @@ class BladeIron {
 					contract: 'ETH',
 					call: 'sendTransaction',
 					args: [],
-					txObj: { from: this.userWallet, to: toAddress, value: amount, gas: gasAmount, gasPrice: this.gasPrice } 
+					txObj: { from: fromWallet, to: toAddress, value: amount, gas: gasAmount, gasPrice: this.gasPrice } 
 				}
 			} else {
 				return {
@@ -680,7 +681,7 @@ class BladeIron {
 					args: ['toAddress', 'amount'],
 					toAddress,
 					amount,
-					txObj: { from: this.userWallet, gas: gasAmount, gasPrice: this.gasPrice }
+					txObj: { from: fromWallet, gas: gasAmount, gasPrice: this.gasPrice }
 				}
 			}
 		}
@@ -691,7 +692,7 @@ class BladeIron {
 	                return this.CUE.Token[tokenSymbol].balanceOf(walletAddr);
 	        }
 
-		this.enqueueTk = (type, contract, call, args) => (amount, gasAmount, tkObj) =>
+		this.enqueueTk = (type, contract, call, args) => (fromWallet, amount, gasAmount, tkObj) =>
 	        {
 	                let txObj = {};
 	
@@ -701,7 +702,7 @@ class BladeIron {
 	                //
 	                // Note: for enqueueTk, it is the caller's duty to verify elements in tkObj.
 	                if (
-	                        this.web3.toAddress(this.userWallet) !== this.userWallet
+	                        this.web3.toAddress(fromWallet) !== fromWallet
 	                     || Number(gasAmount) <= 0
 	                     || isNaN(Number(gasAmount))
 	                ){
@@ -709,9 +710,9 @@ class BladeIron {
 	                };
 	
 	                if (amount === null) {
-	                        txObj = { from: this.userWallet, gas: gasAmount, gasPrice: this.gasPrice }
+	                        txObj = { from: fromWallet, gas: gasAmount, gasPrice: this.gasPrice }
 	                } else if (amount > 0) {
-	                        txObj = { from: this.userWallet, value: amount, gas: gasAmount, gasPrice: this.gasPrice }
+	                        txObj = { from: fromWallet, value: amount, gas: gasAmount, gasPrice: this.gasPrice }
 	                }
 	
 	                return { Q: undefined, type, contract, call, args, ...tkObj, txObj };
@@ -953,31 +954,33 @@ const server = jayson.server(
 		return biapi.validPass();
 	},
 
-	sendTx(args) // sendTx(tokenSymbol, toAddress, amount, gasAmount)
+	sendTx(args) // sendTx(tokenSymbol, fromWallet, toAddress, amount, gasAmount)
 	{
 		let jobObj = {};
 		let tokenSymbol = args[0];
-		let toAddress   = args[1];
-		let amount      = args[2];
-		let gasAmount   = args[3];
+		let fromWallet  = args[1];
+		let toAddress   = args[2];
+		let amount      = args[3];
+		let gasAmount   = args[4];
 
 		try {
-			jobObj = biapi.enqueueTx(tokenSymbol)(toAddress, amount, gasAmount);
+			jobObj = biapi.enqueueTx(tokenSymbol)(fromWallet, toAddress, amount, gasAmount);
 			return biapi.processJobs([jobObj]); // single job, thus single element in list
 		} catch (err) {
 			return Promise.reject(server.error(404, err));
 		}
 	},
 	
-	enqueueTx(args) // enqueueTx(tokenSymbol, toAddress, amount, gasAmount) 
+	getTxObj(args) // getTxObj(tokenSymbol, fromWallet, toAddress, amount, gasAmount) 
 	{
 		let tokenSymbol = args[0];
-		let toAddress   = args[1];
-		let amount      = args[2];
-		let gasAmount   = args[3];
+		let fromWallet  = args[1];
+		let toAddress   = args[2];
+		let amount      = args[3];
+		let gasAmount   = args[4];
 
 		try {
-			return Promise.resolve(biapi.enqueueTx(tokenSymbol)(toAddress, amount, gasAmount));
+			return Promise.resolve(biapi.enqueueTx(tokenSymbol)(fromWallet, toAddress, amount, gasAmount));
 		} catch (err) {
 			return Promise.reject(server.error(404, err));
 		}
@@ -1033,18 +1036,27 @@ const server = jayson.server(
 		}
 	},
 
-	enqueueTk(args) // enqueueTk(type, contract, call, appArgs, amount, gasAmount, tkObj)
+	getTkObj(args) // getTkObj(type, contract, call, appArgs, fromWallet, amount, tkObj)
 	{
 		let type = args[0];
 		let contract = args[1];
 		let call = args[2];
 		let appArgs = args[3];
-		let amount = args[4];
-		let gasAmount = args[5];
+		let fromWallet = args[4];
+		let amount = args[5];
 		let tkObj = args[6];
+		let callArgs = appArgs.map((i) => { return tkObj[i] });
+
+		if (amount != null) {
+			gasAmount = biapi.CUE[appName][ctrName][callName].estimateGas(...callArgs, {from: fromWallet, gasPrice: biapi.gasPrice})
+		} else {
+			gasAmount = biapi.CUE[appName][ctrName][callName].estimateGas(...callArgs, {from: fromWallet, value: amount, gasPrice: biapi.gasPrice})
+		}
+
+		console.log(`DEBUG: calling ${call} using gasAmount = ${gasAmount}`)
 
 		try {
-			return Promise.resolve(biapi.enqueueTk(type, contract, call, appArgs)(amount, gasAmount, tkObj));
+			return Promise.resolve(biapi.enqueueTk(type, contract, call, appArgs)(fromWallet, amount, gasAmount, tkObj));
 		} catch (err) {
 			return Promise.reject(server.error(404, err));
 		}
@@ -1059,15 +1071,16 @@ const server = jayson.server(
 		}
 	},
 
-	setAccount(args) // setAccount(address)
+	canUseAccount(args)
 	{
 		let address = args[0];
+                if (biapi.allAccounts().indexOf(address) === -1) return Promise.reject(server.error(503, 'Account not found');
 
-		try {
-			return Promise.resolve(biapi.setAccount(address));
-		} catch(err) {
-			return Promise.reject(server.error(404, err));
-		}
+                try {
+                        return biapi.managedAddress(address);
+                } catch(err) {
+                        return Promise.reject(server.error(404, err));
+                }	
 	},
 
 	processJobs(jobList)
