@@ -1046,11 +1046,12 @@ const server = jayson.server(
 		let amount = args[5];
 		let tkObj = args[6];
 		let callArgs = appArgs.map((i) => { return tkObj[i] });
+		let gasAmount = 5;
 
 		if (amount != null) {
-			gasAmount = biapi.CUE[appName][ctrName][callName].estimateGas(...callArgs, {from: fromWallet, gasPrice: biapi.gasPrice})
+			gasAmount = biapi.CUE[type][contract][call].estimateGas(...callArgs, {from: fromWallet, gasPrice: biapi.gasPrice})
 		} else {
-			gasAmount = biapi.CUE[appName][ctrName][callName].estimateGas(...callArgs, {from: fromWallet, value: amount, gasPrice: biapi.gasPrice})
+			gasAmount = biapi.CUE[type][contract][call].estimateGas(...callArgs, {from: fromWallet, value: amount, gasPrice: biapi.gasPrice})
 		}
 
 		console.log(`DEBUG: calling ${call} using gasAmount = ${gasAmount}`)
@@ -1074,7 +1075,7 @@ const server = jayson.server(
 	canUseAccount(args)
 	{
 		let address = args[0];
-                if (biapi.allAccounts().indexOf(address) === -1) return Promise.reject(server.error(503, 'Account not found');
+                if (biapi.allAccounts().indexOf(address) === -1) return Promise.reject(server.error(503, 'Account not found'));
 
                 try {
                         return biapi.managedAddress(address);
