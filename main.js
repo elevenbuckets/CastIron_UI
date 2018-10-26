@@ -11,8 +11,8 @@ let win;
 
 let buffer = fs.readFileSync('public/.local/bootstrap_config.json');
 let rootcfg = JSON.parse(buffer.toString());
-let gethcfg = require(path.join(rootcfg.configDir, 'config.json'));
-let ipfscfg = require(path.join(rootcfg.configDir, 'ipfsserv.json'));
+let gethcfg = rootcfg.configDir !== '' ? require(path.join(rootcfg.configDir, 'config.json')) : {};
+let ipfscfg = rootcfg.configDir !== '' ? require(path.join(rootcfg.configDir, 'ipfsserv.json')) : {};
 let cfgObjs = {geth: gethcfg, ipfs: ipfscfg}; 
 
 console.log("DEBUG");
@@ -33,17 +33,19 @@ if (cluster.isMaster) {
 		"version": "1.0"
 	});
 
-	const worker = cluster.fork({rpcport, rpchost});
-	worker.on('message', (rc) => {
-		let stage = Promise.resolve(biapi.connectRPC()).then(() => {
-			return biapi.client.request('fully_initialize', cfgObjs).then((rc) => { console.log("BladeIron: Initialized:"); console.log(rc); })		
+	if (rootcfg.configDir !== '') {
+		const worker = cluster.fork({rpcport, rpchost});
+		worker.on('message', (rc) => {
+			let stage = Promise.resolve(biapi.connectRPC()).then(() => {
+				return biapi.client.request('fully_initialize', cfgObjs).then((rc) => { console.log("BladeIron: Initialized:"); console.log(rc); })		
+			})
 		})
-	})
 
-	process.on('exit', () => {
-		console.log("Shutting down, please wait ...");
-		worker.kill('SIGINT');
-	})
+		process.on('exit', () => {
+			console.log("Shutting down, please wait ...");
+			worker.kill('SIGINT');
+		})
+	}
 	
 	function createWindow () {
 	    // Create the browser window.
