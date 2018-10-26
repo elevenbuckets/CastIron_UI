@@ -961,7 +961,17 @@ const server = jayson.server(
 		let fromWallet  = args[1];
 		let toAddress   = args[2];
 		let amount      = args[3];
-		let gasAmount   = args[4];
+		let gasAmount = 5;
+
+                if (tokenSymbol === 'ETH') {
+                        gasAmount = 21000;
+                } else {
+			let callArgs = [toAddress, amount]
+                        gasAmount = biapi.CUE['Token'][tokenSymbol]['transfer'].estimateGas(...callArgs, {from: fromWallet, gasPrice: biapi.gasPrice})
+                }
+
+		console.log(`DEBUG: sendTx sending ${tokenSymbol} using gasAmount = ${gasAmount}`)
+
 
 		try {
 			jobObj = biapi.enqueueTx(tokenSymbol)(fromWallet, toAddress, amount, gasAmount);
@@ -977,7 +987,16 @@ const server = jayson.server(
 		let fromWallet  = args[1];
 		let toAddress   = args[2];
 		let amount      = args[3];
-		let gasAmount   = args[4];
+		let gasAmount = 5;
+
+                if (tokenSymbol === 'ETH') {
+                        gasAmount = 21000;
+                } else {
+			let callArgs = [toAddress, amount]
+                        gasAmount = biapi.CUE['Token'][tokenSymbol]['transfer'].estimateGas(...callArgs, {from: fromWallet, gasPrice: biapi.gasPrice})
+                }
+
+		console.log(`DEBUG: sending ${tokenSymbol} using gasAmount = ${gasAmount}`)
 
 		try {
 			return Promise.resolve(biapi.enqueueTx(tokenSymbol)(fromWallet, toAddress, amount, gasAmount));
@@ -1080,6 +1099,7 @@ const server = jayson.server(
                 try {
                         return biapi.managedAddress(address);
                 } catch(err) {
+			console.log(err);
                         return Promise.reject(server.error(404, err));
                 }	
 	},
