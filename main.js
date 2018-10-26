@@ -1,3 +1,5 @@
+'use strict';
+
 const {app, BrowserWindow, ipcMain} = require('electron')
 const path = require('path')
 const url = require('url')
@@ -9,32 +11,35 @@ const bladeIron = require('bladeiron_api');
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
 
-let buffer = fs.readFileSync('public/.local/bootstrap_config.json');
-let rootcfg = JSON.parse(buffer.toString());
-let gethcfg = rootcfg.configDir !== '' ? require(path.join(rootcfg.configDir, 'config.json')) : {};
-let ipfscfg = rootcfg.configDir !== '' ? require(path.join(rootcfg.configDir, 'ipfsserv.json')) : {};
-let cfgObjs = {geth: gethcfg, ipfs: ipfscfg}; 
+const loadConfig = (path) => 
+{
+	let buffer = fs.readFileSync(path);
+	return JSON.parse(buffer.toString());
+}
 
-console.log("DEBUG");
-console.log(JSON.stringify(cfgObjs,0,2));
-	
-let rpcport = gethcfg.rpcport || 3000;
-let rpchost = gethcfg.rpchost || '127.0.0.1';
+const bladeWorker = (rootcfg) => 
+{
+	let gethcfg = rootcfg.configDir !== '' ? loadConfig(path.join(rootcfg.configDir, 'config.json')) : {};
+	let ipfscfg = rootcfg.configDir !== '' ? loadConfig(path.join(rootcfg.configDir, 'ipfsserv.json')) : {};
+	let cfgObjs = {geth: gethcfg, ipfs: ipfscfg};
+	let rpcport = gethcfg.rpcport || 3000;
+	let rpchost = gethcfg.rpchost || '127.0.0.1';
+	let biapi   = null 
+	let worker  = null;
 
-cluster.setupMaster({exec: path.join(__dirname, 'server.js')}); //BladeIron RPCServ
-
-if (cluster.isMaster) {
-	const biapi = new bladeIron(rpcport, rpchost, {
-		"appName": "__MAIN__",
-		"artifactDir": __dirname,
-		"conditionDir": __dirname,
-		"contracts": [],
-		"networkID": gethcfg.networkID,
-		"version": "1.0"
-	});
+	console.log(JSON.stringify(cfgObjs,0,2));
 
 	if (rootcfg.configDir !== '') {
-		const worker = cluster.fork({rpcport, rpchost});
+		biapi = new bladeIron(rpcport, rpchost, {
+			"appName": "__MAIN__",
+			"artifactDir": __dirname,
+			"conditionDir": __dirname,
+			"contracts": [],
+			"networkID": gethcfg.networkID,
+			"version": "1.0"
+		});
+
+		worker = cluster.fork({rpcport, rpchost});
 		worker.on('message', (rc) => {
 			let stage = Promise.resolve(biapi.connectRPC()).then(() => {
 				return biapi.client.request('fully_initialize', cfgObjs).then((rc) => { console.log("BladeIron: Initialized:"); console.log(rc); })		
@@ -45,9 +50,26 @@ if (cluster.isMaster) {
 			console.log("Shutting down, please wait ...");
 			worker.kill('SIGINT');
 		})
+
+		ipcMain.on('awaken', (e, args) => {
+			biapi.client.request('unlock', [args]).then((rc) => { console.log(rc.result ? "unlocked" : "locked")})
+		})
+	} else {
+		console.log(`No root config found! BladeWorker init skipped ...`)
 	}
-	
+
+	return {biapi, worker};
+}
+
+cluster.setupMaster({exec: path.join(__dirname, 'server.js')}); //BladeIron RPCServ
+
+if (cluster.isMaster) {
 	function createWindow () {
+	    let rootcfg = loadConfig(path.join("public",".local","bootstrap_config.json"));
+
+	    if (rootcfg.configDir !== '') {
+		const {biapi, worker} = bladeWorker(rootcfg);
+	    }
 	    // Create the browser window.
 	    win = new BrowserWindow({minWidth: 1280, minHeight: 960, resizable: true, icon: path.join(__dirname, 'public', 'assets', 'icon', '11be_logo.png')});
 	    win.setMenu(null);
@@ -81,14 +103,12 @@ if (cluster.isMaster) {
 	
 	// Whole process reloader via ipcRenderer for config reload
 	ipcMain.on('reload', (e, args) => {
+	    	let rootcfg = loadConfig(path.join("public",".local","bootstrap_config.json"));
+		const {biapi, worker} = bladeWorker(rootcfg);
 		app.relaunch();
-		app.exit();	
+		app.exit();
 	});
 
-	ipcMain.on('awaken', (e, args) => {
-		biapi.client.request('unlock', [args]).then((rc) => { console.log(rc.result ? "unlocked" : "locked")})
-	})
-	
 	// Quit when all windows are closed.
 	app.on('window-all-closed', () => {
 	  // On macOS it is common for applications and their menu bar
