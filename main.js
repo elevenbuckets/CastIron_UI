@@ -44,15 +44,24 @@ const bladeWorker = (rootcfg) =>
 			let stage = Promise.resolve(biapi.connectRPC()).then(() => {
 				return biapi.client.request('fully_initialize', cfgObjs).then((rc) => { console.log("BladeIron: Initialized:"); console.log(rc); })		
 			})
+
+			ipcMain.on('awaken', (e, args) => {
+				biapi.client.request('unlock', [args]).then((rc) => { console.log(rc.result ? "unlocked" : "locked")})
+			})
+
+			ipcMain.on('tokenlist', (e, args) => {
+				// args should already be a list
+				biapi.client.request('hotGroups', args).then((rc) => { console.log(rc.result ? args : "Warning: issues updating server-side token list!")})
+			})
+
+			ipcMain.on('gasprice', (e, args) => {
+				biapi.client.request('setGasPrice', [args]).then((rc) => { console.log(rc.result ? {'gasPrice': args} : "Warning: issues updating server-side gasPrice!")})
+			})
 		})
 
 		process.on('exit', () => {
 			console.log("Shutting down, please wait ...");
 			worker.kill('SIGINT');
-		})
-
-		ipcMain.on('awaken', (e, args) => {
-			biapi.client.request('unlock', [args]).then((rc) => { console.log(rc.result ? "unlocked" : "locked")})
 		})
 	} else {
 		console.log(`No root config found! BladeWorker init skipped ...`)

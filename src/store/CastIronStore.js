@@ -63,6 +63,8 @@ class CastIronStore extends Reflux.Store {
 
         BlockTimer.register(this.updateInfo);
         this.updateInfo()
+	
+	ipcRenderer.send('tokenlist', this.state.tokenList);
     }
 
     onInitPlatform() {
@@ -422,6 +424,7 @@ class CastIronStore extends Reflux.Store {
                 //this.wallet.hotGroups(watchedTokens); //remove watch doesn't mean we need to unbind its ERC20 contract
             }
         }
+	ipcRenderer.send('tokenlist', watchedTokens);
     }
 
     processQPromise = (qPromise) => {
@@ -687,6 +690,7 @@ class CastIronStore extends Reflux.Store {
     setGasPrice = gasPrice => {
         this.wallet.gasPrice = gasPrice;
         this.setState({ gasPrice: gasPrice });
+	ipcRenderer.send('gasprice', gasPrice);
     }
 
 }

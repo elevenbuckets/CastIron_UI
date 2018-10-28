@@ -1091,6 +1091,17 @@ const server = jayson.server(
 		}
 	},
 
+	setGasPrice(args) 
+	{
+		let gasPrice = args[0];
+		try {
+			biapi.gasPrice = gasPrice;
+			return Promise.resolve(true);
+		} catch (err) {
+			return Promise.reject(server.error(404, err));
+		}
+	},
+
 	canUseAccount(args)
 	{
 		let address = args[0];
