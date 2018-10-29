@@ -5,7 +5,6 @@ import Reflux from 'reflux';
 import React from 'react';
 import Dropdown from 'react-dropdown';
 import fs from 'fs';
-import os from 'os';
 import path from 'path';
 
 // Reflux store
@@ -124,9 +123,9 @@ class Login extends AlertModalUser {
 									padding: "0 5px 0 5px",
 									textAlign: "center"
 								}}
-								defaultValue={path.join( os.homedir(), ".castiron")} 
+								defaultValue={this.props.defaultCfgDir} 
 								placeholder="Please choose 11BE top-level config folder"
-								onChange={this.props.updateState.bind(this,"configFolder")}/></td>
+								onChange={this.props.updateState.bind(this,"defaultCfgDir")}/></td>
 							</tr>
 							<tr>
 								<td style={{ padding: "10px 15px 0px 5px", fontWeight: "bold", textAlign: "center", fontSize: "22px" }}>Geth data folder:</td>
@@ -139,9 +138,9 @@ class Login extends AlertModalUser {
 									padding: "0 5px 0 5px",
 									textAlign: "center"
 								}} 
-								defaultValue={path.join( os.homedir(), ".ethereum")}
+								defaultValue={this.props.defaultDataDir}
 								placeholder="Please enter geth datadir"
-								onChange={this.props.updateState.bind(this,"gethDataDir")}/></td>
+								onChange={this.props.updateState.bind(this,"defaultDataDir")}/></td>
 							</tr>
 							<tr>
 								<td style={{ padding: "10px 15px 0px 5px", fontWeight: "bold", textAlign: "center", fontSize: "22px" }}>Network ID:</td>
@@ -154,9 +153,9 @@ class Login extends AlertModalUser {
 									padding: "0 5px 0 5px",
 									textAlign: "center"
 								}} 
-								defaultValue={4}
+								defaultValue={this.props.defaultNetID}
 								placeholder="Please enter Ethereum network ID"
-								onChange={this.props.updateState.bind(this,"networkID")}/></td>
+								onChange={this.props.updateState.bind(this,"defaultNetID")}/></td>
 							</tr>
 							<tr>
 								<td style={{ padding: "10px 15px 0px 5px", fontWeight: "bold", textAlign: "center", fontSize: "22px" }}>IPFS repo folder:</td>
@@ -169,9 +168,9 @@ class Login extends AlertModalUser {
 									padding: "0 5px 0 5px",
 									textAlign: "center"
 								}}
-								defaultValue={path.join( os.homedir(), "ipfs_repo")} 
+								defaultValue={this.props.defaultRepoDir} 
 								placeholder="Please enter IPFS repo path (uninitialized)"
-								onChange={this.props.updateState.bind(this,"ipfsRepoDir")}/></td>
+								onChange={this.props.updateState.bind(this,"defaultRepoDir")}/></td>
 							</tr>
 							</tbody>
 					</table>
