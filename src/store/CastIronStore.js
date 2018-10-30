@@ -396,7 +396,7 @@ class CastIronStore extends Reflux.Store {
         let stage = Promise.resolve(this.setState({ customGasPrice: price }))
         stage.then(() => {
             if (this.state.customGasPrice) {
-                let gasPrice = this.wallet.toWei(parseFloat(this.state.customGasPrice).toString(), 9);
+                let gasPrice = this.wallet.toWei(parseFloat(this.state.customGasPrice).toString(), 9).toString();
                 this.setGasPrice(gasPrice);
             }
         }
@@ -560,7 +560,7 @@ class CastIronStore extends Reflux.Store {
                 let gasPrice = this.state.gasPriceInfo[this.state.gasPriceOption]
                 this.setGasPrice(gasPrice);
             } else if (this.state.customGasPrice) {
-                let gasPrice = this.wallet.toWei(parseFloat(this.state.customGasPrice).toString(), 9);
+                let gasPrice = this.wallet.toWei(parseFloat(this.state.customGasPrice).toString(), 9).toString();
                 this.setGasPrice(gasPrice);
             }
         });
