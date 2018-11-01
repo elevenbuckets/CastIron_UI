@@ -12,6 +12,9 @@ class AppStore extends React.Component {
             availableApps: {
                 Schedular: {
 					installButtonValue : "Install"
+				},
+				DLogs: {
+					installButtonValue : "Install"
                 }
             }
         }
@@ -58,7 +61,7 @@ class AppStore extends React.Component {
         stage.then(() => {
             return this.setState({
                 availableApps: {
-                    Schedular: {
+                    [appName]: {
                         installButtonValue: "Installing..."
                     }
                 }
@@ -70,7 +73,7 @@ class AppStore extends React.Component {
         }).then(()=>{
             return this.setState({
                 availableApps: {
-                    Schedular: {
+                    [appName]: {
                         installButtonValue: "Remove"
                     }
                 }
@@ -127,14 +130,15 @@ class AppStore extends React.Component {
 				</div>
 				<div className="card">
 				<img src="assets/forum-icon.png" className="cardicon"/>
-				<p className="cardtext">Forum App</p>
-				<input type="button" className="button cardget" value="install" onClick=""/>
+				<p className="cardtext">DLogs</p>
+				<input type="button" className="button cardget" value={this.state.availableApps.DLogs.installButtonValue}
+				onClick={this.handleClickInstall.bind(this, "DLogs")}/>
 				</div>
 				<div className="card">
 				<img src="assets/clock-icon.png" className="cardicon"/>
 				<p className="cardtext">Schedular</p>
 				<input type="button" className="button cardget" 
-				value={this.state.availableApps.Schedular.installButtonValue} 
+				value="Install" 
 				onClick={this.handleClickInstall.bind(this, "Schedular")}/>
 				</div>
 				<div className="card">
