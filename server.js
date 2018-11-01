@@ -954,6 +954,11 @@ const server = jayson.server(
 		return biapi.validPass();
 	},
 
+	ethNetStatus()
+	{
+		return Promise.resolve(biapi.ethNetStatus());
+	},
+
 	sendTx(args) // sendTx(tokenSymbol, fromWallet, toAddress, amount, gasAmount)
 	{
 		let jobObj = {};
