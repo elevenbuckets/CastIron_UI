@@ -58,6 +58,8 @@ class Transfer extends Reflux.Component {
     this.setState(() => { return { recipient: addr } });
   }
 
+  toEther = (wei) => { return this.wallet.web3.fromWei(wei, 'ether').toString()}
+
   render = () => {
     return (
       <div className="item TransferLayout">
@@ -87,7 +89,7 @@ class Transfer extends Reflux.Component {
         />
         <TxObjects selected_token_name={this.state.selected_token_name} send_button_value="Send"
           handleEnqueue={this.handleEnqueue} handleSend={this.handleSend} recipient={this.state.recipient}/>
-        <TxQList />
+        <TxQList toEther={this.toEther} />
         <div className="item TransferClicks">
           <input type="button" className="button" value='BatchSend' onClick={this.handleBatchSend} />
           <input type="button" className="button xbutton" value='ClearAll' onClick={this.handleClearQueue} />
