@@ -1,4 +1,3 @@
-/*
 import tar from 'tar';
 import DappViewService from '../service/DappViewService';
 import IPFSService from '../service/IPFSService'
@@ -22,11 +21,11 @@ class Installer {
         )
     }
 
-    // fetch package from IPFS 
-    fetchPackage = (appName) => {
-        let outputPath = "./dapps/" + appName + ".tar.gz";
-        return IPFSService.pullFile("QmRACrfrYvC7F54yQzYygaPrg5ohBrkYr6WXJEZVPuTeqi",outputPath);   
-    }
+    // fetch package from IPFS
+    // fetchPackage = (appName) => {
+    //     let outputPath = "./dapps/" + appName + ".tar.gz";
+    //     return IPFSService.pullFile("QmRACrfrYvC7F54yQzYygaPrg5ohBrkYr6WXJEZVPuTeqi",outputPath);   
+    // }
 
 
 
@@ -66,4 +65,3 @@ const installer = new Installer()
 // runInstall();
 
 export default installer;
-*/

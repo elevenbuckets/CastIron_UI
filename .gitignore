@@ -48,11 +48,13 @@ public/util/
 public/app.js
 public/.old/
 public/.local/
+dapps/
 
 # Do not ignore these files
 !public/index.html
 !public/style.css
 !public/assets/
+!dapps/installed.json
 
 # Typescript v1 declaration files
 typings/

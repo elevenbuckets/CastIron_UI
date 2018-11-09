@@ -92,10 +92,10 @@ class AppDrawer extends React.Component {
 		console.log(Object.keys(DappViewService.viewMap));
 
 		return Object.keys(DappViewService.viewMap).map((key) => {
-			let src = "../dapps/" + key + "/assets/clock-icon.png";
+			let src = "../dapps/" + key + "/assets/icon.png";
 
 
-			return (<div className="card appcard" onClick={this.handleIconClick.bind(this, key)}>
+			return (<div className="card appcard" onClick={this.launchApp.bind(this, key)}>
 			<img src={src} className="cardicon"/>
 			<p className="cardtext">{key}</p>
 			</div>)
@@ -109,10 +109,6 @@ class AppDrawer extends React.Component {
 				<div className="card appcard">
 				<img src="assets/transfer-icon.png" className="cardicon"/>
 				<p className="cardtext">Wallet App</p>
-				</div>
-				<div className="card appcard" onClick={this.launchApp.bind(this, 'DLogs')}>
-				<img src="assets/forum-icon.png" className="cardicon"/>
-                                <p className="cardtext">DLogs</p>
 				</div>
 			{this.getDappIcons()}
 			</div>
