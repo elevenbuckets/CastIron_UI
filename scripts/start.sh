@@ -77,8 +77,32 @@ function startUI() {
 	./cast-iron-app
 }
 
+function appShortcut() {
+        if [ ! -e $HOME/.local/share/applications/11BE.desktop ]; then
+                cat <<EOF > $HOME/.local/share/applications/11BE.desktop
+#!/usr/bin/env xdg-open
+
+[Desktop Entry]
+Version=0.1
+Name=11BE
+GenericName=11BE
+Comment=ElevenBuckets Build Environment (Developer Preview)
+Exec=${DATADIR}/dist/start.sh
+Icon=${DISTDIR}/dist/linux-unpacked/public/assets/icon/11be_logo.png
+Terminal=true
+Type=Application
+MimeType=text/html;text/xml;application/xhtml+xml;
+StartupNotify=true
+Categories=Network;
+X-Desktop-File-Install-Version=0.22
+EOF
+		chmod +x $HOME/.local/share/applications/11BE.desktop;
+        fi
+}
+
 # Main
 dockerInit && \
 createStunnel && \
+appShortcut && \
 startUI && \
 blocking;

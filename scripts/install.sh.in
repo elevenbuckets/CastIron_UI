@@ -29,16 +29,18 @@ function __break()
 	exit 1;
 }
 
+function check_cmdlist() 
+{
+	# input should be space separated commands, assuming no spaces in commands themselves
+	for i in $1; do
+		__chk_cmd $i && echo -e "\tFound ${i} ..." || __break "Error: Please install ${i} or make sure it is available in \$PATH";
+	done
+}
+
 function check_dependencies()
 {
 	echo "Checking system dependencies, please wait...";
-	__chk_cmd xzcat && echo -e "\tFound xzcat ..." || __break "Error: Please install xzcat or make sure it is available in \$PATH" 
-	__chk_cmd jq && echo -e "\tFound jq ..." || __break "Error: Please install jq or make sure it is available in \$PATH" 
-	__chk_cmd docker && echo -e "\tFound docker ..." || __break "Error: Please install docker or make sure it is available in \$PATH"
-	__chk_cmd ssh && echo -e "\tFound ssh client..." || __break "Error: Please install ssh client or make sure it is available in \$PATH"
-	__chk_cmd ssh-keygen && echo -e "\tFound ssh-keygen..." || __break "Error: Please install ssh-keygen or make sure it is available in \$PATH"
-	__chk_cmd ssh-keyscan && echo -e "\tFound ssh-keyscan..." || __break "Error: Please install ssh-keyscan or make sure it is available in \$PATH"
-
+	check_cmdlist "tar xzcat jq docker ssh ssh-keygen ssh-keyscan";
 	docker ps &> /dev/null && echo 'Done!' || \
 		__break "Please enable docker to be managed by non-root users following this instructuion:\nhttps://docs.docker.com/install/linux/linux-postinstall/"
 }
