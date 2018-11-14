@@ -72,6 +72,7 @@ function dockerInit() {
 }
 
 function startUI() {
+	sleep 3 && \
 	cd ./linux-unpacked && \
 	./cast-iron-app
 }
@@ -86,6 +87,7 @@ Version=0.1
 Name=11BE
 GenericName=11BE
 Comment=ElevenBuckets Build Environment (Developer Preview)
+Path=${DATADIR}/dist
 Exec=${DATADIR}/dist/start.sh
 Icon=${DATADIR}/dist/linux-unpacked/public/icon/11be_logo.png
 Terminal=true
@@ -101,7 +103,6 @@ EOF
 
 # Main
 dockerInit && \
-sleep 3 && \
 createStunnel && \
 appShortcut && \
 startUI && \
