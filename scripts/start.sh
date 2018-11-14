@@ -50,18 +50,31 @@ function sshFP() {
 	ssh-keyscan -t ecdsa $IP >> $HOME/.ssh/known_hosts;
 }
 
+# INIT or UPDATE
 function dockerSetup() {
-	docker pull docker.io/infwonder/geth_stunnel_rinkeby_les2 && \
-	docker run --rm -t -v"${DATADIR}:/data:z" \
-		--entrypoint "/usr/bin/start.sh" \
-		docker.io/infwonder/geth_stunnel_rinkeby_les2 INIT && \
-	sshkeys && \
-        docker run --name geth_stunnel_rinkeby \
-	        -p 30303:30303 -p 30303:30303/udp -p 30304:30304/udp \
-		-td -v"${DATADIR}:/data:z" \
-		--entrypoint "/usr/bin/start.sh" \
-		docker.io/infwonder/geth_stunnel_rinkeby_les2 START && \
-	sshFP
+	if [ "${ANS}x" != "x" ]; then
+		echo "11BE initialized, update only..."
+		docker pull docker.io/infwonder/geth_stunnel_rinkeby_les2 && \
+		sshkeys && \
+	        docker run --name geth_stunnel_rinkeby \
+		        -p 30303:30303 -p 30303:30303/udp -p 30304:30304/udp \
+			-td -v"${DATADIR}:/data:z" \
+			--entrypoint "/usr/bin/start.sh" \
+			docker.io/infwonder/geth_stunnel_rinkeby_les2 START && \
+		sshFP
+	else
+		docker pull docker.io/infwonder/geth_stunnel_rinkeby_les2 && \
+		docker run --rm -t -v"${DATADIR}:/data:z" \
+			--entrypoint "/usr/bin/start.sh" \
+			docker.io/infwonder/geth_stunnel_rinkeby_les2 INIT && \
+		sshkeys && \
+	        docker run --name geth_stunnel_rinkeby \
+		        -p 30303:30303 -p 30303:30303/udp -p 30304:30304/udp \
+			-td -v"${DATADIR}:/data:z" \
+			--entrypoint "/usr/bin/start.sh" \
+			docker.io/infwonder/geth_stunnel_rinkeby_les2 START && \
+		sshFP
+	fi
 }
 
 function dockerInit() {
@@ -87,8 +100,8 @@ Version=0.1
 Name=11BE
 GenericName=11BE
 Comment=ElevenBuckets Build Environment (Developer Preview)
-Path=${DATADIR}/dist
 Exec=${DATADIR}/dist/start.sh
+Path=${DATADIR}
 Icon=${DATADIR}/dist/linux-unpacked/public/icon/11be_logo.png
 Terminal=true
 Type=Application
