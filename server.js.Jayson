@@ -1,6 +1,6 @@
 'use strict';
 
-const WSServ = require('rpc-websockets').Server;
+const jayson = require('jayson/promise');
 const Web3   = require('web3');
 const net    = require('net');
 const os     = require('os');
@@ -920,32 +920,8 @@ class IPFS_Blade {
 
 const biapi = new BladeIron();
 const ipfsi = new IPFS_Blade();
-const rpcport = process.env.rpcport;
-const rpchost = process.env.rpchost;
 
-// Create a server 
-const server = new WSServ({
-  port: rpcport,
-  host: rpchost
-});
-
-server.on('listening', () => { process.send("Ready") });
-// Registering methods
-server.event('connected');
-
-server.register('initialize', (obj) => 
-{
-	biapi.setup(obj); 
-	console.dir(obj);
-	biapi.connect().then((rc) => 
-	{
-	         server.emit('connected', biapi.connected());
-        });
-});
-
-server.register('accounts', () => { return biapi.allAccounts() });
-server.register('ethNetStatus', () => { return biapi.ethNetStatus() });
-/*
+// create a server
 const server = jayson.server(
     {
 	connected()
@@ -1345,12 +1321,16 @@ process.on('SIGINT', () => {
 		} catch(err) {
 			true;
 		}
-   		server.close();	
+   		httpServ.close();	
    		process.exit(0);
 	})
    } else {
-   	server.close();	
+   	httpServ.close();	
    	process.exit(0);
    }
 })
 
+const rpcport = process.env.rpcport;
+const rpchost = process.env.rpchost;
+
+httpServ.listen(rpcport, rpchost, () => { process.send("Ready");});

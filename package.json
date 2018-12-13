@@ -61,6 +61,7 @@
     "react-router-dom": "^4.2.2",
     "react-toggle": "^4.0.2",
     "reflux": "^6.4.1",
+    "rpc-websockets": "^4.3.5",
     "tar": "^4.4.4",
     "uuid": "^3.2.1",
     "validator": "8.0.0",
