@@ -5,7 +5,7 @@ const path = require('path')
 const url = require('url')
 const fs = require('fs')
 const cluster = require('cluster');
-const bladeIron = require('bladeiron_api');
+const flatIron = require('bladeiron_api');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -24,13 +24,13 @@ const bladeWorker = (rootcfg) =>
 	let cfgObjs = {geth: gethcfg, ipfs: ipfscfg};
 	let rpcport = gethcfg.rpcport || 3000;
 	let rpchost = gethcfg.rpchost || '127.0.0.1';
-	let biapi   = null 
+	let fiapi   = null 
 	let worker  = null;
 
 	console.log(JSON.stringify(cfgObjs,0,2));
 
 	if (rootcfg.configDir !== '') {
-		biapi = new bladeIron(rpcport, rpchost, {
+		fiapi = new flatIron(rpcport, rpchost, {
 			"appName": "__MAIN__",
 			"artifactDir": __dirname,
 			"conditionDir": __dirname,
@@ -41,33 +41,34 @@ const bladeWorker = (rootcfg) =>
 
 		worker = cluster.fork({rpcport, rpchost});
 		worker.on('message', (rc) => {
-			let stage = Promise.resolve(biapi.connectRPC()).then(() => {
-				return biapi.client.request('fully_initialize', cfgObjs).then((rc) => { console.log("BladeIron: Initialized:"); console.log(rc); })		
+			let stage = fiapi.connectRPC().then(() => {
+				return fiapi.client.call('fully_initialize', cfgObjs).then((rc) => { console.log("BladeIron: Initialized:"); console.log(rc); })		
 			})
 
 			ipcMain.on('awaken', (e, args) => {
-				biapi.client.request('unlock', [args]).then((rc) => { console.log(rc.result ? "unlocked" : "locked")})
+				fiapi.client.call('unlock', [args]).then((rc) => { console.log(rc.result ? "unlocked" : "locked")})
 			})
 
 			ipcMain.on('tokenlist', (e, args) => {
 				// args should already be a list
-				biapi.client.request('hotGroups', args).then((rc) => { console.log(rc.result ? args : "Warning: issues updating server-side token list!")})
+				fiapi.client.call('hotGroups', args).then((rc) => { console.log(rc.result ? args : "Warning: issues updating server-side token list!")})
 			})
 
 			ipcMain.on('gasprice', (e, args) => {
-				biapi.client.request('setGasPrice', [args]).then((rc) => { console.log(rc.result ? {'gasPrice': args} : "Warning: issues updating server-side gasPrice!")})
+				fiapi.client.call('setGasPrice', [args]).then((rc) => { console.log(rc.result ? {'gasPrice': args} : "Warning: issues updating server-side gasPrice!")})
 			})
 		})
 
 		process.on('exit', () => {
 			console.log("Shutting down, please wait ...");
+			fiapi.client.close();
 			worker.kill('SIGINT');
 		})
 	} else {
 		console.log(`No root config found! BladeWorker init skipped ...`)
 	}
 
-	return {biapi, worker};
+	return {fiapi, worker};
 }
 
 cluster.setupMaster({exec: path.join(__dirname, 'server.js')}); //BladeIron RPCServ
@@ -77,7 +78,7 @@ if (cluster.isMaster) {
 	    let rootcfg = loadConfig(path.join("public",".local","bootstrap_config.json"));
 
 	    if (rootcfg.configDir !== '') {
-		const {biapi, worker} = bladeWorker(rootcfg);
+		const {fiapi, worker} = bladeWorker(rootcfg);
 	    }
 	    // Create the browser window.
 	    win = new BrowserWindow({minWidth: 1280, minHeight: 960, resizable: true, icon: path.join(__dirname, 'public', 'assets', 'icon', '11be_logo.png')});
@@ -113,7 +114,7 @@ if (cluster.isMaster) {
 	// Whole process reloader via ipcRenderer for config reload
 	ipcMain.on('reload', (e, args) => {
 	    	let rootcfg = loadConfig(path.join("public",".local","bootstrap_config.json"));
-		const {biapi, worker} = bladeWorker(rootcfg);
+		const {fiapi, worker} = bladeWorker(rootcfg);
 		app.relaunch();
 		app.exit();
 	});
