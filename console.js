@@ -24,7 +24,7 @@ const bladeWorker = (rootcfg) =>
         let wsrpc   = new WSClient('ws://' + rpchost + ':' + rpcport);
         let worker  = null;
 
-        console.log(JSON.stringify(cfgObjs,0,2));
+        //console.log(JSON.stringify(cfgObjs,0,2));
 
         worker = cluster.fork({rpcport, rpchost});
 
@@ -52,43 +52,36 @@ const replEvalPromise = (cmd,ctx,filename,cb) => {
   return cb(null, result);
 }
 
-// REPL main function
-/*
-const terminal = (app, slogan = '11BE Dev Console') => {
-        let r = repl.start({ prompt: `[-= ${slogan} =-]$ `, eval: replEvalPromise });
-        r.context = {app};
-
-        r.on('exit', () => {
-                console.log("\n" + 'Stopping CLI...');
-                process.exit(0);
-        })
-}
-*/
-
+// Main
 cluster.setupMaster({exec: path.join(__dirname, 'server.js')}); //BladeIron RPCServ
 
 let rootcfg = loadConfig(path.join("public",".local","bootstrap_config.json"));
-let app;
+let app, r;
+
 if (rootcfg.configDir !== '') {
 	if (cluster.isMaster) {
+		let slogan = "11BE Dev Console";
 		app = bladeWorker(rootcfg);
-
         	app.worker.on('message', (rc) => {
-    			ASCII_Art("Ho.Ho.Ho!").then((art) => {
-          			console.log(art + "\n"); 
-        		})
-        	})
-
-        	process.on('exit', () => {
-                	console.log("Shutting down, please wait ...");
-                	app.worker.kill('SIGINT');
-        	})
-		
-		let r = repl.start({ prompt: `[-= 11BE =-]$ `, eval: replEvalPromise });
-		r.context = {app};
-        	r.on('exit', () => {
-               		console.log("\n" + 'Stopping CLI...');
-               		process.exit(0);
+    			ASCII_Art(slogan).then((art) => {
+				app.wsrpc.on('open', () => 
+				{
+					app.wsrpc.call('initialize', app.cfgObjs.geth).then(() => 
+					{
+          					console.log(art); 
+					}).then(() => 
+					{
+						r = repl.start({ prompt: `[-= ${slogan} =-]$ `, eval: replEvalPromise });
+						r.context = {app};
+				        	r.on('exit', () => {
+				               		console.log("\n\t" + 'Stopping CLI...');
+							app.wsrpc.close();
+		                			app.worker.kill('SIGINT');
+							//process.kill('SIGINT');
+				        	});
+					});
+				});
+        		});
         	})
 	}
 } else {

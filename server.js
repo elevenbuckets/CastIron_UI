@@ -945,394 +945,345 @@ server.register('initialize', (obj) =>
 
 server.register('accounts', () => { return biapi.allAccounts() });
 server.register('ethNetStatus', () => { return biapi.ethNetStatus() });
-/*
-const server = jayson.server(
-    {
-	connected()
-	{
-		return Promise.resolve(biapi.connected());
-	},
-
-        initialize(obj) 
-	{ 
-		biapi.setup(obj); 
-		console.log(obj);
-		return biapi.connect(); 
-	},
-
-	accounts() 
-	{ 
-		return Promise.resolve(biapi.allAccounts()); 
-	},
-
-	unlock(args) // unlock(ps)
-	{
-		let ps = args[0];
-		biapi.password(ps);
-		return biapi.validPass();
-	},
-
-	hasPass()
-	{
-		return biapi.validPass();
-	},
-
-	ethNetStatus()
-	{
-		return Promise.resolve(biapi.ethNetStatus());
-	},
-
-	sendTx(args) // sendTx(tokenSymbol, fromWallet, toAddress, amount, gasAmount)
-	{
-		let jobObj = {};
-		let tokenSymbol = args[0];
-		let fromWallet  = args[1];
-		let toAddress   = args[2];
-		let amount      = args[3];
-		let gasAmount = 5;
+server.register('unlock', (args) => 
+{ 
+	let ps = args[0];
+	biapi.password(ps);
+	return biapi.validPass();
+});
+server.register('hasPass', () => { return biapi.validPass() });
+server.register('sendTx', (args) => // sendTx(tokenSymbol, fromWallet, toAddress, amount, gasAmount) 
+{
+	let jobObj = {};
+	let tokenSymbol = args[0];
+	let fromWallet  = args[1];
+	let toAddress   = args[2];
+	let amount      = args[3];
+	let gasAmount = 5;
 
                 if (tokenSymbol === 'ETH') {
                         gasAmount = 21000;
                 } else {
-			let callArgs = [toAddress, amount]
+		let callArgs = [toAddress, amount]
                         gasAmount = biapi.CUE['Token'][tokenSymbol]['transfer'].estimateGas(...callArgs, {from: fromWallet, gasPrice: biapi.gasPrice})
                 }
 
-		console.log(`DEBUG: sendTx sending ${tokenSymbol} using gasAmount = ${gasAmount}`)
+	console.log(`DEBUG: sendTx sending ${tokenSymbol} using gasAmount = ${gasAmount}`)
 
 
-		try {
-			jobObj = biapi.enqueueTx(tokenSymbol)(fromWallet, toAddress, amount, gasAmount);
-			return biapi.processJobs([jobObj]); // single job, thus single element in list
-		} catch (err) {
-			return Promise.reject(server.error(404, err));
-		}
-	},
-	
-	getTxObj(args) // getTxObj(tokenSymbol, fromWallet, toAddress, amount, gasAmount) 
-	{
-		let tokenSymbol = args[0];
-		let fromWallet  = args[1];
-		let toAddress   = args[2];
-		let amount      = args[3];
-		let gasAmount = 5;
+	try {
+		jobObj = biapi.enqueueTx(tokenSymbol)(fromWallet, toAddress, amount, gasAmount);
+		return biapi.processJobs([jobObj]); // single job, thus single element in list
+	} catch (err) {
+		return Promise.reject(server.error(404, err));
+	}
+});
+
+server.register('getTxObj', (args) => // getTxObj(tokenSymbol, fromWallet, toAddress, amount, gasAmount) 
+{
+	let tokenSymbol = args[0];
+	let fromWallet  = args[1];
+	let toAddress   = args[2];
+	let amount      = args[3];
+	let gasAmount = 5;
 
                 if (tokenSymbol === 'ETH') {
                         gasAmount = 21000;
                 } else {
-			let callArgs = [toAddress, amount]
+		let callArgs = [toAddress, amount]
                         gasAmount = biapi.CUE['Token'][tokenSymbol]['transfer'].estimateGas(...callArgs, {from: fromWallet, gasPrice: biapi.gasPrice})
                 }
 
-		console.log(`DEBUG: sending ${tokenSymbol} using gasAmount = ${gasAmount}`)
+	console.log(`DEBUG: sending ${tokenSymbol} using gasAmount = ${gasAmount}`)
 
-		try {
-			return Promise.resolve(biapi.enqueueTx(tokenSymbol)(fromWallet, toAddress, amount, gasAmount));
-		} catch (err) {
-			return Promise.reject(server.error(404, err));
-		}
-	},
+	try {
+		return Promise.resolve(biapi.enqueueTx(tokenSymbol)(fromWallet, toAddress, amount, gasAmount));
+	} catch (err) {
+		return Promise.reject(server.error(404, err));
+	}
+});
 
-	newApp(args) // newApp(appSymbol, version, contract, abiPath, conditions, address = null)
-	{
-		let appSymbol = args[0];
-		let version   = args[1];
-		let contract  = args[2];
-		let abiPath   = args[3];
-		let conditions = args[4];
+server.register('newApp', (args) => // newApp(appSymbol, version, contract, abiPath, conditions, address = null)
+{
+	let appSymbol = args[0];
+	let version   = args[1];
+	let contract  = args[2];
+	let abiPath   = args[3];
+	let conditions = args[4];
 
-		try {
-			if (args.length === 6 && args[5] != null) {
-				let address = args[5];
-				return Promise.resolve(biapi.newApp(appSymbol)(version, contract, abiPath, conditions, address));
-			} else {
-				return Promise.resolve(biapi.newApp(appSymbol)(version, contract, abiPath, conditions));
-			}
-		} catch (err) {
-			console.log(err);
-			return Promise.reject(server.error(404, err));
-		}	
-	},
-
-	call(callObj) // callObj example: {appName: 'appName', ctrName: 'ctrName', callName: 'callName', args: [arg01, arg02 ...]}
-	{
-		let abiObj = null;
-		let appName = callObj.appName;
-		let ctrName = callObj.ctrName;
-		let callName = callObj.callName;
-		try {
-			abiObj = biapi.CUE[appName].ABI[ctrName].filter((i) => { return (i.name === callName && i.constant === true) } );
-			
-			if (abiObj.length === 1 && abiObj[0].inputs.length === callObj.args.length) {
-				console.log("Calling " + callName)
-				let __call = (resolve, reject) => {
-					biapi.CUE[appName][ctrName][callName](...callObj.args, (err, result) => {
-						if (err) return reject(err);
-						console.log("HERE!")
-						resolve(result);
-					})
-				}
-				
-				return new Promise(__call);
-			} else {
-				throw "Wrong function or function arguments";
-			}
-		} catch(err) {
-			console.log(err);
-			return Promise.reject(server.error(501, 'unsupported constant call'));
-		}
-	},
-
-	getTkObj(args) // getTkObj(type, contract, call, appArgs, fromWallet, amount, tkObj)
-	{
-		let type = args[0];
-		let contract = args[1];
-		let call = args[2];
-		let appArgs = args[3];
-		let fromWallet = args[4];
-		let amount = args[5];
-		let tkObj = args[6];
-		let callArgs = appArgs.map((i) => { return tkObj[i] });
-		let gasAmount = 5;
-
-		if (amount != null) {
-			gasAmount = biapi.CUE[type][contract][call].estimateGas(...callArgs, {from: fromWallet, gasPrice: biapi.gasPrice})
+	try {
+		if (args.length === 6 && args[5] != null) {
+			let address = args[5];
+			return Promise.resolve(biapi.newApp(appSymbol)(version, contract, abiPath, conditions, address));
 		} else {
-			gasAmount = biapi.CUE[type][contract][call].estimateGas(...callArgs, {from: fromWallet, value: amount, gasPrice: biapi.gasPrice})
+			return Promise.resolve(biapi.newApp(appSymbol)(version, contract, abiPath, conditions));
 		}
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(server.error(404, err));
+	}	
+});
 
-		console.log(`DEBUG: calling ${call} using gasAmount = ${gasAmount}`)
-
-		try {
-			return Promise.resolve(biapi.enqueueTk(type, contract, call, appArgs)(fromWallet, amount, gasAmount, tkObj));
-		} catch (err) {
-			return Promise.reject(server.error(404, err));
+server.register('call', (callObj) => // callObj example: {appName: 'appName', ctrName: 'ctrName', callName: 'callName', args: [arg01, arg02 ...]}
+{
+	let abiObj = null;
+	let appName = callObj.appName;
+	let ctrName = callObj.ctrName;
+	let callName = callObj.callName;
+	try {
+		abiObj = biapi.CUE[appName].ABI[ctrName].filter((i) => { return (i.name === callName && i.constant === true) } );
+		
+		if (abiObj.length === 1 && abiObj[0].inputs.length === callObj.args.length) {
+			console.log("Calling " + callName)
+			let __call = (resolve, reject) => {
+				biapi.CUE[appName][ctrName][callName](...callObj.args, (err, result) => {
+					if (err) return reject(err);
+					console.log("HERE!")
+					resolve(result);
+				})
+			}
+			
+			return new Promise(__call);
+		} else {
+			throw "Wrong function or function arguments";
 		}
-	},
+	} catch(err) {
+		console.log(err);
+		return Promise.reject(server.error(501, 'unsupported constant call'));
+	}
+});
 
-	hotGroups(tokenList)
-	{
-		try {
-			return Promise.resolve(biapi.hotGroups(tokenList));
-		} catch(err) {
-			return Promise.reject(server.error(404, err));
-		}
-	},
+server.register('getTkObj', (args) => // getTkObj(type, contract, call, appArgs, fromWallet, amount, tkObj)
+{
+	let type = args[0];
+	let contract = args[1];
+	let call = args[2];
+	let appArgs = args[3];
+	let fromWallet = args[4];
+	let amount = args[5];
+	let tkObj = args[6];
+	let callArgs = appArgs.map((i) => { return tkObj[i] });
+	let gasAmount = 5;
 
-	setGasPrice(args) 
-	{
-		let gasPrice = args[0];
-		try {
-			biapi.gasPrice = gasPrice;
-			return Promise.resolve(true);
-		} catch (err) {
-			return Promise.reject(server.error(404, err));
-		}
-	},
+	if (amount != null) {
+		gasAmount = biapi.CUE[type][contract][call].estimateGas(...callArgs, {from: fromWallet, gasPrice: biapi.gasPrice})
+	} else {
+		gasAmount = biapi.CUE[type][contract][call].estimateGas(...callArgs, {from: fromWallet, value: amount, gasPrice: biapi.gasPrice})
+	}
 
-	canUseAccount(args)
-	{
-		let address = args[0];
+	console.log(`DEBUG: calling ${call} using gasAmount = ${gasAmount}`)
+
+	try {
+		return Promise.resolve(biapi.enqueueTk(type, contract, call, appArgs)(fromWallet, amount, gasAmount, tkObj));
+	} catch (err) {
+		return Promise.reject(server.error(404, err));
+	}
+});
+
+server.register('hotGroups', (tokenList) =>
+{
+	try {
+		return Promise.resolve(biapi.hotGroups(tokenList));
+	} catch(err) {
+		return Promise.reject(server.error(404, err));
+	}
+});
+
+server.register('setGasPrice', (args) => 
+{
+	let gasPrice = args[0];
+	try {
+		biapi.gasPrice = gasPrice;
+		return Promise.resolve(true);
+	} catch (err) {
+		return Promise.reject(server.error(404, err));
+	}
+});
+
+server.register('canUseAccount', (args) =>
+{
+	let address = args[0];
                 if (biapi.allAccounts().indexOf(address) === -1) return Promise.reject(server.error(503, 'Account not found'));
 
                 try {
                         return biapi.managedAddress(address);
                 } catch(err) {
-			console.log(err);
+		console.log(err);
                         return Promise.reject(server.error(404, err));
                 }	
-	},
+});
 
-	processJobs(jobList)
-	{
-		try {
-			return biapi.processJobs(jobList);
-		} catch (err) {
-			return Promise.reject(server.error(404, err));
-		}
-	},
-
-	addrEtherBalance(args) // addrEtherBalance(address)
-	{
-		let address = args[0];
-		try {
-			return Promise.resolve(biapi.addrEtherBalance(address));
-		} catch(err) {
-			return Promise.reject(server.error(404, err));
-		}
-	},
-
-	addrTokenBalance(args) // addrTokenBalance(tokenSymbol, address)
-	{
-		let tokenSymbol = args[0];
-		let address     = args[1];
-
-		try {
-			return Promise.resolve(biapi.addrTokenBalance(tokenSymbol)(address));
-		} catch (err) {
-			return Promise.reject(server.error(404, err));
-		}
-	},
-
-	getReceipts(args) // getRecepts(Q)
-        {
-		let Q = args[0];
-		let txhashes = biapi.rcdQ[Q].map((r) => { return r.tx });
-		try {
-			return biapi.getReceipt(txhashes);
-		} catch (err) {
-			console.log(err);
-			return Promise.reject(server.error(404, err));
-		}
-	},
-
-	ipfs_connected()
-        {
-		return Promise.resolve(typeof(ipfsi.ipfsd) !== 'undefined' && ipfsi.ready);
-	},
-
-	ipfs_initialize(obj)
-	{
-		ipfsi.init(obj);
-		return ipfsi.start().then(() => { return true;});		
-	},
-
-	ipfs_pullFile(args) // ipfs_pullFile(inhash, outpath)
-	{
-		let inhash = args[0];
-		let outpath = args[1];
-		try {
-			return ipfsi.pullFile(inhash, outpath);
-		} catch(err) {
-			return Promise.reject(server.error(404, err));
-		}
-	},
-
-	ipfs_put(args) // ipfs_put(fpath)
-	{
-		let fpath = args[0];
-		try {
-			return ipfsi.put(fpath);
-		} catch(err) {
-			return Promise.reject(server.error(404, err));
-		}
-	},
-
-	ipfs_read(args) // ipfs_read(hash)
-	{
-		let hash = args[0];
-		try {
-			return ipfsi.read(hash);
-		} catch(err) {
-			return Promise.reject(server.error(404, err));
-		}
-	},
-
-	ipfs_readPath(args) // ipfs_readPath(ipfspath)
-	{
-		let ipfspath = args[0];
-		try {
-			return ipfsi.readPath(ipfspath);
-		} catch(err) {
-			return Promise.reject(server.error(404, err));
-		}
-	},
-
-	ipfs_publish(args) // ipfs_resolve(contentHash, key = null)
-	{
-		let hash = args[0];
-		try {
-			if (args.length === 2 && args[1] != null) {
-				let key = args[1];
-				return ipfsi.publish(hash, key);
-			} else if (args.length === 1) {
-				return ipfsi.publish(hash);
-			}
-		} catch(err) {
-			return Promise.reject(server.error(404, err));
-		}
-	},
-
-	ipfs_resolve(args) // ipfs_resolve(ipnsHash)
-	{
-		let ipnsHash = args[0];
-		try {
-			return ipfsi.resolve(ipnsHash);
-		} catch(err) {
-			return Promise.reject(server.error(404, err));
-		}
-	},
-
-	ipfs_myid()
-	{
-		return ipfsi.myid();
-	},
-
-	ipfs_pullIPNS(args) // ipfs_pullIPNS(ipnsHash)
-	{
-		let ipnsHash = args[0];
-		try {
-			return ipfsi.pullIPNS(ipnsHash);
-		} catch(err) {
-			return Promise.reject(server.error(404, err));
-		} 
-	},
-
-	ipfs_lspin()
-	{
-		try {
-			return ipfsi.lspin();
-		} catch(err) {
-			return Promise.reject(server.error(404, err));
-		} 
-	},
-
-	full_checks()
-	{
-		let geth = biapi.connected();
-		let ipfs = typeof(ipfsi.ipfsd) !== 'undefined' && ipfsi.ready;
-
-		return Promise.resolve({geth, ipfs});
-	},
-
-	fully_initialize(obj)
-	{
-		let gethCfg = obj.geth;
-		let ipfsCfg = obj.ipfs;
-		let gethChk = biapi.connected();
-		let ipfsChk = typeof(ipfsi.ipfsd) !== 'undefined' && ipfsi.ready;
-
-		console.log("DEBUG:");
-		console.log(obj);
-		console.log({gethChk});
-		console.log({ipfsChk});
-
-		biapi.setup(gethCfg);
-		ipfsi.init(ipfsCfg);
-
-		let reqs = 
-		[
-			gethChk ? true : biapi.connect(),
-			ipfsChk ? true : ipfsi.start().then(() => { return true; })
-		];
-
-		return Promise.all(reqs);
+server.register('processJobs', (jobList) =>
+{
+	try {
+		return biapi.processJobs(jobList);
+	} catch (err) {
+		return Promise.reject(server.error(404, err));
 	}
-    }
-);
+});
 
-const httpServ = server.http();
-
-/*
-process.on('message', (msg) => {
-	if (msg === 'ipfs_close' && typeof(ipfsi.controller) !== 'undefined' && ipfsi.controller.started) {
-		ipfsi.stop().then(() => {
-	        	fs.unlinkSync(path.join(ipfsi.cfsrc.repoPathGo, 'api'));
-	        	fs.unlinkSync(path.join(ipfsi.cfsrc.repoPathGo, 'repo.lock'));
-		})
+server.register('addrEtherBalance', (args) => // addrEtherBalance(address)
+{
+	let address = args[0];
+	try {
+		return Promise.resolve(biapi.addrEtherBalance(address));
+	} catch(err) {
+		return Promise.reject(server.error(404, err));
 	}
-})
-*/
+});
+
+server.register('addrTokenBalance', (args) => // addrTokenBalance(tokenSymbol, address)
+{
+	let tokenSymbol = args[0];
+	let address     = args[1];
+
+	try {
+		return Promise.resolve(biapi.addrTokenBalance(tokenSymbol)(address));
+	} catch (err) {
+		return Promise.reject(server.error(404, err));
+	}
+});
+
+server.register('getReceipts', (args) => // getRecepts(Q)
+{
+	let Q = args[0];
+	let txhashes = biapi.rcdQ[Q].map((r) => { return r.tx });
+	try {
+		return biapi.getReceipt(txhashes);
+	} catch (err) {
+		console.log(err);
+		return Promise.reject(server.error(404, err));
+	}
+});
+
+server.event('ipfs_connected');
+server.register('ipfs_initialize', (obj) =>
+{
+	ipfsi.init(obj);
+	ipfsi.start().then(() => 
+	{ 
+		server.emit(ipfs_connected, typeof(ipfsi.ipfsd) !== 'undefined' && ipfsi.ready); 
+	});		
+});
+
+server.register('ipfs_pullFile', (args) => // ipfs_pullFile(inhash, outpath)
+{
+	let inhash = args[0];
+	let outpath = args[1];
+	try {
+		return ipfsi.pullFile(inhash, outpath);
+	} catch(err) {
+		return Promise.reject(server.error(404, err));
+	}
+});
+
+server.register('ipfs_put', (args) => // ipfs_put(fpath)
+{
+	let fpath = args[0];
+	try {
+		return ipfsi.put(fpath);
+	} catch(err) {
+		return Promise.reject(server.error(404, err));
+	}
+});
+
+server.register('ipfs_read', (args) => // ipfs_read(hash)
+{
+	let hash = args[0];
+	try {
+		return ipfsi.read(hash);
+	} catch(err) {
+		return Promise.reject(server.error(404, err));
+	}
+});
+
+server.register('ipfs_readPath', (args) => // ipfs_readPath(ipfspath)
+{
+	let ipfspath = args[0];
+	try {
+		return ipfsi.readPath(ipfspath);
+	} catch(err) {
+		return Promise.reject(server.error(404, err));
+	}
+});
+
+server.register('ipfs_publish', (args) => // ipfs_resolve(contentHash, key = null)
+{
+	let hash = args[0];
+	try {
+		if (args.length === 2 && args[1] != null) {
+			let key = args[1];
+			return ipfsi.publish(hash, key);
+		} else if (args.length === 1) {
+			return ipfsi.publish(hash);
+		}
+	} catch(err) {
+		return Promise.reject(server.error(404, err));
+	}
+});
+
+server.register('ipfs_resolve', (args) => // ipfs_resolve(ipnsHash)
+{
+	let ipnsHash = args[0];
+	try {
+		return ipfsi.resolve(ipnsHash);
+	} catch(err) {
+		return Promise.reject(server.error(404, err));
+	}
+});
+
+server.register('ipfs_myid', () => { return ipfsi.myid() });
+
+server.register('ipfs_pullIPNS', (args) => // ipfs_pullIPNS(ipnsHash)
+{
+	let ipnsHash = args[0];
+	try {
+		return ipfsi.pullIPNS(ipnsHash);
+	} catch(err) {
+		return Promise.reject(server.error(404, err));
+	} 
+});
+
+server.register('ipfs_lspin', () =>
+{
+	try {
+		return ipfsi.lspin();
+	} catch(err) {
+		return Promise.reject(server.error(404, err));
+	} 
+});
+
+server.register('full_checks', () =>
+{
+	let geth = biapi.connected();
+	let ipfs = typeof(ipfsi.ipfsd) !== 'undefined' && ipfsi.ready;
+
+	return Promise.resolve({geth, ipfs});
+});
+
+server.register('fully_initialize', (obj) =>
+{
+	let gethCfg = obj.geth;
+	let ipfsCfg = obj.ipfs;
+	let gethChk = biapi.connected();
+	let ipfsChk = typeof(ipfsi.ipfsd) !== 'undefined' && ipfsi.ready;
+
+	console.log("DEBUG:");
+	console.log(obj);
+	console.log({gethChk});
+	console.log({ipfsChk});
+
+	biapi.setup(gethCfg);
+	ipfsi.init(ipfsCfg);
+
+	let reqs = 
+	[
+		gethChk ? true : biapi.connect(),
+		ipfsChk ? true : ipfsi.start().then(() => { return true; })
+	];
+
+	return Promise.all(reqs);
+});
 
 process.on('SIGINT', () => {
    console.log("\tRPC Server stopping ...");
@@ -1353,4 +1304,3 @@ process.on('SIGINT', () => {
    	process.exit(0);
    }
 })
-
