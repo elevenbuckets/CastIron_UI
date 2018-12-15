@@ -46,16 +46,16 @@ const bladeWorker = (rootcfg) =>
 			})
 
 			ipcMain.on('awaken', (e, args) => {
-				fiapi.client.call('unlock', [args]).then((rc) => { console.log(rc.result ? "unlocked" : "locked")})
+				fiapi.client.call('unlock', [args]).then((rc) => { console.log(rc ? "unlocked" : "locked")})
 			})
 
 			ipcMain.on('tokenlist', (e, args) => {
 				// args should already be a list
-				fiapi.client.call('hotGroups', args).then((rc) => { console.log(rc.result ? args : "Warning: issues updating server-side token list!")})
+				fiapi.client.call('hotGroups', args).then((rc) => { console.log(rc ? args : "Warning: issues updating server-side token list!")})
 			})
 
 			ipcMain.on('gasprice', (e, args) => {
-				fiapi.client.call('setGasPrice', [args]).then((rc) => { console.log(rc.result ? {'gasPrice': args} : "Warning: issues updating server-side gasPrice!")})
+				fiapi.client.call('setGasPrice', [args]).then((rc) => { console.log(rc ? {'gasPrice': args} : "Warning: issues updating server-side gasPrice!")})
 			})
 		})
 

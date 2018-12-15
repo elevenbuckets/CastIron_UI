@@ -3,6 +3,7 @@
 const path = require('path')
 const url = require('url')
 const fs = require('fs')
+const cluster = require('cluster');
 const WSClient = require('rpc-websockets').Client;
 const repl = require('repl');
 const figlet = require('figlet');
@@ -21,8 +22,13 @@ const bladeWorker = (rootcfg) =>
         let rpcport = gethcfg.rpcport || 3000;
         let rpchost = gethcfg.rpchost || '127.0.0.1';
         let wsrpc   = new WSClient('ws://' + rpchost + ':' + rpcport);
+        let worker  = null;
 
-	return {wsrpc, cfgObjs};
+        //console.log(JSON.stringify(cfgObjs,0,2));
+
+        worker = cluster.fork({rpcport, rpchost});
+
+	return {wsrpc, worker, cfgObjs};
 }
 
 // ASCII Art!!!
@@ -47,21 +53,37 @@ const replEvalPromise = (cmd,ctx,filename,cb) => {
 }
 
 // Main
+cluster.setupMaster({exec: path.join(__dirname, 'server.js')}); //BladeIron RPCServ
+
 let rootcfg = loadConfig(path.join("public",".local","bootstrap_config.json"));
 let app, r;
 
 if (rootcfg.configDir !== '') {
-	let slogan = "11BE Dev Console";
-	app = bladeWorker(rootcfg);
-		ASCII_Art(slogan).then((art) => {
-          		console.log(art);
-			r = repl.start({ prompt: `[-= ${slogan} =-]$ `, eval: replEvalPromise });
-			r.context = {app};
-		       	r.on('exit', () => {
-		       		console.log("\n\t" + 'Stopping CLI...');
-				app.wsrpc.close();
-		       	});
-       		});
+	if (cluster.isMaster) {
+		let slogan = "11BE Dev Console";
+		app = bladeWorker(rootcfg);
+        	app.worker.on('message', (rc) => {
+    			ASCII_Art(slogan).then((art) => {
+				app.wsrpc.on('open', () => 
+				{
+					app.wsrpc.call('initialize', app.cfgObjs.geth).then(() => 
+					{
+          					console.log(art); 
+					}).then(() => 
+					{
+						r = repl.start({ prompt: `[-= ${slogan} =-]$ `, eval: replEvalPromise });
+						r.context = {app};
+				        	r.on('exit', () => {
+				               		console.log("\n\t" + 'Stopping CLI...');
+							app.wsrpc.close();
+		                			app.worker.kill('SIGINT');
+							//process.kill('SIGINT');
+				        	});
+					});
+				});
+        		});
+        	})
+	}
 } else {
 	throw "Please setup bootstrap config first ..."; 
 }
