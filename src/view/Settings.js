@@ -349,34 +349,34 @@ class Settings extends AlertModalUser {
 					<table className="tokenTitleTable">
 					<tbody>
 						<tr>
-							<td width='10%' style={{borderRight: '2px solid rgb(17,31,47)'}}>Select</td>
-							<td width='10%' style={{borderRight: '2px solid rgb(17,31,47)'}}>Symbol</td>
-							<td width='40%' style={{borderRight: '2px solid rgb(17,31,47)'}}>Address</td>
-							<td width='10%' style={{borderRight: '2px solid rgb(17,31,47)'}}>Name</td>
-							<td width='10%' style={{borderRight: '2px solid rgb(17,31,47)'}}>Decimals</td>
-							<td width='10%' style={{borderRight: '2px solid rgb(17,31,47)'}}>Catgory</td>
-							<td width='10%'>Watched</td>
+							<td style={{minWidth: '5.2vw', maxWidth: '5.3vw', borderRight: '2px solid rgb(17,31,47)'}}>Select</td>
+							<td style={{minWidth: '8.1vw', maxWidth: '8.16vw', borderRight: '2px solid rgb(17,31,47)'}}>Symbol</td>
+							<td style={{minWidth: '30.2vw', maxWidth: '30.5vw', borderRight: '2px solid rgb(17,31,47)'}}>Address</td>
+							<td style={{minWidth: '10.6vw', maxWidth: '10.6vw', borderRight: '2px solid rgb(17,31,47)'}}>Name</td>
+							<td style={{minWidth: '8.16vw', maxWidth: '8.16vw', borderRight: '2px solid rgb(17,31,47)'}}>Decimals</td>
+							<td style={{minWidth: '8.16vw', maxWidth: '8.16vw', borderRight: '2px solid rgb(17,31,47)'}}>Catgory</td>
+							<td style={{minWidth: '8.16vw', maxWidth: '8.16vw' }}>Watched</td>
 						</tr>
 						<tr hidden={!(this.state.tokenAction === "New")} style={{backgroundColor: "rgb(34, 169, 202)"}}>
-							<td width='10%'>N/A</td>
-							<td width='10%'><input type='text' size='3'
+							<td style={{minWidth: '8.16vw', maxWidth: '8.16vw'}}>N/A</td>
+							<td style={{minWidth: '8.16vw', maxWidth: '8.16vw'}}><input type='text' size='3'
 								value={this.state.tokenToAdd.symbol === undefined ? "" : this.state.tokenToAdd.symbol}
 								onChange={this.changeNewTokenField.bind(this, "symbol")}
 							/></td>
-							<td width='40%'><input type='text' size='20'
+							<td style={{minWidth: '30.5vw', maxWidth: '30.5vw'}}><input type='text' size='20'
 								value={this.state.tokenToAdd.token === undefined ? "" : this.state.tokenToAdd.token.addr}
 								onChange={this.changeNewTokenField.bind(this, "addr")}
 							/></td>
-							<td width='10%'><input type='text' size='10'
+							<td style={{minWidth: '10.6vw', maxWidth: '10.6vw'}}><input type='text' size='10'
 								value={this.state.tokenToAdd.token === undefined ? "" : this.state.tokenToAdd.token.name}
 								onChange={this.changeNewTokenField.bind(this, "name")}
 							/></td>
-							<td width='10%'><input type='text' size='10'
+							<td style={{minWidth: '8.16vw', maxWidth: '8.16vw'}}><input type='text' size='10'
 								value={this.state.tokenToAdd.token === undefined ? "" : this.state.tokenToAdd.token.decimals}
 								onChange={this.changeNewTokenField.bind(this, "decimals")}
 							/></td>
-							<td width='10%'></td>
-							<td width='10%'><input type='button' 
+							<td style={{minWidth: '8.16vw', maxWidth: '8.16vw'}}></td>
+							<td style={{minWidth: '8.16vw', maxWidth: '8.16vw'}}><input type='button' 
 								className="button" value='Add' 
 								style={{height: '23px', backgroundColor: 'rgba(0,0,0,0)', fontSize: '13px', fontWeight: 'bold'}}
 								onClick={this.handleClickAddToken}
@@ -384,28 +384,28 @@ class Settings extends AlertModalUser {
 
 						</tr>
 						<tr hidden={!(this.state.tokenAction === "Search")}>
-							<td width='10%'>N/A</td>
-							<td width='10%'><input type='text' size='3'
+							<td style={{minWidth: '5.0vw', maxWidth: '5.0vw'}}>N/A</td>
+							<td style={{minWidth: '8.16vw', maxWidth: '8.16vw'}}><input type='text' size='3'
 								value={this.state.tokenFilter.symbol === undefined ? "" : this.state.tokenFilter.symbol}
 								onChange={this.changeTokenFilter.bind(this, "symbol")}
 							/></td>
-							<td width='40%'><input type='text' size='20'
+							<td style={{minWidth: '30.5vw', maxWidth: '30.5vw'}}><input type='text' size='20'
 								value={this.state.tokenFilter.addr === undefined ? "" : this.state.tokenFilter.addr}
 								onChange={this.changeTokenFilter.bind(this, "addr")}
 							/></td>
-							<td width='10%'><input type='text' size='10'
+							<td style={{minWidth: '10.6vw', maxWidth: '10.6vw'}}><input type='text' size='10'
 								value={this.state.tokenFilter.name === undefined ? "" : this.state.tokenFilter.name}
 								onChange={this.changeTokenFilter.bind(this, "name")}
 							/></td>
-							<td width='10%'><input type='text' size='10'
+							<td style={{minWidth: '8.16vw', maxWidth: '8.16vw'}}><input type='text' size='10'
 								value={this.state.tokenFilter.decimals === undefined ? "" : this.state.tokenFilter.decimals}
 								onChange={this.changeTokenFilter.bind(this, "decimals")}
 							/></td>
-							<td width='10%'><input type='text' size='5'
+							<td style={{minWidth: '8.16vw', maxWidth: '8.16vw'}}><input type='text' size='5'
 								value={this.state.tokenFilter.category === undefined ? "" : this.state.tokenFilter.category}
 								onChange={this.changeTokenFilter.bind(this, "category")}
 							/></td>
-							<td width='10%'><input type='text' size='10'
+							<td style={{minWidth: '8.16vw', maxWidth: '8.16vw'}}><input type='text' size='10'
 								value={this.state.tokenFilter.watched === undefined ? "" : this.state.tokenFilter.watched}
 								onChange={this.changeTokenFilter.bind(this, "watched")}
 							/></td>
@@ -438,18 +438,18 @@ class Settings extends AlertModalUser {
 				return (
 					<tr>
 						<td
-							width='10%'><input
+							style={{minWidth: '5.0vw', maxWidth: '5.0vw'}}><input
 								name="check"
 								type="checkbox"
 								checked={this.state.selectedTokens.includes(key)}
 								onChange={this.checkToken.bind(this, key)}
 								style={{ width: "16px", height: "16px" }} /></td>
-						<td width='10%'>{key}</td>
-						<td width='40%'>{token.addr}</td>
-						<td width='10%'>{token.name}</td>
-						<td width='10%'>{token.decimals}</td>
-						<td width='10%'>{token.category}</td>
-						<td width='10%'>{token.watched ? "Yes" : "No"}</td>
+						<td style={{minWidth: '8.16vw', maxWidth: '8.16vw'}}>{key}</td>
+						<td style={{minWidth: '30.5vw', maxWidth: '30.5vw'}}>{token.addr}</td>
+						<td style={{minWidth: '10.6vw', maxWidth: '10.6vw'}}>{token.name}</td>
+						<td style={{minWidth: '8.16vw', maxWidth: '8.16vw'}}>{token.decimals}</td>
+						<td style={{minWidth: '8.16vw', maxWidth: '8.16vw'}}>{token.category}</td>
+						<td style={{minWidth: '8.16vw', maxWidth: '8.16vw'}}>{token.watched ? "Yes" : "No"}</td>
 
 					</tr>
 				);
@@ -457,18 +457,18 @@ class Settings extends AlertModalUser {
 				return (
 					<tr>
 						<td
-							width='10%'><input
+							style={{minWidth: '5.0vw', maxWidth: '5.0vw'}}><input
 								name="check"
 								type="checkbox"
 								checked={this.state.selectedTokens.includes(token.symbol)}
 								onChange={this.checkToken.bind(this, token.symbol)}
 								style={{ width: "16px", height: "16px" }} /></td>
-						<td width='10%'>{token.symbol}</td>
-						<td width='40%'>{token.addr}</td>
-						<td width='10%'>{token.name}</td>
-						<td width='10%'>{token.decimals}</td>
-						<td width='10%'>{token.category}</td>
-						<td width='10%'>{token.watched ? "Yes" : "No"}</td>
+						<td style={{minWidth: '8.16vw', maxWidth: '8.16vw'}}>{token.symbol}</td>
+						<td style={{minWidth: '30.5vw', maxWidth: '30.5vw'}}>{token.addr}</td>
+						<td style={{minWidth: '10.6vw', maxWidth: '10.6vw'}}>{token.name}</td>
+						<td style={{minWidth: '8.16vw', maxWidth: '8.16vw'}}>{token.decimals}</td>
+						<td style={{minWidth: '8.16vw', maxWidth: '8.16vw'}}>{token.category}</td>
+						<td style={{minWidth: '8.16vw', maxWidth: '8.16vw'}}>{token.watched ? "Yes" : "No"}</td>
 
 					</tr>
 				);
