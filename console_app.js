@@ -32,11 +32,11 @@ const bladeWorker = (rootcfg) =>
 	if (__load_app !== '11be') { // FIXME: better app folder structure needed.
 		BIApi = require('./' + __load_app + '.js');
 		appOpts = require('./' + __load_app + '.json');
-		if (appOpts.appName == '11be') throw "Invalid App Name which uses preserved words";
+		if (appOpts.appName == 'be') throw "Invalid App Name which uses preserved words";
 	} else {
 		BIApi = require('bladeiron_api');
 		appOpts = {
-			"appName": "__MAIN__",
+			"appName": "be",
 	                "artifactDir": __dirname,
 	                "conditionDir": __dirname,
 	                "contracts": [],
@@ -45,9 +45,7 @@ const bladeWorker = (rootcfg) =>
 		}
 	}
 
-	__load_app === '11be' 
-		? output['be'] = new BIApi(rpcport, rpchost, appOpts)
-		: output[appOpts.appName] = new BIApi(rpcport, rpchost, appOpts);
+	output[appOpts.appName] = new BIApi(rpcport, rpchost, appOpts);
 
 	return output;
 }
@@ -75,20 +73,31 @@ const replEvalPromise = (cmd,ctx,filename,cb) => {
 
 // Main
 let rootcfg = loadConfig(path.join("public",".local","bootstrap_config.json"));
-let app, r;
+let app, r, appName;
+let stage   = Promise.resolve();
 
 if (rootcfg.configDir !== '') {
 	let slogan = "11BE Dev Console";
 	app = bladeWorker(rootcfg);
-		ASCII_Art(slogan).then((art) => {
-          		console.log(art);
-			r = repl.start({ prompt: `[-= ${slogan} =-]$ `, eval: replEvalPromise });
-			r.context = {app};
-		       	r.on('exit', () => {
-		       		console.log("\n\t" + 'Stopping CLI...');
-				app.be.client.close();
-		       	});
-       		});
+	appName = Object.keys(app).filter((e) => { return e !== 'cfgObjs'})[0];
+	console.log(appName);
+		stage = stage.then(() => { return app[appName].connectRPC() });
+		if (appName !== 'be') {
+			stage = stage.then(() => { return app[appName].init(); });
+			slogan = appName;
+		}
+		stage = stage.then(() => 
+		{  
+			 return ASCII_Art(slogan).then((art) => {
+		          		console.log(art);
+					r = repl.start({ prompt: `[-= ${slogan} =-]$ `, eval: replEvalPromise });
+					r.context = {app};
+				       	r.on('exit', () => {
+				       		console.log("\n\t" + 'Stopping CLI...');
+						app[appName].client.close();
+				       	});
+		       		});
+		});
 } else {
 	throw "Please setup bootstrap config first ..."; 
 }
