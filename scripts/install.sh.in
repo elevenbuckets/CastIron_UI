@@ -1,0 +1,57 @@
+#!/bin/bash
+
+uuencode=1
+binary=0
+
+function untar_payload()
+{
+	match=$(grep --text --line-number '^PAYLOAD:$' $0 | cut -d ':' -f 1)
+	payload_start=$((match + 1))
+	if [[ $binary -ne 0 ]]; then
+		tail -n +$payload_start $0 | xzcat - |tar -xvf -
+	fi
+	if [[ $uuencode -ne 0 ]]; then
+		tail -n +$payload_start $0 | uudecode | tar -xvf -
+	fi
+}
+
+function __chk_cmd()
+{
+	CMD=$1;
+	RC=`which $CMD &> /dev/null && echo 0 || echo 1`
+	[ $RC -eq 0 ]
+}
+
+function __break()
+{
+	MSG=$1;
+	echo -e $MSG;
+	exit 1;
+}
+
+function check_cmdlist() 
+{
+	# input should be space separated commands, assuming no spaces in commands themselves
+	for i in $1; do
+		__chk_cmd $i && echo -e "\tFound ${i} ..." || __break "Error: Please install ${i} or make sure it is available in \$PATH";
+	done
+}
+
+function check_dependencies()
+{
+	echo "Checking system dependencies, please wait...";
+	check_cmdlist "tar xzcat jq docker ssh ssh-keygen ssh-keyscan";
+	docker ps &> /dev/null && echo 'Done!' || \
+		__break "Please enable docker to be managed by non-root users following this instructuion:\nhttps://docs.docker.com/install/linux/linux-postinstall/"
+}
+
+# Main
+check_dependencies
+read -p "Install files? " ans
+if [[ "${ans:0:1}"  ||  "${ans:0:1}" ]]; then
+	mkdir Container && chmod 700 Container;
+	untar_payload && mv dist Container/ && cd Container/dist && ./start.sh
+	# Do remainder of install steps.
+fi
+
+exit 0
